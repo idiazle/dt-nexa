@@ -1,3 +1,4 @@
+import { ChangeTheme } from "@/components/change-theme";
 import Image from "next/image";
 
 export default function Home() {
