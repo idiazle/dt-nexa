@@ -6,21 +6,33 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-  } from "@/components/ui/card"
-  
+} from "@/components/ui/card"
+import Image from 'next/image'
+import LoginForm from './login-form'
+
 export default function LoginCard() {
     return (
-        <Card className='bg-white/20 border border-white'>
+        <Card className='bg-white/20 border border-white w-1/5 h-[550px] flex flex-col justify-center items-center gap-5 rounded-2xl'>
             <CardHeader>
-                <CardTitle>Card Title</CardTitle>
-                <CardDescription>Card Description</CardDescription>
+                <div className='flex justify-center items-center'>
+                    <Image
+                        style={{
+                            width: 'auto',
+                            height: 'auto'
+                        }}
+                        src="/img/icons/login-logo.png"
+                        width={200}
+                        height={200}
+                        alt="Picture of the author"
+                    />
+                </div>
             </CardHeader>
-            <CardContent>
-                <p>Card Content</p>
+            <CardContent className='w-full'>
+                <LoginForm />
             </CardContent>
-            <CardFooter>
+            {/* <CardFooter>
                 <p>Card Footer</p>
-            </CardFooter>
+            </CardFooter> */}
         </Card>
 
     )
