@@ -18,6 +18,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { FaAnglesDown } from "react-icons/fa6";
 import { FaRegUser } from "react-icons/fa6";
 import { FaLock } from "react-icons/fa6";
+import { signIn, useSession } from 'next-auth/react'
+import { toast } from "../ui/use-toast"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
     username: z.string().min(2).max(50),
@@ -30,11 +33,54 @@ export default function LoginForm() {
         resolver: zodResolver(formSchema),
         defaultValues: {
             username: "",
+            password: "",
         },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    const router = useRouter()
+
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        try {
+            const sendForm = {
+              userdata: values.username,
+              password: values.password,
+              redirect: false
+            }
+            const res = await signIn('credentials', sendForm)
+            // console.log('THIS IS RESPONSE', res)
+      
+            if (res !== null && res !== undefined) {
+              if (res.status === 200) {
+                toast({
+                  duration: 3000,
+                  variant: 'default',
+                  title: 'Datos correctos',
+                  description: 'Ingreso exitoso'
+                })
+                router.push('/user')
+                // router.refresh()
+                // setLoading(false)
+              }
+              if (res.error !== null) {
+                toast({
+                  duration: 3000,
+                  variant: 'destructive',
+                  title: 'Error',
+                  description: `${res?.error}`
+                })
+                // setLoading(false)
+              }
+            }
+          } catch (error) {
+            // console.log('MY ERROR', error)
+            toast({
+              duration: 3000,
+              variant: 'destructive',
+              title: 'Eliminación ',
+              description: 'Error'
+            })
+            // setLoading(false)
+          }
     }
 
     return (
@@ -61,7 +107,7 @@ export default function LoginForm() {
                 />
                 <FormField
                     control={form.control}
-                    name="username"
+                    name="password"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex flex-row items-center justify-start gap-1">
@@ -69,7 +115,7 @@ export default function LoginForm() {
                                 <p>Contraseña</p>
                             </FormLabel>
                             <FormControl>
-                                <Input className="bg-white border-none text-black" placeholder="*****" {...field} />
+                                <Input type="password" className="bg-white border-none text-black" placeholder="*****" {...field} />
                             </FormControl>
                             {/* <FormDescription>
                                 This is your public display name.

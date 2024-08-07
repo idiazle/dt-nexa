@@ -27,3 +27,26 @@ export const payments: Payment[] = [
   },
   // ...
 ]
+
+export interface moduleListStructure {
+  id: number,
+  icon_path: string,
+  icon_tooltip: string,
+  route: string
+  enable: boolean
+}
+
+
+export interface UserStructure {
+  id: number
+  code: string
+  role: string
+  name: string
+  last_name: string
+  username: string
+  dui: string
+  short_name: string
+  position: string
+  email: string
+  groups: any[]
+}
