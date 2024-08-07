@@ -11,7 +11,7 @@ export default function AuthLayout({
                 <aside className="h-full max-w-[275px] overflow-hidden">
                     <UserAside />
                 </aside>
-                <main className="w-full h-full overflow-auto">
+                <main className="w-full h-full overflow-hidden">
                     {children}
                 </main>
             </div>

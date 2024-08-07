@@ -26,6 +26,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -65,7 +66,7 @@ export function DataTable<TData, TValue>({
 
     return (
 
-        <div>
+        <div className='h-full'>
             {/* <div className="flex items-center py-4">
                 <Input
                     placeholder="Filtrar nombre..."
@@ -125,57 +126,61 @@ export function DataTable<TData, TValue>({
                     {table.getFilteredRowModel().rows.length} columna(s) seleccionados.
                 </div>
             </div> */}
-            <div className="rounded-md border border-slate-500/40 overflow-hidden">
-                <Table>
-                    <TableHeader className="bg-[#1bb398]">
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id} className="border-none">
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead className="text-white h-8 text-[12px] text-center" key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    )
-                                })}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    className="border-none hover:bg-muted/10"
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="p-2 px-4 text-[11px] text-center">
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+            <div className="rounded-md border border-slate-500/40 h-full w-full flex flex-col">
+                <ScrollArea className='h-[80vh] w-full rounded-md'>
+                    <Table wrapperClassName='overflow-clip'>
+                        <TableHeader className="bg-[#1bb398] sticky top-0">
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <TableRow key={headerGroup.id} className="border-none">
+                                    {headerGroup.headers.map((header) => {
+                                        return (
+                                            <TableHead className="text-white h-8 text-[12px] text-center" key={header.id}>
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                        header.column.columnDef.header,
+                                                        header.getContext()
+                                                    )}
+                                            </TableHead>
+                                        )
+                                    })}
                                 </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-                <div className="h-3 w-3"></div>
+                            ))}
+                        </TableHeader>
+                        <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <TableRow
+                                        className="border-none hover:bg-muted/10"
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && "selected"}
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id} className="p-2 px-4 text-[11px] text-center">
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                    <ScrollBar orientation="horizontal" />
+
+                </ScrollArea>
+                {/* <div className="h-3 w-3"></div> */}
                 <div className="flex items-center justify-end px-2 pt-3">
                     {/* <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div> */}
-                    <div className="flex flex-row justify-center items-center">
+                    <div className="flex flex-row justify-center items-center mb-5">
                         <div className="flex flex-row justify-center items-center space-x-2">
                             <p className="text-sm font-medium">Elementos por página</p>
                             <Select
@@ -184,7 +189,7 @@ export function DataTable<TData, TValue>({
                                     table.setPageSize(Number(value))
                                 }}
                             >
-                                <SelectTrigger className="h-8 w-[70px] bg-[#4bb398] border-none">
+                                <SelectTrigger className="h-6 w-[60px] bg-[#4bb398] border-none">
                                     <SelectValue placeholder={table.getState().pagination.pageSize} />
                                 </SelectTrigger>
                                 <SelectContent side="top">
@@ -204,7 +209,7 @@ export function DataTable<TData, TValue>({
                         <div className="flex items-center space-x-2">
                             <Button
                                 variant={'outline'}
-                                className="hidden h-8 w-8 p-0 lg:flex bg-[#4bb398] border-none"
+                                className="hidden h-7 w-7 p-0 lg:flex bg-[#4bb398] border-none"
                                 onClick={() => { table.setPageIndex(0) }}
                                 disabled={!table.getCanPreviousPage()}
                             >
@@ -212,7 +217,7 @@ export function DataTable<TData, TValue>({
                             </Button>
                             <Button
                                 variant="outline"
-                                className="h-8 w-8 p-0 bg-[#4bb398] border-none"
+                                className="h-7 w-7 p-0 bg-[#4bb398] border-none"
                                 onClick={() => { table.previousPage() }}
                                 disabled={!table.getCanPreviousPage()}
                             >
@@ -220,7 +225,7 @@ export function DataTable<TData, TValue>({
                             </Button>
                             <Button
                                 variant="outline"
-                                className="h-8 w-8 p-0 bg-[#4bb398] border-none"
+                                className="h-7 w-7 p-0 bg-[#4bb398] border-none"
                                 onClick={() => { table.nextPage() }}
                                 disabled={!table.getCanNextPage()}
                             >
@@ -228,7 +233,7 @@ export function DataTable<TData, TValue>({
                             </Button>
                             <Button
                                 variant="outline"
-                                className="hidden h-8 w-8 p-0 lg:flex bg-[#4bb398] border-none"
+                                className="hidden h-7 w-7 p-0 lg:flex bg-[#4bb398] border-none"
                                 onClick={() => { table.setPageIndex(table.getPageCount() - 1) }}
                                 disabled={!table.getCanNextPage()}
                             >

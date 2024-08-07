@@ -258,12 +258,13 @@ async function getData(): Promise<Payment[]> {
 export default async function page() {
   const data = await getData()
   return (
-    <div className='h-full w-full bg-white text-black pr-7'>
+    <div className='h-full w-full bg-white text-black pr-7 flex flex-col overflow-auto'>
       <div className='border-b-2 border-slate-600 pt-8 pb-1 pl-7'>
         <h1 className='text font-semibold'>Detalles del Proyecto Salares Norte</h1>
       </div>
-      <div className='mt-8 ml-10'>
+      <div className='mt-8 ml-10 overflow-hidden'>
         <DataTable columns={columns} data={data} />
+        {/* <h1>wadpkwapd</h1> */}
       </div>
     </div>
   )
