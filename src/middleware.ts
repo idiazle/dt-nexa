@@ -1,11 +1,13 @@
 import { withAuth } from 'next-auth/middleware'
 import { NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
+import { jwtDecode } from "jwt-decode";
 
 export default withAuth(
-  function middleware (req) {
-    // console.log('MY REQ', req)
+  function middleware(req) {
+    // console.log('MY REQ', req.cookies)
+    // console.log('MY REQ 2', req.nextauth)
     const token = req.nextauth.token
+    
     if (token == null) {
       if (req.nextUrl.pathname !== '/auth/login') {
         return NextResponse.redirect(new URL('/auth/login', req.url))
@@ -13,8 +15,10 @@ export default withAuth(
         return NextResponse.next()
       }
     }
+
+
     try {
-      const decodedUser = jwt.decode(token?.access_token as string) as jwt.JwtPayload
+      const decodedUser = jwtDecode(token?.access_token as string) as any
       // console.log('Detalles del Usuario', decodedUser)
 
       const encontre = decodedUser?.groups.find((obj: any) => obj === 1 || obj === 3)

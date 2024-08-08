@@ -1,7 +1,9 @@
 import { ChangeTheme } from "@/components/change-theme";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 export default function Home() {
+  redirect('/auth/login')
   return (
     <main></main>
   );

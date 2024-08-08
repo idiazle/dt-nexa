@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
+import NextAuthProvider from "@/components/providers/next-auth-provider";
 
 
 const fontSetter = Neucha({
@@ -37,15 +38,17 @@ export default function RootLayout({
           fontSetter.className
         )}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
-        <Toaster/>
+        <NextAuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+          <Toaster />
+        </NextAuthProvider>
       </body>
     </html>
   );

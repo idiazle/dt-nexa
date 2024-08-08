@@ -1,6 +1,6 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { type NextAuthOptions } from 'next-auth';
-import * as jwt from 'jsonwebtoken';
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import axios from 'axios';
 import { postLogin } from '@/api/auth/auth-api';
 import { type UserStructure } from '@/lib/utils';
@@ -12,20 +12,17 @@ interface UserStructureAuth {
 }
 
 async function refreshAccessToken(token: any) {
-  console.log("Refreshing access token", token);
   try {
-    console.log("Bearer token", `Bearer ${token.refresh_token}`);
     const response = await axios.post(`${process.env.NEXT_PUBLIC_BACK_URL}/token/refresh`, {
       refresh: token.refresh_token
     });
 
     if (response.status === 200) {
-      console.log(response.data);
       return {
         ...token,
         access_token: response.data.access,
         refresh_token: response.data.refresh ?? token.refresh_token,
-        accessTokenExpires: jwt.decode(response.data.access).exp * 1000,
+        accessTokenExpires: jwtDecode(response.data.access).exp * 1000,
       };
     }
     throw response.data;
@@ -62,7 +59,7 @@ export const authOptions: NextAuthOptions = {
             access_token: response?.access_token,
             refresh_token: response?.refresh_token
           };
-
+          console.log("IN PROVIDER", token);
           return token;
         } catch (e: any) {
           const errorMessage = e.response?.data.message;
@@ -81,8 +78,11 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, account, user }: UserStructureAuth) {
+      // console.log("IN JWT ", token);
+      
       if (token.access_token) {
-        const decodedToken = jwt.decode(token.access_token);
+        const decodedToken = jwtDecode(token.access_token);
+        // console.log(decodedToken);
         token.accessTokenExpires = decodedToken?.exp * 1000;
       }
 
@@ -100,11 +100,15 @@ export const authOptions: NextAuthOptions = {
       }
 
       const refreshedToken = await refreshAccessToken(token);
+      // console.log(refreshedToken);
+      
       return refreshedToken;
     },
     async session({ session, token }) {
+      // console.log(token);
+      
       if (token.access_token) {
-        const decoded = jwt.decoded(token.access_token) as jwt.JwtPayload;
+        const decoded = jwtDecode(String(token.access_token)) as any;
         session.user = {
           id: decoded?.user_id,
           code: decoded?.code,
