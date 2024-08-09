@@ -3,6 +3,7 @@ import { DataTable } from './data-table'
 import { columns, Payment } from './columns-table'
 import { getEntities } from '@/api/admin/entities-api'
 import UserRenderTitle from '@/components/user/user-render-title'
+import UserContainer from '@/components/user/user-container'
 
 
 
@@ -283,15 +284,6 @@ export default async function User() {
 
 
   return (
-    <div className='h-full w-full  pr-7 flex flex-col overflow-auto bg-white'>
-      <div className='border-b-2 border-slate-600 pt-8 pb-1 pl-7'>
-        <UserRenderTitle/>
-      </div>
-      {/* <p>{session?.access_token}</p> */}
-      <div className='mt-8 ml-10 overflow-auto'>
-        <DataTable columns={columns} data={data} />
-        {/* {JSON.stringify(data)} */}
-      </div>
-    </div>
+    <UserContainer data={data} />
   )
 }

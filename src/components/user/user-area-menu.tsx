@@ -26,7 +26,7 @@ export default function UserAreaMenu({ data }: UserAreaMenuStructure) {
             {
                 data.map((obj: any, index: number) => {
                     return (
-                        <button onClick={() => handleClick(obj)} key={index} className='flex flex-col gap-1 justify-center items-center overflow-hidden'>
+                        <button onClick={() => handleClick(obj)} key={index} className='p-2 rounded-md flex flex-col justify-center items-center overflow-hidden hover:bg-white/40'>
                             <div className='w-[75px] h-[75px] bg-[#0c6063] rounded flex flex-col justify-center items-center'>
                                 <Image
                                     style={{

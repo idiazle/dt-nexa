@@ -12,7 +12,7 @@ export default function AuthLayout({
     return (
         <div className="w-full h-full bg-default-background bg-no-repeat bg-cover">
             <div className="flex flex-row h-full w-full">
-                <aside className="h-full max-w-[275px] overflow-hidden">
+                <aside className="h-full max-w-[270px] overflow-hidden">
                     <UserAside />
                 </aside>
                 <main className="w-full h-full overflow-hidden">
