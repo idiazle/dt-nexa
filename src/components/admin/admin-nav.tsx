@@ -6,12 +6,14 @@ import React from 'react'
 
 export default function AdminNav() {
     const theme = useTheme()
-    const colorNav = theme.theme === 'dark' ? 'bg-[#030F2E]' : 'bg-gradient-to-r from-[#0078d4] to-red-500'
+    // const colorNav = theme.theme === 'dark' ? 'bg-[#030F2E]' : 'bg-gradient-to-r from-[#aa945e] to-[#030F2E]'
+    // const colorNav = 'bg-gradient-to-r from-[#aa945e] to-[#030F2E]'
+    const colorNav = 'bg-gradient-to-r from-[#030F2E] to-[#aa945e]'
     const { data: session } = useSession()
 
     return (
         <nav className={`p-5 flex flex-row justify-between items-center w-full h-[48px] ${colorNav} h-[48px]`}>
-            <div>
+            <div className='flex flex-row gap-3 justify-start items-center w-full'>
                 <Image
                     src="/img/icons/default-icon.png"
                     height={42}
@@ -19,6 +21,7 @@ export default function AdminNav() {
                     objectFit='contain'
                     alt={"icon-enterprise"}
                 />
+                <h1 className='uppercase text-white'>Salares Norte</h1>
                 {/* <Image
                     style={{
                         width: 'auto',
