@@ -7,6 +7,7 @@ export default withAuth(
     // console.log('MY REQ', req.cookies)
     // console.log('MY REQ 2', req.nextauth)
     const token = req.nextauth.token
+    // console.log(token);
     
     if (token == null) {
       if (req.nextUrl.pathname !== '/auth/login') {

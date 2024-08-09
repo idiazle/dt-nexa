@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
             access_token: response?.access_token,
             refresh_token: response?.refresh_token
           };
-          console.log("IN PROVIDER", token);
+          // console.log("IN PROVIDER", token);
           return token;
         } catch (e: any) {
           const errorMessage = e.response?.data.message;

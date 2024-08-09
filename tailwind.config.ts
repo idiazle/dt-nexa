@@ -7,7 +7,7 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -75,7 +75,7 @@ const config = {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
-      backgroundImage:{
+      backgroundImage: {
         'login-background': 'url("/img/backgrounds/login-background.jpg")',
         'default-background': 'url("/img/backgrounds/base-image.jpg")',
       }

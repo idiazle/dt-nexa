@@ -21,6 +21,9 @@ import { FaLock } from "react-icons/fa6";
 import { signIn, useSession } from 'next-auth/react'
 import { toast } from "../ui/use-toast"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { EyeIcon } from "lucide-react"
+import { EyeClosedIcon } from "@radix-ui/react-icons"
 
 const formSchema = z.object({
     username: z.string().min(2).max(50),
@@ -29,6 +32,7 @@ const formSchema = z.object({
 
 export default function LoginForm() {
 
+    const [showPass, setShowPass] = useState<boolean>(false)
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -42,45 +46,45 @@ export default function LoginForm() {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
             const sendForm = {
-              userdata: values.username,
-              password: values.password,
-              redirect: false
+                userdata: values.username,
+                password: values.password,
+                redirect: false
             }
             const res = await signIn('credentials', sendForm)
             // console.log('THIS IS RESPONSE', res)
-      
+
             if (res !== null && res !== undefined) {
-              if (res.status === 200) {
-                toast({
-                  duration: 3000,
-                  variant: 'default',
-                  title: 'Datos correctos',
-                  description: 'Ingreso exitoso'
-                })
-                router.push('/user')
-                // router.refresh()
-                // setLoading(false)
-              }
-              if (res.error !== null) {
-                toast({
-                  duration: 3000,
-                  variant: 'destructive',
-                  title: 'Error',
-                  description: `${res?.error}`
-                })
-                // setLoading(false)
-              }
+                if (res.status === 200) {
+                    toast({
+                        duration: 3000,
+                        variant: 'default',
+                        title: 'Datos correctos',
+                        description: 'Ingreso exitoso'
+                    })
+                    router.push('/user')
+                    // router.refresh()
+                    // setLoading(false)
+                }
+                if (res.error !== null) {
+                    toast({
+                        duration: 3000,
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: `${res?.error}`
+                    })
+                    // setLoading(false)
+                }
             }
-          } catch (error) {
+        } catch (error) {
             // console.log('MY ERROR', error)
             toast({
-              duration: 3000,
-              variant: 'destructive',
-              title: 'Eliminación ',
-              description: 'Error'
+                duration: 3000,
+                variant: 'destructive',
+                title: 'Eliminación ',
+                description: 'Error'
             })
             // setLoading(false)
-          }
+        }
     }
 
     return (
@@ -92,7 +96,7 @@ export default function LoginForm() {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className="flex flex-row items-center justify-start gap-1">
-                                <FaRegUser />
+                                <FaRegUser size={20} />
                                 <p>Usuario</p>
                             </FormLabel>
                             <FormControl>
@@ -110,12 +114,19 @@ export default function LoginForm() {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="flex flex-row items-center justify-start gap-1">
-                                <FaLock />
-                                <p>Contraseña</p>
+                            <FormLabel className="flex flex-row items-center justify-between gap-1">
+                                <div className="flex flex-row items-center justify-start gap-1">
+                                    <FaLock size={20} />
+                                    <p>Contraseña</p>
+                                </div>
+                                <Button type="button" onClick={() => setShowPass(!showPass)} className="h-7 w-7" size={'icon'} variant={'outline'}>
+                                    {
+                                        !showPass ? <EyeIcon /> : <EyeClosedIcon />
+                                    }
+                                </Button>
                             </FormLabel>
                             <FormControl>
-                                <Input type="password" className="bg-white border-none text-black" placeholder="*****" {...field} />
+                                <Input type={showPass ? "password" : 'text'} className="bg-white border-none text-black" placeholder="*****" {...field} />
                             </FormControl>
                             {/* <FormDescription>
                                 This is your public display name.
