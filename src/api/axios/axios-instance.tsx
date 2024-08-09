@@ -36,8 +36,8 @@ axiosInstance.interceptors.response.use(response => response,
       if (error.response.status === 401) {
         console.log("AQUI 2");
         // await signOut({ callbackUrl: '/auth/login' })
-        logoutAction()
         if (typeof window !== 'undefined') {
+          
           // await signOut({ callbackUrl: '/auth/login' });
           // logoutAction()
         } else {

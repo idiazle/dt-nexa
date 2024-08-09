@@ -2,19 +2,34 @@ import Image from 'next/image'
 import React from 'react'
 import UserGrInfoMenu from './user-gr-info-menu'
 import UserAreaMenu from './user-area-menu'
+import { ChangeTheme } from '../change-theme'
 
 export default function UserAside() {
 
   const optionArray = [
-    1, 2, 3, 4
+    {
+      id: 1,
+      name: 'Detalles del proyecto'
+    },
+    {
+      id: 2,
+      name: 'Detalles otros'
+    }
   ]
   const areaArray = [
-    1, 2, 3, 4, 5, 6
+    {
+      id: 1,
+      name: 'Area 1'
+    },
+    {
+      id: 2,
+      name: 'Area 2'
+    }
   ]
 
-
   return (
-    <div className='bg-[#001d39] w-full h-full p-7 flex flex-col'>
+    <div className='bg-[#001d39] w-full h-full p-7 flex flex-col text-white'>
+      {/* <ChangeTheme/> */}
       <div className='flex justify-center items-center mb-5'>
         <Image
           style={{
@@ -33,30 +48,16 @@ export default function UserAside() {
         <div className='w-full border-b border-white'>
           <h4 className='text-sm w-full'>Información General</h4>
         </div>
-        <div className='flex flex-col justify-center items-center p-2 gap-2 overflow-auto'>
-          {
-            optionArray.map((obj, index) => {
-              return (
-                <UserGrInfoMenu key={index} />
-              )
-            })
-          }
-        </div>
+        <UserGrInfoMenu data={optionArray} />
+
       </div>
 
       <div className='flex flex-col justify-start items-center w-full overflow-hidden h-1/2'>
         <div className='w-full border-b border-white'>
           <h4 className='text-sm w-full'>Áreas</h4>
         </div>
-        <div className='flex flex-row justify-center items-center gap-3 flex-wrap overflow-auto mt-4 w-full'>
-          {
-            areaArray.map((obj, index) => {
-              return (
-                <UserAreaMenu key={index} />
-              )
-            })
-          }
-        </div>
+        <UserAreaMenu data={areaArray} />
+
       </div>
 
     </div>

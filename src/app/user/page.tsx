@@ -2,11 +2,9 @@ import React from 'react'
 import { DataTable } from './data-table'
 import { columns, Payment } from './columns-table'
 import { getEntities } from '@/api/admin/entities-api'
-import { getSession, signOut } from 'next-auth/react'
-import LogoutButton from '@/components/user/logout-button'
-import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/authOptions'
+import UserRenderTitle from '@/components/user/user-render-title'
+
+
 
 
 async function getData(): Promise<Payment[]> {
@@ -271,31 +269,28 @@ const getEntidades = async () => {
   } catch (error: any) {
     console.log(error.message);
     if (error.message === '401') {
-      redirect('/auth/login')
+      // redirect('/auth/login')
     }
   }
 }
 
 export default async function User() {
   // console.log(session);
-  // const session = await getServerSession(authOptions)
-  // console.log(session?.access_token);
-  
-  const data = await getEntidades()
+
+  const data = await getData()
 
 
 
 
   return (
-    <div className='h-full w-full bg-white text-black pr-7 flex flex-col overflow-auto'>
+    <div className='h-full w-full  pr-7 flex flex-col overflow-auto bg-white'>
       <div className='border-b-2 border-slate-600 pt-8 pb-1 pl-7'>
-        <h1 className='text font-semibold'>Detalles del Proyecto Salares Norte</h1>
+        <UserRenderTitle/>
       </div>
       {/* <p>{session?.access_token}</p> */}
-      <LogoutButton/>
-      <div className='mt-8 ml-10 overflow-hidden'>
-        {/* <DataTable columns={columns} data={data} /> */}
-        {JSON.stringify(data)}
+      <div className='mt-8 ml-10 overflow-auto'>
+        <DataTable columns={columns} data={data} />
+        {/* {JSON.stringify(data)} */}
       </div>
     </div>
   )

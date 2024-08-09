@@ -21,12 +21,13 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
+import { OptionAsideContext } from '@/context/option-aside-context'
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
@@ -63,6 +64,10 @@ export function DataTable<TData, TValue>({
         }
     })
     const [selectToolValue, setSelectToolValue] = useState<string>('')
+
+    const {option} = useContext(OptionAsideContext)
+    console.log(option);
+    
 
     return (
 
@@ -127,7 +132,7 @@ export function DataTable<TData, TValue>({
                 </div>
             </div> */}
             <div className="rounded-md border border-slate-500/40 h-full w-full flex flex-col">
-                <ScrollArea className='h-[80vh] w-full rounded-md'>
+                <ScrollArea className='max-h-[80vh] w-full rounded-md'>
                     <Table wrapperClassName='overflow-clip'>
                         <TableHeader className="bg-[#1bb398] sticky top-0">
                             {table.getHeaderGroups().map((headerGroup) => (
@@ -147,11 +152,11 @@ export function DataTable<TData, TValue>({
                                 </TableRow>
                             ))}
                         </TableHeader>
-                        <TableBody>
+                        <TableBody className='bg-[#f8f8fd]'>
                             {table.getRowModel().rows?.length ? (
                                 table.getRowModel().rows.map((row) => (
                                     <TableRow
-                                        className="border-none hover:bg-muted/10"
+                                        className="border-none hover:bg-slate-200"
                                         key={row.id}
                                         data-state={row.getIsSelected() && "selected"}
                                     >

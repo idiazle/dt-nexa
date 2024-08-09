@@ -4,6 +4,7 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import axios from 'axios';
 import { postLogin } from '@/api/auth/auth-api';
 import { type UserStructure } from '@/lib/utils';
+import { signOut } from 'next-auth/react';
 
 interface UserStructureAuth {
   token: string | any;
@@ -28,6 +29,7 @@ async function refreshAccessToken(token: any) {
     throw response.data;
   } catch (error) {
     console.log(error);
+    await signOut({ callbackUrl: '/auth/login' })
     return {
       ...token,
       error: "RefreshAccessTokenError",
@@ -79,7 +81,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account, user }: UserStructureAuth) {
       // console.log("IN JWT ", token);
-      
+
       if (token.access_token) {
         const decodedToken = jwtDecode(token.access_token);
         // console.log(decodedToken);
@@ -97,16 +99,15 @@ export const authOptions: NextAuthOptions = {
 
       if (Date.now() < token.accessTokenExpires) {
         return token;
-      }
+      } 
 
       const refreshedToken = await refreshAccessToken(token);
-      // console.log(refreshedToken);
-      
+
       return refreshedToken;
     },
     async session({ session, token }) {
       // console.log(token);
-      
+
       if (token.access_token) {
         const decoded = jwtDecode(String(token.access_token)) as any;
         session.user = {

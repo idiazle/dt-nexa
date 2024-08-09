@@ -21,6 +21,7 @@ export const columns: ColumnDef<Payment>[] = [
         header: () => <div className="text-left">Nombres</div>,
         cell: ({ row }) => {
             // const image = row.getValue('tag') || '/img/logo_main_dp.png' as any
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const [information, setInformation] = useState<any>({
                 data: {
                     file_url: '',
@@ -29,6 +30,7 @@ export const columns: ColumnDef<Payment>[] = [
                 }
             })
 
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const [openMedia, setOpenMedia] = useState<boolean>(false)
 
             return (
@@ -44,7 +46,7 @@ export const columns: ColumnDef<Payment>[] = [
                         })
                     }} className="flex flex-row justify-start items-center h-full w-full gap-0.5">
                         <FaRegFilePdf size={18} color="red" />
-                        <p>{row.getValue('id')}</p>
+                        <p className="w-full text-left">{row.getValue('id')}</p>
                     </button>
                     {
                         openMedia ?
