@@ -1,6 +1,10 @@
 import React from 'react'
-
-export default function EquipmentDialog() {
+interface EquipmentDialogStructure {
+  id: number | null
+  dialogOpen: boolean
+  setDialogOpen: (value: boolean) => void
+}
+export default function EquipmentDialog({ id, dialogOpen, setDialogOpen }: EquipmentDialogStructure) {
   return (
     <div>EquipmentDialog</div>
   )

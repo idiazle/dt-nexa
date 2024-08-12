@@ -15,7 +15,7 @@ interface EntitiesTableStructure {
 export default function EntitiesTable({ data }: EntitiesTableStructure) {
 
 
-    const [selectedEntity, setSelectedEntity] = useState<any>(null)
+    const [selectedEntity, setSelectedEntity] = useState<EntityStructure | null>(null)
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [openAlertDelete, setOpenAlertDelete] = useState<boolean>(false)
     const router = useRouter()
@@ -30,19 +30,21 @@ export default function EntitiesTable({ data }: EntitiesTableStructure) {
     }, []);
 
     const delEntity = async () => {
-        try {
-            const response = await deleteEntity(selectedEntity.id)
-            if (response.status === 200) {
-                router.refresh()
-                toast({
-                    duration: 3000,
-                    variant: 'destructive',
-                    title: 'Eliminación ',
-                    description: 'Entidad eliminada correctamente'
-                })
+        if (selectedEntity !== null) {
+            try {
+                const response = await deleteEntity(selectedEntity.id)
+                if (response.status === 200) {
+                    router.refresh()
+                    toast({
+                        duration: 3000,
+                        variant: 'destructive',
+                        title: 'Eliminación ',
+                        description: 'Entidad eliminada correctamente'
+                    })
+                }
+            } catch (error) {
+                throw new Error('Error al eliminar la entidad')
             }
-        } catch (error) {
-            throw new Error('Error al eliminar la entidad')
         }
     }
 
@@ -52,10 +54,10 @@ export default function EntitiesTable({ data }: EntitiesTableStructure) {
         <div>
             <DataTable columns={columns} data={data} />
             {
-                dialogOpen ? <EntityDialog id={selectedEntity.id} setDialogOpen={setDialogOpen} dialogOpen={dialogOpen} /> : null
+                dialogOpen && selectedEntity !== null ? <EntityDialog id={selectedEntity.id} setDialogOpen={setDialogOpen} dialogOpen={dialogOpen} /> : null
             }
             {
-                openAlertDelete ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delEntity} objName={selectedEntity.name}/> : null
+                openAlertDelete && selectedEntity !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delEntity} objName={selectedEntity.name} /> : null
             }
         </div>
     )

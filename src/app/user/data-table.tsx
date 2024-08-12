@@ -66,7 +66,6 @@ export function DataTable<TData, TValue>({
     const [selectToolValue, setSelectToolValue] = useState<string>('')
 
     const {option} = useContext(OptionAsideContext)
-    console.log(option);
     
 
     return (
