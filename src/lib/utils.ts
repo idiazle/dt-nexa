@@ -50,3 +50,19 @@ export interface UserStructure {
   email: string
   groups: any[]
 }
+
+
+export interface EntityStructure {
+  id: number
+  image: string | null
+  description: string | null
+  active: boolean
+  name: string
+  code: string
+  type: number
+  blocked: boolean
+  parent_id: number | null
+  user_id: number
+  deleted: boolean
+  plan_image: string | null
+}

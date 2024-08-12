@@ -1,4 +1,3 @@
-import { logoutAction } from '@/lib/actions';
 import { authOptions } from '@/lib/authOptions';
 import axios from 'axios'
 import { getServerSession } from 'next-auth';
@@ -11,8 +10,8 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use(async config => {
-  const session = await getServerSession(authOptions);
-  console.log(session);
+  const session = await getSession()
+  // console.log(session);
 
   const token = session?.access_token;
 
@@ -37,7 +36,7 @@ axiosInstance.interceptors.response.use(response => response,
         console.log("AQUI 2");
         // await signOut({ callbackUrl: '/auth/login' })
         if (typeof window !== 'undefined') {
-          
+
           // await signOut({ callbackUrl: '/auth/login' });
           // logoutAction()
         } else {

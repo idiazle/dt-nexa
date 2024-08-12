@@ -36,49 +36,49 @@ export default function AdminAside() {
             icon_path: '/img/aside-icons/I_G. de tags.png',
             icon_tooltip: 'Gestión de Equipos',
             route: '/admin/equipments',
-            enable: false
+            enable: true
         },
         {
             id: 4,
             icon_path: '/img/aside-icons/I_G. de imágenes.png',
             icon_tooltip: 'Gestión de Imágenes',
             route: '/admin/icons',
-            enable: false
+            enable: true
         },
         {
             id: 5,
             icon_path: '/img/aside-icons/I_G. de planos.png',
             icon_tooltip: 'Gestión de Planos',
             route: '/admin/plans',
-            enable: false
+            enable: true
         },
         {
             id: 6,
             icon_path: '/img/aside-icons/I_G. de troubleshooting.png',
             icon_tooltip: 'Gestión de Troubleshooting',
             route: '/admin/troubles',
-            enable: false
+            enable: true
         },
         {
             id: 7,
             icon_path: '/img/aside-icons/I_G. de usuarios.png',
             icon_tooltip: 'Gestión de Usuarios',
             route: '/admin/users',
-            enable: false
+            enable: true
         },
         {
             id: 8,
             icon_path: '/img/aside-icons/I_G. de autorizaciones.png',
             icon_tooltip: 'Gestión de Autorizaciones',
             route: '/admin/authorizations',
-            enable: false
+            enable: true
         },
         {
             id: 9,
             icon_path: '/img/aside-icons/I_G. de despieces.png',
             icon_tooltip: 'Gestión de Despieces',
             route: '/admin/despieces',
-            enable: false
+            enable: true
         },
     ]
     const theme = useTheme()
