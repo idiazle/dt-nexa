@@ -93,3 +93,78 @@ export interface EquipmentStructure {
   manufacturer_id: Manufacturer
   parent_data: EntityStructure
 }
+
+export interface PermissionsStructure {
+  id: number
+  model: string
+  codename: string
+  content_type: number
+  content_type_name: string
+}
+
+export interface PermissionsListStructure {
+  content_type_name: string
+  permissions: PermissionsStructure[]
+}
+
+export interface AuthorizationStructure {
+  id: number
+  name: string
+  user_permissions: any[]
+  permissions: PermissionsStructure[]
+}
+
+export interface ColumnsPropsStructure {
+  onEdit: (obj: any) => void;
+  onDelete: (obj: any) => void;
+}
+
+export interface ModuleStructure {
+  id: number
+  name: string
+  code: string
+  initials: string
+  parent: number
+}
+
+export interface DocumentStructure {
+  id: number
+  title: string
+  filename: string | null
+  author: string
+  aux_type_id: ModuleStructure
+  aux_discipline_id: ModuleStructure
+  aux_module_id: ModuleStructure
+  confidential: number
+  file_url: string
+  date_doc: any
+  date_load: any
+  date_expired: any
+  days_expired: number
+  user_id: number
+  deleted: boolean
+  vendor: any | null
+  client: any | null
+}
+
+export interface ObjVsDocStructure {
+  document_id: any[]
+  entity_id: any[]
+  type: number
+  user_id: number
+}
+
+export interface OneAuxStructure {
+  id: number
+  name: string
+  code: string
+  initials: string
+  icon_url: string
+  parent: number
+}
+
+export interface AllAuxListStructure {
+  modules: OneAuxStructure[]
+  disciplines: OneAuxStructure[]
+  types: OneAuxStructure[]
+}

@@ -25,14 +25,14 @@ export default function EquipmentsTable({ data, entities, manufacturers }: Equip
     const [openAlertDelete, setOpenAlertDelete] = useState<boolean>(false)
     const router = useRouter()
 
-    const onDelete = useCallback(async (entity: any) => {
+    const onDelete = useCallback(async (equipment: any) => {
         setOpenAlertDelete(true)
-        setSelectedEquipment(entity)
+        setSelectedEquipment(equipment)
     }, []);
-    const onEdit = useCallback((entity: any) => {
-        console.log(entity);
+    const onEdit = useCallback((equipment: any) => {
+        console.log(equipment);
         
-        setSelectedEquipment(entity);
+        setSelectedEquipment(equipment);
         setDialogOpen(true);
     }, []);
 

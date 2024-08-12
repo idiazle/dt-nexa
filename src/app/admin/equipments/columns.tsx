@@ -1,4 +1,4 @@
-import { EquipmentStructure } from "@/lib/utils";
+import { ColumnsPropsStructure, EquipmentStructure } from "@/lib/utils";
 import { type ColumnDef } from '@tanstack/react-table'
 import {
     DropdownMenu,
@@ -13,13 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { MoreHorizontal } from "lucide-react";
 import { FaFilePen, FaTrashCan } from "react-icons/fa6";
 
-
-interface EquipmentsColumnsProps {
-    onEdit: (obj: any) => void;
-    onDelete: (obj: any) => void;
-}
-
-export const columnsEquipments = ({ onEdit, onDelete }: EquipmentsColumnsProps): ColumnDef<EquipmentStructure>[] => [
+export const columnsEquipments = ({ onEdit, onDelete }: ColumnsPropsStructure): ColumnDef<EquipmentStructure>[] => [
     {
         id: 'select',
         header: ({ table }) => (

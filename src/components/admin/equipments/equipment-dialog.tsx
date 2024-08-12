@@ -583,7 +583,7 @@ export default function EquipmentDialog({ id, dialogOpen, setDialogOpen, entitie
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
+      {/* <DialogTrigger asChild>
         {
           id === null
             ? <p>
@@ -593,8 +593,7 @@ export default function EquipmentDialog({ id, dialogOpen, setDialogOpen, entitie
               Editar
             </p>
         }
-        {/* <Button>Crear TAG</Button> */}
-      </DialogTrigger>
+      </DialogTrigger> */}
       <DialogContent className="sm:max-w-lg max-h-[95vh] overflow-auto min-w-[50vw]" onPointerDownOutside={(e) => { e.preventDefault() }}>
         <DialogHeader>
           <DialogTitle>{id === null ? 'Crear TAG' : 'Editar TAG'}</DialogTitle>

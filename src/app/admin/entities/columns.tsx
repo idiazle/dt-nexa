@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react'
-import { type EntityStructure } from '@/lib/utils'
+import { ColumnsPropsStructure, type EntityStructure } from '@/lib/utils'
 import Image from 'next/image'
 import { FaFilePen, FaTrashCan } from 'react-icons/fa6'
 import { useToast } from '@/components/ui/use-toast'
@@ -25,12 +25,7 @@ import { deleteEntity } from '@/api/admin/entities-api'
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 
-interface EntitiesColumnsProps {
-  onEdit: (obj: any) => void;
-  onDelete: (obj: any) => void;
-}
-
-export const columnsEntities = ({ onEdit, onDelete }: EntitiesColumnsProps): ColumnDef<EntityStructure>[] => [
+export const columnsEntities = ({ onEdit, onDelete }: ColumnsPropsStructure): ColumnDef<EntityStructure>[] => [
   {
     accessorKey: 'id',
     header: 'Id'

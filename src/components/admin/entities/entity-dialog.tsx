@@ -22,17 +22,17 @@ export default function EntityDialog({ id, dialogOpen, setDialogOpen }: EntityDi
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             {
-                <DialogTrigger asChild>
-                    {
-                        id === null
-                            ? <p>
-                                Crear entidad
-                            </p>
-                            : <p>
-                                Editar entidad
-                            </p>
-                    }
-                </DialogTrigger>
+                // <DialogTrigger asChild>
+                //     {
+                //         id === null
+                //             ? <p>
+                //                 Crear entidad
+                //             </p>
+                //             : <p>
+                //                 Editar entidad
+                //             </p>
+                //     }
+                // </DialogTrigger>
             }
             <DialogPortal>
                 <DialogOverlay />
