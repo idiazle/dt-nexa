@@ -66,3 +66,31 @@ export interface EntityStructure {
   deleted: boolean
   plan_image: string | null
 }
+
+export interface Manufacturer {
+  id: number
+  name: string
+}
+
+export interface LevelData {
+  id: number
+  name: string
+  code: string
+  parent: number
+  description: string | null
+}
+
+export interface EquipmentStructure {
+  id: number
+  tag: string
+  english_name: string | null
+  requisition: string
+  properties: string | null
+  equipment_id: number
+  level_data: LevelData
+  name: string
+  code: string
+  parent: number
+  manufacturer_id: Manufacturer
+  parent_data: EntityStructure
+}

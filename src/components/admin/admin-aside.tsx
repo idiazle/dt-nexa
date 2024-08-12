@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { ChangeTheme } from '../change-theme'
 import { moduleListStructure } from '@/lib/utils'
 import {
@@ -81,17 +81,20 @@ export default function AdminAside() {
             enable: true
         },
     ]
+
     const theme = useTheme()
+
+
     const colorNav = 'bg-gradient-to-r from-[#aa945e] to-[#030F2E]'
 
 
     return (
-        <div className={`w-full h-full flex flex-col flex-wrap justify-start items-center gap-2 pt-5 ${theme.theme === 'dark' ? 'bg-[#030F2E]' : 'bg-[#f3f2f1]'}`}>
+        <div className={`w-full h-full flex flex-col flex-wrap justify-start items-center gap-2 pt-5 ${theme.theme === 'dark' ? 'bg-[#030F2E]' : ''}`}>
             <div className='w-full h-[47px] rounded border-b-2'>
                 <TooltipProvider>
                     <Tooltip delayDuration={100}>
                         <TooltipTrigger className={`w-full h-full`}>
-                            <Button variant={'ghost'} className={`w-full h-full p-0 ${theme.theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-300'}`} asChild>
+                            <Button variant={'ghost'} className={`w-full h-full p-0`} asChild>
                                 <Link href={'/admin'}>
                                     <FaHouse size={22} />
                                 </Link>
@@ -113,10 +116,10 @@ export default function AdminAside() {
                             <TooltipProvider>
                                 <Tooltip delayDuration={100}>
                                     <TooltipTrigger disabled={!obj.enable} className={`w-full h-full`}>
-                                        <Button variant={'ghost'} disabled={!obj.enable} className={`w-full h-full p-0 ${obj.enable ? 'cursor-pointer pointer-events-auto' : 'cursor-not-allowed'} ${theme.theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-300'}`} asChild>
+                                        <Button variant={'ghost'} disabled={!obj.enable} className={`w-full h-full p-0 ${obj.enable ? 'cursor-pointer pointer-events-auto' : 'cursor-not-allowed'}`} asChild>
                                             <Link href={obj.route}>
                                                 <Image
-                                                    className={`${theme.theme === 'dark' ? 'invert' : 'invert-0'} ${obj.enable ? 'opacity-100' : 'opacity-50'}`}
+                                                    className={`${obj.enable ? 'opacity-100' : 'opacity-50'} ${theme.theme === 'dark' ? 'invert':'invert-0'}`}
                                                     src={obj.icon_path || "/img/icons/default-icon.png"}
                                                     height={30}
                                                     width={30}

@@ -14,22 +14,22 @@ import FormEntity from './form-entity'
 
 interface EntityDialogStructure {
     id: number | null
+    dialogOpen: boolean
+    setDialogOpen: (value: boolean) => void
 }
 
-export default function EntityDialog({ id }: EntityDialogStructure) {
-    const [dialogOpen, setDialogOpen] = useState<boolean>(false)
-
+export default function EntityDialog({ id, dialogOpen, setDialogOpen }: EntityDialogStructure) {
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             {
                 <DialogTrigger asChild>
                     {
                         id === null
-                            ? <Button onClick={() => { setDialogOpen(true) }}>
+                            ? <p>
                                 Crear entidad
-                            </Button>
-                            : <p className='' onClick={() => { setDialogOpen(true) }}>
-                                Editar
+                            </p>
+                            : <p>
+                                Editar entidad
                             </p>
                     }
                 </DialogTrigger>
