@@ -3,15 +3,22 @@ import axios from 'axios'
 import { getServerSession } from 'next-auth';
 import { getSession, signOut } from 'next-auth/react';
 
-
-
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACK_URL,
 });
 
 axiosInstance.interceptors.request.use(async config => {
+  // const session = await getServerSession(authOptions)
   const session = await getSession()
-  // console.log(session);
+  console.log(session);
+  if (session?.access_token === '') {
+    const error = new Error('Unauthorized: No token found')
+    // error.status = 401
+    throw error
+  }
+  if (session != null) {
+    config.headers.Authorization = `Bearer ${session.access_token}`
+  }
 
   const token = session?.access_token;
 
@@ -31,7 +38,8 @@ axiosInstance.interceptors.response.use(response => response,
     // console.log(error)
     // console.log(error.response)
     if (error.response) {
-      console.log("AQUI");
+      console.log("AQUI", error.response);
+      
       if (error.response.status === 401) {
         console.log("AQUI 2");
         // await signOut({ callbackUrl: '/auth/login' })
@@ -45,7 +53,7 @@ axiosInstance.interceptors.response.use(response => response,
           throw new Error("401");
         }
       } else {
-        throw new Error('Prohibited')
+        console.log(error)
       }
     } else {
       console.log('Error')

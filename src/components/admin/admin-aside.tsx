@@ -86,10 +86,11 @@ export default function AdminAside() {
 
 
     const colorNav = 'bg-gradient-to-r from-[#aa945e] to-[#030F2E]'
+    console.log(theme);
 
 
     return (
-        <div className={`w-full h-full flex flex-col flex-wrap justify-start items-center gap-2 pt-5 ${theme.theme === 'dark' ? 'bg-[#030F2E]' : ''}`}>
+        <div className={`w-full h-full flex flex-col flex-wrap justify-start items-center gap-2 pt-5 ${theme.theme === 'dark' || (theme.systemTheme === 'dark' && theme.theme === 'system') ? 'bg-[#030F2E]' : ''}`}>
             <div className='w-full h-[47px] rounded border-b-2'>
                 <TooltipProvider>
                     <Tooltip delayDuration={100}>
@@ -119,7 +120,7 @@ export default function AdminAside() {
                                         <Button variant={'ghost'} disabled={!obj.enable} className={`w-full h-full p-0 ${obj.enable ? 'cursor-pointer pointer-events-auto' : 'cursor-not-allowed'}`} asChild>
                                             <Link href={obj.route}>
                                                 <Image
-                                                    className={`${obj.enable ? 'opacity-100' : 'opacity-50'} ${theme.theme === 'dark' ? 'invert':'invert-0'}`}
+                                                    className={`${obj.enable ? 'opacity-100' : 'opacity-50'} ${theme.theme === 'dark' || (theme.systemTheme === 'dark' && theme.theme === 'system') ? 'invert' : 'invert-0'}`}
                                                     src={obj.icon_path || "/img/icons/default-icon.png"}
                                                     height={30}
                                                     width={30}

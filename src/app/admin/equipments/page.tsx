@@ -1,9 +1,29 @@
 import CreateEquipmentBtn from '@/components/admin/equipments/create-equipment-btn'
 import React from 'react'
 import EquipmentsTable from './equipments-table'
-import { EquipmentStructure } from '@/lib/utils'
+import { EntityStructure, EquipmentStructure, Manufacturer } from '@/lib/utils'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
+import { getManufacturers } from '@/api/admin/equipments-api'
+import { getEntities } from '@/api/admin/entities-api'
+import axiosInstance from '@/api/axios/axios-instance'
+
+
+const getDataManufacturers = async (): Promise<Manufacturer[]> => {
+  const response = await getManufacturers()
+  if (response.status !== 200) {
+    throw new Error('Error en respuesta')
+  }
+  return response.data.data
+}
+const getDataEntities = async (): Promise<EntityStructure[]> => {
+  const response = await getEntities()
+  if (response.status !== 200) {
+    throw new Error('Error en respuesta')
+  }
+  return response.data.data
+}
+
 
 const getData = async (token: any): Promise<EquipmentStructure[]> => {
   // const response = await getEntities()
@@ -32,12 +52,14 @@ export default async function Equipments() {
   const session = await getServerSession(authOptions)
 
   const data = await getData(session?.access_token)
-
+  const entities = await getDataEntities()
+  const manufacturers = await getDataManufacturers()
+  
 
   return (
     <div className='h-full w-full'>
-      <CreateEquipmentBtn />
-      <EquipmentsTable data={data} />
+      <CreateEquipmentBtn entities={entities} equipments={data} manufacturers={manufacturers}/>
+      <EquipmentsTable entities={entities} manufacturers={manufacturers} data={data} />
     </div>
   )
 }

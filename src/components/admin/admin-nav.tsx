@@ -1,8 +1,9 @@
 'use client'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import React from 'react'
+import { Button } from '../ui/button'
 
 export default function AdminNav() {
     const theme = useTheme()
@@ -36,7 +37,14 @@ export default function AdminNav() {
                 /> */}
 
             </div>
-            <h1 className='border p-1 rounded-3xl border-white'>{session?.user.username}</h1>
+            <div className='flex flex-row justify-center items-center'>
+                <h1 className='border p-1 rounded-3xl border-white'>{session?.user.username}</h1>
+                <Button onClick={async()=>{
+                    await signOut()
+                }}>
+                    Salir
+                </Button>
+            </div>
         </nav>
     )
 }

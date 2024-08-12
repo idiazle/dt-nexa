@@ -81,7 +81,6 @@ export interface LevelData {
 }
 
 export interface EquipmentStructure {
-  id: number
   tag: string
   english_name: string | null
   requisition: string

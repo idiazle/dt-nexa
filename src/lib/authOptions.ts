@@ -5,6 +5,7 @@ import axios from 'axios';
 import { postLogin } from '@/api/auth/auth-api';
 import { type UserStructure } from '@/lib/utils';
 import { signOut } from 'next-auth/react';
+import axiosInstance from '@/api/axios/axios-instance';
 
 interface UserStructureAuth {
   token: string | any;
@@ -108,7 +109,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       // console.log(token);
 
-      if (token.access_token) {
+      if (token.access_token !== null && token.access_token !== undefined) {
         const decoded = jwtDecode(String(token.access_token)) as any;
         session.user = {
           id: decoded?.user_id,
@@ -124,6 +125,8 @@ export const authOptions: NextAuthOptions = {
           groups: decoded?.groups
         };
         session.access_token = token?.access_token as string;
+        axiosInstance.defaults.headers["Authorization"] = `Bearer ${token?.access_token}`
+
       }
 
       return session;

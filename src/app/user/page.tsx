@@ -4,6 +4,7 @@ import { columns, Payment } from './columns-table'
 import { getEntities } from '@/api/admin/entities-api'
 import UserRenderTitle from '@/components/user/user-render-title'
 import UserContainer from '@/components/user/user-container'
+import axiosInstance from '@/api/axios/axios-instance'
 
 
 
@@ -279,7 +280,7 @@ export default async function User() {
   // console.log(session);
 
   const data = await getData()
-
+  const etnitdades = await getEntidades()
 
 
 
