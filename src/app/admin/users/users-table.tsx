@@ -56,7 +56,7 @@ export default function UsersTable({ data }: UserTableStructure) {
                 dialogOpen && selectedUser !== null ? <UserDialog id={selectedUser.id} setDialogOpen={setDialogOpen} dialogOpen={dialogOpen} /> : null
             }
             {
-                openAlertDelete && selectedUser !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delEntity} objName={selectedEntity.name} /> : null
+                openAlertDelete && selectedUser !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delEntity} objName={selectedUser.name} /> : null
             }
         </div>
     )

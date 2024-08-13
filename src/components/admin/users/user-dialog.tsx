@@ -87,21 +87,6 @@ export default function UserDialog({ id, dialogOpen, setDialogOpen }: UserDialog
     const [tabSelection, setTabSelection] = useState<string>('')
     const [myGroups, setMyGroups] = useState<any[] | null>(null)
 
-    // const getAllGroups = async () => {
-    //   try {
-    //     const response = await getGroups()
-    //     // console.log(response.data.data)
-    //     const rptaChanged = response.data.data.map((obj: any) => {
-    //       return {
-    //         ...obj,
-    //         isChecked: false
-    //       }
-    //     })
-    //     setMyGroups(rptaChanged as [])
-    //   } catch (error) {
-    //     throw new Error('Error al obtener grupos')
-    //   }
-    // }
     const getUser = async () => {
         const responseGroups = await getGroups()
         // console.log(response.data.data)
@@ -284,18 +269,6 @@ export default function UserDialog({ id, dialogOpen, setDialogOpen }: UserDialog
 
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            {/* <DialogTrigger asChild>
-                {
-                    id === null
-                        ? <p>
-                            Crear Usuario
-                        </p>
-                        : <p>
-                            Editar Usuario
-                        </p>
-                }
-
-            </DialogTrigger> */}
             <DialogContent className="max-h-[95vh] overflow-auto" onPointerDownOutside={(e) => { e.preventDefault() }}>
                 <Tabs onValueChange={(e: string) => { setTabSelection(e) }} defaultValue="account" className="w-[full]">
                     <DialogHeader>
@@ -303,13 +276,6 @@ export default function UserDialog({ id, dialogOpen, setDialogOpen }: UserDialog
                             <TabsTrigger value="edit-all">{id === null ? 'Crear usuario' : 'Editar usuario'}</TabsTrigger>
                             {id === null ? null : <TabsTrigger value="edit-password">Editar Password</TabsTrigger>}
                         </TabsList>
-                        {/* <div className='flex flex-row justify-start items-center gap-3'>
-                <DialogTitle >{dialogType === 'create' ? 'Crear usuario' : 'Editar usuario'}</DialogTitle>
-                <DialogTitle>Editar password</DialogTitle>
-              </div> */}
-                        {/* <DialogDescription>
-                Anyone who has this link will be able to view this.
-              </DialogDescription> */}
                         <Separator />
                     </DialogHeader>
                     <TabsContent value="edit-all">

@@ -16,7 +16,7 @@ interface DocumentTableStructure {
 
 export default function DocumentsTable({ data }: DocumentTableStructure) {
 
-    const [documentSelected, setDocumentSelected] = useState<DocumentStructure|null>(null)
+    const [documentSelected, setDocumentSelected] = useState<DocumentStructure | null>(null)
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [openAlertDelete, setOpenAlertDelete] = useState<boolean>(false)
     const router = useRouter()
@@ -30,7 +30,24 @@ export default function DocumentsTable({ data }: DocumentTableStructure) {
         setDocumentSelected(document);
         setDialogOpen(true);
     }, []);
-    const columns = useMemo(() => columnsDocuments({ onEdit, onDelete }), [])
+    const onViewDoc = useCallback((document: any) => {
+        console.log(document);
+        setDocumentSelected(document);
+        setDialogOpen(true);
+    }, []);
+    const onViewDownload = useCallback((document: any) => {
+        console.log(document);
+        setDocumentSelected(document);
+        setDialogOpen(true);
+    }, []);
+    const onViewRefs = useCallback((document: any) => {
+        console.log(document);
+        setDocumentSelected(document);
+        setDialogOpen(true);
+    }, []);
+
+
+    const columns = useMemo(() => columnsDocuments({ onEdit, onDelete, onViewDoc, onViewDownload, onViewRefs }), [])
 
     const delDocument = async () => {
         if (documentSelected !== null) {
@@ -54,7 +71,7 @@ export default function DocumentsTable({ data }: DocumentTableStructure) {
         <div>
             <DataTable columns={columns} data={data} />
             {
-                dialogOpen && documentSelected !== null ? <DocumentDialog/> : null
+                dialogOpen && documentSelected !== null ? <DocumentDialog dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} setTempFile={()=>{}} tempFile={null} id={documentSelected.id} /> : null
             }
             {
                 openAlertDelete && documentSelected !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delDocument} objName={documentSelected.title} /> : null

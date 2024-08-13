@@ -57,6 +57,18 @@ export const postObjVsDocs = async (body: ObjVsDocStructure) => {
   })
 }
 
+export const getObjVsDoc = async (id: number) => {
+  return await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/objVsDoc/${id}`)
+}
+
+export const getDocVsDocRef = async (id: number) => {
+  return await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/refToDocs/${id}`)
+}
+
+export const deleteReference = async (idEnlace: number) => {
+  return await axiosInstance.delete(`${process.env.NEXT_PUBLIC_BACK_URL}/objVsDoc/${idEnlace}`)
+}
+
 export const postRefDocToDoc = async (data: any) => {
   return await axiosInstance.post(`${process.env.NEXT_PUBLIC_BACK_URL}/refToDocs`, data)
 }

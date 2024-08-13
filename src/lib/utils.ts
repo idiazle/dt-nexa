@@ -51,6 +51,11 @@ export interface UserStructure {
   groups: any[]
 }
 
+export interface LightDocument {
+  id: number
+  title: string
+  filename: string
+}
 
 export interface EntityStructure {
   id: number
