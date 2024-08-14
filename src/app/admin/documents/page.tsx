@@ -6,7 +6,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/authOptions'
 
 
-const getData = async (page: number, token: any): Promise<DocumentStructure[]> => {
+const getData = async (page: number, token: any): Promise<any> => {
   const rpta = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/documents?page=${page}`,
     {
       headers: {
@@ -15,20 +15,36 @@ const getData = async (page: number, token: any): Promise<DocumentStructure[]> =
       cache: 'no-store'
     })
   const response = await rpta.json()
-  return response.data
+  return response
 }
 
 
-export default async function Documents() {
+export default async function Documents({
+  searchParams: { page = '1' }
+}: {
+  searchParams: {
+    page: string
+  }
+}) {
+  let pageNumber:number
+
+  try {
+    pageNumber = parseInt(page)
+    if (pageNumber < 1) pageNumber = 1
+  } catch (e) {
+    pageNumber = 1
+  }
+
   const session = await getServerSession(authOptions)
-  const data = await getData(1, session?.access_token)
+  const data = await getData(pageNumber, session?.access_token)
+  
 
   return (
     <div className='h-full w-full'>
 
       {/* <DataTable columns={columns} data={data} /> */}
       <CreateDocBtn />
-      <DocumentsTable data={data} />
+      <DocumentsTable data={data} pageNumber={pageNumber} totalPages={data.total_pages} rowsPerPage={data.rows_quantity} totalDocuments={data.count}/>
     </div>
   )
 }

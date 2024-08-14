@@ -53,6 +53,7 @@ export const authOptions: NextAuthOptions = {
         };
         try {
           const response = await postLogin(sendCredentials);
+
           if (response === null || response === undefined) {
             throw new Error('No response from authentication service');
           }
@@ -64,7 +65,7 @@ export const authOptions: NextAuthOptions = {
           };
           // console.log("IN PROVIDER", token);
           return token;
-        } catch (e: any) {
+        } catch (e: any) {        
           const errorMessage = e.response?.data.message;
           throw new Error(errorMessage ? errorMessage : 'Problema al iniciar sesión');
         }
@@ -100,7 +101,7 @@ export const authOptions: NextAuthOptions = {
 
       if (Date.now() < token.accessTokenExpires) {
         return token;
-      } 
+      }
 
       const refreshedToken = await refreshAccessToken(token);
 

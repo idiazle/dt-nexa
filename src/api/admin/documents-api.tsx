@@ -4,8 +4,14 @@ export const getDocuments = async (page: number, token: any) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/documents?page=${page}`, {
     headers: {
       Authorization: `Bearer ${token}`
-    }
+    },
+    cache: 'no-store'
   })
+  return res
+}
+
+export const getDocumentsNoToken = async (page: number) => {
+  const res = await axiosInstance(`${process.env.NEXT_PUBLIC_BACK_URL}/documents?page=${page}`)
   return res
 }
 export const getDocumentById = async (id: number) => {

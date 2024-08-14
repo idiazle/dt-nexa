@@ -85,6 +85,33 @@ export interface LevelData {
   description: string | null
 }
 
+
+export interface SearchInput {
+  title: string
+  filename: string
+  author: string
+  tag: string
+  entity: string
+  discipline: string
+  module: string
+  type: string
+  confidential: string
+  date_doc: string
+  date_load: string
+  date_expired: string
+  days_expired: string
+  status_vendor: string
+  code_vendor: string
+  revision_vendor: string
+  rev_vendor_by: string
+  status_client: string
+  code_client: string
+  revision_client: string
+  rev_client_by: string
+  rev_client_alt: string
+  po_contract: string
+}
+
 export interface EquipmentStructure {
   tag: string
   english_name: string | null

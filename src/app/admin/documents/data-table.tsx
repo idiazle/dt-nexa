@@ -39,15 +39,22 @@ import {
 } from '@/components/ui/select'
 import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
+import SearchDocumentDialog from '@/components/admin/documents/search-document-dialog'
 
 interface DataTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   data: TData[]
+  pagination: any
+  setPagination: (value: any) => void
+  setMyData: (value: any) => void
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data
+  data,
+  pagination,
+  setPagination,
+  setMyData
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -55,35 +62,48 @@ export function DataTable<TData, TValue>({
   )
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
+
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    // getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: setPagination,
     autoResetPageIndex: false,
+    manualPagination: true,
+    pageCount: pagination.totalPages,
     state: {
       sorting,
       columnFilters,
-      columnVisibility
-    }
+      columnVisibility,
+      pagination
+    },
+    // initialState:{
+    //   pagination:{
+    //     pageIndex:pagination.pageIndex,
+    //     pageSize:20
+    //   }
+    // }
   })
+
+  const [openDialog, setOpenDialog] = useState<boolean>(false)
 
   return (
     <div>
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filtrar nombre..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        <Button variant={'outline'} onClick={() => setOpenDialog(true)}>
+          Buscar Documento
+        </Button>
+        {
+          openDialog ?
+            <SearchDocumentDialog openDialog={openDialog} setOpenDialog={setOpenDialog} setMyData={setMyData} /> : null
+        }
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -112,6 +132,7 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      <h1 className='text-right'>Mostrando {table.getRowCount()} de {pagination.totalDocuments} documentos</h1>
       <div className="rounded-md border">
         <Table wrapperClassName='overflow-clip'>
           <TableHeader className="sticky -top-5 bg-secondary">
@@ -161,7 +182,7 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex items-center justify-end px-2 pt-3">
         <div className="flex flex-row justify-center items-center">
-          <div className="flex flex-row justify-center items-center space-x-2">
+          {/* <div className="flex flex-row justify-center items-center space-x-2">
             <p className="text-sm font-medium">Elementos por página</p>
             <Select
               value={`${table.getState().pagination.pageSize}`}
@@ -180,18 +201,20 @@ export function DataTable<TData, TValue>({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </div> */}
           <div className="flex w-[100px] items-center justify-center text-sm font-medium ">
-            Página {table.getState().pagination.pageIndex + 1} de{' '}
-            {table.getPageCount()}
+            Página {table.getState().pagination.pageIndex} de{' '}
+            {table.getState().pagination.pageSize}
           </div>
+          {/* <p>{JSON.stringify(table.getState().pagination)}</p> */}
+          {/* <p>{JSON.stringify(table.getPageCount())}</p> */}
 
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => { table.setPageIndex(0) }}
-              disabled={!table.getCanPreviousPage()}
+              className="h-8 w-8 p-0 lg:flex"
+              onClick={() => { table.setPageIndex(1) }}
+              disabled={table.getState().pagination.pageIndex === 1 ? true : false}
             >
               <DoubleArrowLeftIcon className="h-4 w-4" />
             </Button>
@@ -199,7 +222,7 @@ export function DataTable<TData, TValue>({
               variant="outline"
               className="h-8 w-8 p-0"
               onClick={() => { table.previousPage() }}
-              disabled={!table.getCanPreviousPage()}
+              disabled={table.getState().pagination.pageIndex === 1 ? true : false}
             >
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
@@ -207,15 +230,15 @@ export function DataTable<TData, TValue>({
               variant="outline"
               className="h-8 w-8 p-0"
               onClick={() => { table.nextPage() }}
-              disabled={!table.getCanNextPage()}
+              disabled={table.getState().pagination.pageIndex === table.getState().pagination.pageSize ? true : false}
             >
               <ChevronRightIcon className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
-              className="hidden h-8 w-8 p-0 lg:flex"
-              onClick={() => { table.setPageIndex(table.getPageCount() - 1) }}
-              disabled={!table.getCanNextPage()}
+              className="h-8 w-8 p-0 lg:flex"
+              onClick={() => { table.setPageIndex(table.getState().pagination.pageSize) }}
+              disabled={table.getState().pagination.pageIndex === table.getState().pagination.pageSize ? true : false}
             >
               <DoubleArrowRightIcon className="h-4 w-4" />
             </Button>

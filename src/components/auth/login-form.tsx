@@ -51,7 +51,6 @@ export default function LoginForm() {
                 redirect: false
             }
             const res = await signIn('credentials', sendForm)
-            // console.log('THIS IS RESPONSE', res)
 
             if (res !== null && res !== undefined) {
                 if (res.status === 200) {
