@@ -114,8 +114,17 @@ export const getAllAuxList = async () => {
   }>(`${process.env.NEXT_PUBLIC_BACK_URL}/all-aux-list`)
 }
 
-export const getSearchDocuments = async (data: any) => {
-  const rpta = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/documentSearch/?title=${data.title}&filename=${data.filename}&author=${data.author}&module=${data.module}&discipline=${data.discipline}&type=${data.type}&confidential=${data.confidential}&date_doc=${data.date_doc}&date_load=${data.date_load}&date_expired=${data.date_expired}&days_expired=${data.days_expired}&status_vendor=${data.status_vendor}&code_vendor=${data.code_vendor}&revision_vendor=${data.revision_vendor}&rev_vendor_by=${data.rev_vendor_by}&status_client=${data.status_client}&code_client=${data.code_client}&revision_client=${data.revision_client}&rev_client_by=${data.rev_client_by}&rev_client_alt=${data.rev_client_alt}&po_contract=${data.po_contract}`)
+export const getSearchDocuments = async (page: number, data: any) => {
+  const rpta = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/documentSearch/?title=${data.title}&filename=${data.filename}&author=${data.author}&tag=${data.tag}&entity=${data.entity}&module=${data.module}&discipline=${data.discipline}&type=${data.type}&confidential=${data.confidential}&date_doc=${data.date_doc}&date_load=${data.date_load}&date_expired=${data.date_expired}&days_expired=${data.days_expired}&status_vendor=${data.status_vendor}&code_vendor=${data.code_vendor}&revision_vendor=${data.revision_vendor}&rev_vendor_by=${data.rev_vendor_by}&status_client=${data.status_client}&code_client=${data.code_client}&revision_client=${data.revision_client}&rev_client_by=${data.rev_client_by}&rev_client_alt=${data.rev_client_alt}&po_contract=${data.po_contract}&page=${page}`)
+  return rpta
+}
+export const getSearchDocumentsNoCache = async (page: number, data: any, token:string) => {
+  const rpta = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/documentSearch/?title=${data.title}&filename=${data.filename}&author=${data.author}&tag=${data.tag}&entity=${data.entity}&module=${data.module}&discipline=${data.discipline}&type=${data.type}&confidential=${data.confidential}&date_doc=${data.date_doc}&date_load=${data.date_load}&date_expired=${data.date_expired}&days_expired=${data.days_expired}&status_vendor=${data.status_vendor}&code_vendor=${data.code_vendor}&revision_vendor=${data.revision_vendor}&rev_vendor_by=${data.rev_vendor_by}&status_client=${data.status_client}&code_client=${data.code_client}&revision_client=${data.revision_client}&rev_client_by=${data.rev_client_by}&rev_client_alt=${data.rev_client_alt}&po_contract=${data.po_contract}&page=${page}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    cache: 'no-store'
+  })
   return rpta
 }
 

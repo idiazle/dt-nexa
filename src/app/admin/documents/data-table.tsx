@@ -47,6 +47,7 @@ interface DataTableProps<TData, TValue> {
   pagination: any
   setPagination: (value: any) => void
   setMyData: (value: any) => void
+  loading: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -54,7 +55,8 @@ export function DataTable<TData, TValue>({
   data,
   pagination,
   setPagination,
-  setMyData
+  setMyData,
+  loading
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -67,6 +69,7 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
+
     getCoreRowModel: getCoreRowModel(),
     // getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -102,7 +105,7 @@ export function DataTable<TData, TValue>({
         </Button>
         {
           openDialog ?
-            <SearchDocumentDialog openDialog={openDialog} setOpenDialog={setOpenDialog} setMyData={setMyData} /> : null
+            <SearchDocumentDialog setPagination={setPagination} openDialog={openDialog} setOpenDialog={setOpenDialog} setMyData={setMyData} /> : null
         }
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -173,7 +176,9 @@ export function DataTable<TData, TValue>({
               : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    No results.
+                    {
+                      loading ? 'Cargando':'No results.'
+                    }
                   </TableCell>
                 </TableRow>
               )}

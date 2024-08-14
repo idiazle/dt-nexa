@@ -1,14 +1,13 @@
 'use client'
-import { DocumentStructure } from '@/lib/utils'
+import { DocumentStructure, SearchInput } from '@/lib/utils'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { columnsDocuments } from './columns'
 import { useRouter } from 'next/navigation'
 import DocumentDialog from '@/components/admin/documents/document-dialog'
 import AlertDeleteDialog from '@/components/general/alert-delete-dialog'
-import { deleteDocument, getDocuments, getDocumentsNoToken } from '@/api/admin/documents-api'
+import { deleteDocument, getDocumentsNoToken, getSearchDocuments } from '@/api/admin/documents-api'
 import { toast } from '@/components/ui/use-toast'
 import { DataTable } from './data-table'
-import { useSession } from 'next-auth/react'
 
 
 interface DocumentTableStructure {
@@ -30,31 +29,64 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
         pageIndex: number,
         pageSize: number,
         rowsPerPage: number,
-        totalDocuments: number
+        totalDocuments: number,
+        paginationType: string,
+        searchDocuments: SearchInput | null
     }>({
         pageIndex: 1,
         pageSize: totalPages,
         rowsPerPage: rowsPerPage,
-        totalDocuments: totalDocuments
+        totalDocuments: totalDocuments,
+        paginationType: 'normal',
+        searchDocuments: null
     })
-    const loadingState = isLoading || data.length === 0 ? 'loading' : 'idle'
+    const loadingState = isLoading || data.length === 0 ? true : false
+
+
+    const [refreshTable, setRefreshTable] = useState<boolean>(false)
+    const [actualCountRowPage, setActualCountRowPage] = useState<number>(30)
 
 
     const getData = async () => {
-        const response = await getDocumentsNoToken(page.pageIndex)
+        if (page.paginationType === 'normal') {
+            const response = await getDocumentsNoToken(actualCountRowPage === 1 ? 1 : page.pageIndex)
+            if (response.status === 200) {
+                setIsLoading(false)
+                setMyData(response.data.data)
+                setActualCountRowPage(response.data.quantity_in_page)
+                if (actualCountRowPage === 1) {
+                    setPage({
+                        ...page,
+                        pageSize: response.data.total_pages,
+                        pageIndex:1
+                    })
+                }
 
-
-        if (response.status === 200) {
-            setIsLoading(false)
-            setMyData(response.data.data)
+            } else {
+                setIsLoading(true)
+            }
         } else {
-            setIsLoading(true)
+            const query = await getSearchDocuments(actualCountRowPage === 1 ? 1 : page.pageIndex, page.searchDocuments)
+            if (query.status === 200) {
+                setMyData(query.data.results)
+                setActualCountRowPage(query.data.quantity_in_page)
+                if (actualCountRowPage === 1) {
+                    setPage({
+                        ...page,
+                        pageSize: query.data.total_pages,
+                        pageIndex:1
+                    })
+                }
+            } else {
+                setIsLoading(true)
+            }
+
         }
     }
     useEffect(() => {
         getData()
         // console.log(myData)
-    }, [page, isLoading])
+    }, [page, isLoading, refreshTable])
 
 
     const [documentSelected, setDocumentSelected] = useState<DocumentStructure | null>(null)
@@ -67,28 +99,24 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
         setDocumentSelected(document)
     }, []);
     const onEdit = useCallback((document: any) => {
-        console.log(document);
         setDocumentSelected(document);
         setDialogOpen(true);
     }, []);
     const onViewDoc = useCallback((document: any) => {
-        console.log(document);
         setDocumentSelected(document);
-        setDialogOpen(true);
     }, []);
     const onViewDownload = useCallback((document: any) => {
-        console.log(document);
         setDocumentSelected(document);
-        setDialogOpen(true);
     }, []);
     const onViewRefs = useCallback((document: any) => {
         console.log(document);
         setDocumentSelected(document);
-        setDialogOpen(true);
     }, []);
 
 
     const columns = useMemo(() => columnsDocuments({ onEdit, onDelete, onViewDoc, onViewDownload, onViewRefs }), [])
+
+
 
     const delDocument = async () => {
         if (documentSelected !== null) {
@@ -96,6 +124,8 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
                 const response = await deleteDocument(documentSelected.id)
                 if (response.status === 200) {
                     router.refresh()
+
+                    setRefreshTable(prevstate => !prevstate)
                     toast({
                         duration: 3000,
                         variant: 'destructive',
@@ -110,9 +140,9 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
     }
     return (
         <div>
-            <DataTable columns={columns} data={myData} setPagination={setPage} pagination={page} setMyData={setMyData} />
+            <DataTable loading={loadingState} columns={columns} data={myData} setPagination={setPage} pagination={page} setMyData={setMyData} />
             {
-                dialogOpen && documentSelected !== null ? <DocumentDialog dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} setTempFile={() => { }} tempFile={null} id={documentSelected.id} /> : null
+                dialogOpen && documentSelected !== null ? <DocumentDialog setRefreshTable={setRefreshTable} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} setTempFile={() => { }} tempFile={null} id={documentSelected.id} /> : null
             }
             {
                 openAlertDelete && documentSelected !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delDocument} objName={documentSelected.title} /> : null

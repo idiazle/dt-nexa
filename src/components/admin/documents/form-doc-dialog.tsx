@@ -32,6 +32,7 @@ interface FormDocDialogStructure {
     tempFile: any
     setTempFile: (value: any) => void
     setDialogOpen: (value: boolean) => void
+    setRefreshTable: (value: any) => void
     id: number | null
 }
 
@@ -41,7 +42,7 @@ export interface CheckValuesForm {
     client: boolean
 }
 
-export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen }: FormDocDialogStructure) {
+export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen, setRefreshTable }: FormDocDialogStructure) {
     const [modules, setModules] = useState<ModuleStructure[]>([])
     const [disciplines, setDisciplines] = useState<ModuleStructure[]>([])
     const [types, setTypes] = useState<ModuleStructure[]>([])
@@ -510,8 +511,6 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
 
             }
         } else {
-            console.log("ESTOY EN EDIT EDOCUMENT PUT");
-            
             const finalResponse = {
                 ...form.getValues(),
                 client: checkExpired.client ? formClient.getValues() : null,
@@ -556,7 +555,10 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                     } else {
                         console.log("LUEGO LO SUBO ");
                     }
+                    console.log("Refresshh");
+
                     router.refresh()
+                    setRefreshTable((prevstate: boolean) => !prevstate)
                     setDialogOpen(false)
                 }
             } catch (error) {
@@ -677,7 +679,6 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                             <FormLabel className='w-1/3'>Módulos</FormLabel>
                                             <FormControl className='w-2/3'>
                                                 <ComboBoxModules data={modules} defaultValue={form.watch('aux_module_id')} title='Módulo' {...field} onChange={field.onChange} />
-                                                {/* <DropdownSelect dataArray={modules} title={'módulo'} {...field} onChange={field.onChange} /> */}
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

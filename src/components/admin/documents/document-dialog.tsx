@@ -17,10 +17,11 @@ interface DocumentDialogStructure {
   setDialogOpen: (value: boolean) => void
   tempFile: any
   setTempFile: (value: any) => void
+  setRefreshTable: (value: boolean) => void
 
 }
 
-export default function DocumentDialog({ id, dialogOpen, setDialogOpen, tempFile, setTempFile }: DocumentDialogStructure) {
+export default function DocumentDialog({ id, dialogOpen, setDialogOpen, tempFile, setTempFile, setRefreshTable }: DocumentDialogStructure) {
 
 
   return (
@@ -30,7 +31,7 @@ export default function DocumentDialog({ id, dialogOpen, setDialogOpen, tempFile
           <DialogTitle>{id === null ? 'Crear' : 'Editar'} documento</DialogTitle>
         </DialogHeader>
         {
-          <FormDocDialog id={id} setTempFile={setTempFile} tempFile={tempFile} setDialogOpen={setDialogOpen} />
+          <FormDocDialog setRefreshTable={setRefreshTable} id={id} setTempFile={setTempFile} tempFile={tempFile} setDialogOpen={setDialogOpen} />
         }
         {/* <DialogFooter className="w-full h-full">
           <div className='flex flex-row justify-end items-center gap-3 w-full'>

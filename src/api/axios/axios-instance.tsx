@@ -10,7 +10,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(async config => {
   // const session = await getServerSession(authOptions)
   const session = await getSession()
-  console.log(session);
+  // console.log(session);
   if (session?.access_token === '') {
     const error = new Error('Unauthorized: No token found')
     // error.status = 401
@@ -38,10 +38,10 @@ axiosInstance.interceptors.response.use(response => response,
     // console.log(error)
     // console.log(error.response)
     if (error.response) {
-      console.log("AQUI", error.response);
+      // console.log("AQUI", error.response);
       
       if (error.response.status === 401) {
-        console.log("AQUI 2");
+        // console.log("AQUI 2");
         // await signOut({ callbackUrl: '/auth/login' })
         if (typeof window !== 'undefined') {
 
@@ -56,7 +56,7 @@ axiosInstance.interceptors.response.use(response => response,
         console.log(error)
       }
     } else {
-      console.log('Error')
+      // console.log('Error')
     }
     return await Promise.reject(error)
   }

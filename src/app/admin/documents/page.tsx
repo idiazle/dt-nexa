@@ -38,6 +38,7 @@ export default async function Documents({
   const session = await getServerSession(authOptions)
   const data = await getData(pageNumber, session?.access_token)
   
+// console.log(data.quantity_in_page);
 
   return (
     <div className='h-full w-full'>

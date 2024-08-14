@@ -70,6 +70,7 @@ export interface EntityStructure {
   user_id: number
   deleted: boolean
   plan_image: string | null
+    children: EntityStructure[]
 }
 
 export interface Manufacturer {
