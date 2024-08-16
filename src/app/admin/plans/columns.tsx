@@ -8,14 +8,15 @@ import {
     TooltipTrigger
 } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
-import { FaFileImage, FaFilePdf, FaFilePen, FaTrash } from 'react-icons/fa6'
+import { FaFileImage, FaFilePdf, FaFilePen, FaTrash, FaMapLocationDot } from 'react-icons/fa6'
 import PlanDialog from '@/components/admin/plans/plan-dialog'
 
 interface ColumnsPlansStructure extends ColumnsPropsStructure {
     onViewDocument: (obj: any, type: string) => void
+    onCreateShapes: (obj: any) => void
 }
 
-export const columnsPlans = ({ onEdit, onDelete, onViewDocument }: ColumnsPlansStructure): ColumnDef<PlanStructure>[] => [
+export const columnsPlans = ({ onEdit, onDelete, onViewDocument, onCreateShapes}: ColumnsPlansStructure): ColumnDef<PlanStructure>[] => [
     {
         header: 'Código',
         accessorKey: 'code'
@@ -43,7 +44,7 @@ export const columnsPlans = ({ onEdit, onDelete, onViewDocument }: ColumnsPlansS
             return (
                 <div className="flex flex-row justify-center items-center h-full w-full">
                     <TooltipProvider>
-                        <div className='flex flex-row gap-1'>
+                        <div className='flex flex-row gap-1 w-full justify-center items-center h-full'>
                             <Tooltip>
                                 <TooltipTrigger className='relative' asChild>
                                     <Button disabled={row.original.image === null} variant="outline" size="icon" onClick={() => { onViewDocument(row.original, 'image') }}>
@@ -77,7 +78,17 @@ export const columnsPlans = ({ onEdit, onDelete, onViewDocument }: ColumnsPlansS
             return (
                 <div className="flex flex-row justify-center items-center h-full w-full">
                     <TooltipProvider>
-                        <div className='flex flex-row gap-1'>
+                        <div className='flex flex-row gap-2 justify-center items-center w-full h-full'>
+                            <Tooltip>
+                                <TooltipTrigger className='relative' asChild>
+                                    <Button disabled={row.original.image === null} variant="outline" size="icon" onClick={() => { onCreateShapes(row.original) }}>
+                                        <FaMapLocationDot />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className='absolute right-5'>
+                                    <p>Registrar puntos en el mapa</p>
+                                </TooltipContent>
+                            </Tooltip>
                             <Tooltip>
                                 <TooltipTrigger className='relative' asChild>
                                     <Button variant="outline" size="icon" onClick={() => { onEdit(row.original) }}>

@@ -9,6 +9,7 @@ import PlanDialog from '@/components/admin/plans/plan-dialog'
 import AlertDeleteDialog from '@/components/general/alert-delete-dialog'
 import { DataTable } from './data-table'
 import ModalViewMedia from '@/components/viewers/modal-viewer'
+import ShapesPlanDialog from '@/components/admin/plans/shapes-plan-dialog'
 
 
 interface PlanTableStructure {
@@ -23,6 +24,8 @@ export default function PlansTable({ data }: PlanTableStructure) {
 
     const [openViewDoc, setOpenViewDoc] = useState<any>(null)
 
+    const [openShapesPlanDialog, setOpenShapesPlanDialog] = useState<boolean>(false)
+
     const router = useRouter()
     const [informationView, setInformationView] = useState<{
         data: {
@@ -33,6 +36,13 @@ export default function PlansTable({ data }: PlanTableStructure) {
             file_url: string
         }
     } | null>(null)
+
+
+    const onCreateShapes = useCallback(async (plan: any) => {
+        setPlanSelected(plan)
+        setOpenShapesPlanDialog(true)
+
+    }, [])
     const onViewDocument = useCallback(async (plan: any, type: string) => {
 
         if (type === 'image') {
@@ -89,7 +99,7 @@ export default function PlansTable({ data }: PlanTableStructure) {
         }
     }
 
-    const columns = useMemo(() => columnsPlans({ onEdit, onDelete, onViewDocument }), [])
+    const columns = useMemo(() => columnsPlans({ onEdit, onDelete, onViewDocument, onCreateShapes }), [])
 
     return (
         <div>
@@ -102,6 +112,9 @@ export default function PlansTable({ data }: PlanTableStructure) {
             }
             {
                 openViewDoc ? <ModalViewMedia open={openViewDoc} setOpen={setOpenViewDoc} type={String(informationView?.data.type)} information={informationView} /> : null
+            }
+            {
+                openShapesPlanDialog ? <ShapesPlanDialog dialogOpen={openShapesPlanDialog} setDialogOpen={setOpenShapesPlanDialog} id={planSelected.id} /> : null
             }
         </div>
     )
