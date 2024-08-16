@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/authOptions'
 import { PlanStructure } from '@/lib/utils'
 import { getServerSession } from 'next-auth'
 import React from 'react'
+import PlansTable from './plans-table'
 
 const getData = async (token: any): Promise<PlanStructure[]> => {
   // const response = await getEntities()
@@ -26,6 +27,7 @@ export default async function Plans() {
       {/* <DataTable columns={columns} data={data} /> */}
       <CreatePlanBtn />
       {/* <UsersTable data={response} /> */}
+      <PlansTable data={data} />
     </div>
   )
 }

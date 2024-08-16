@@ -1,37 +1,51 @@
+'use client'
 import React, { useCallback, useMemo, useState } from 'react'
-import DataTable from './data-table'
 import { useRouter } from 'next/navigation'
 import { PlanStructure } from '@/lib/utils'
 import { toast } from '@/components/ui/use-toast'
 import { columnsPlans } from './columns'
+import { deletePlanById } from '@/api/admin/plan-api'
+import PlanDialog from '@/components/admin/plans/plan-dialog'
+import AlertDeleteDialog from '@/components/general/alert-delete-dialog'
+import { DataTable } from './data-table'
 
-export default function PlansTable() {
 
-    const [selectedPlan, setSelectedPlan] = useState<PlanStructure|null>(null)
+interface PlanTableStructure {
+    data: PlanStructure[]
+}
+
+export default function PlansTable({ data }: PlanTableStructure) {
+
+    const [planSelected, setPlanSelected] = useState<any>(null)
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [openAlertDelete, setOpenAlertDelete] = useState<boolean>(false)
     const router = useRouter()
 
-    const onDelete = useCallback(async (user: any) => {
+    const onViewDocument = useCallback(async (plan: any, type: string) => {
         setOpenAlertDelete(true)
-        setSelectedPlan(user)
+        setPlanSelected(plan)
     }, []);
-    const onEdit = useCallback((user: any) => {
-        setSelectedPlan(user);
+
+    const onDelete = useCallback(async (plan: any) => {
+        setOpenAlertDelete(true)
+        setPlanSelected(plan)
+    }, []);
+    const onEdit = useCallback((plan: any) => {
+        setPlanSelected(plan);
         setDialogOpen(true);
     }, []);
 
     const delEntity = async () => {
-        if (selectedPlan !== null) {
+        if (planSelected !== null) {
             try {
-                const response = await deleteUserById(selectedUser.id)
+                const response = await deletePlanById(planSelected.id)
                 if (response.status === 200) {
                     router.refresh()
                     toast({
                         duration: 3000,
                         variant: 'destructive',
                         title: 'Eliminación ',
-                        description: 'Usuario eliminado correctamente'
+                        description: 'Plan eliminado correctamente'
                     })
                 }
             } catch (error) {
@@ -40,16 +54,17 @@ export default function PlansTable() {
         }
     }
 
-    const columns = useMemo(() => columnsPlans({ onEdit, onDelete }), [])
-  return (
-    <div>
-    <DataTable columns={columns} data={data} />
-    {
-        dialogOpen && selectedUser !== null ? <UserDialog id={selectedUser.id} setDialogOpen={setDialogOpen} dialogOpen={dialogOpen} /> : null
-    }
-    {
-        openAlertDelete && selectedUser !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delEntity} objName={selectedUser.name} /> : null
-    }
-</div>
-  )
+    const columns = useMemo(() => columnsPlans({ onEdit, onDelete, onViewDocument }), [])
+    
+    return (
+        <div>
+            <DataTable columns={columns} data={data} />
+            {
+                dialogOpen && planSelected !== null ? <PlanDialog id={planSelected.id} setDialogOpen={setDialogOpen} dialogOpen={dialogOpen} /> : null
+            }
+            {
+                openAlertDelete && planSelected !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delEntity} objName={planSelected.name} /> : null
+            }
+        </div>
+    )
 }

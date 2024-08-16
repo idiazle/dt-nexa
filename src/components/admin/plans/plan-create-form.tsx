@@ -300,6 +300,9 @@ export default function PlanCreateForm({ id, setDialogOpen }: PlanCreateFormStru
         formEntity.setValue('user_id', dataEntity.user_id)
         formEntity.setValue('parent_id', dataEntity.parent.id !== null ? String(dataEntity.parent.id) : null)
         formEntity.setValue('description', dataEntity.description)
+
+        
+
         setIdsOfPlan({
           ...idsOfPlan,
           document_id: dataEntity.documents[0].document_id.id,
@@ -390,6 +393,8 @@ export default function PlanCreateForm({ id, setDialogOpen }: PlanCreateFormStru
         }
       }
     } catch (error) {
+      console.log(error);
+      
       throw new Error('Error al obtener Plano -  getPlanById')
     }
   }
@@ -568,9 +573,9 @@ export default function PlanCreateForm({ id, setDialogOpen }: PlanCreateFormStru
               duration: 3000,
               variant: 'destructive',
               title: 'Error',
-              description: error?.response?.data?.data.map((obj: any) => {
+              description: error?.response?.data?.data.map((obj: any, index:number) => {
                 return (
-                  <p>- {obj.detail}</p>
+                  <p key={index}>- {obj.detail}</p>
                 )
               }) || 'Ocurrió un error, no se pudo crear el plano'
             })
