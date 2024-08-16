@@ -70,7 +70,7 @@ export interface EntityStructure {
   user_id: number
   deleted: boolean
   plan_image: string | null
-    children: EntityStructure[]
+  children: EntityStructure[]
 }
 
 export interface Manufacturer {
@@ -218,4 +218,11 @@ export interface PlanStructure {
   deleted: boolean
   plan_image: string | null
   documents: any[]
+}
+
+export interface DespieceInfoStructure {
+  description: string
+  user_id: number
+  equipment_id: string
+  control_interactive: string
 }

@@ -16,7 +16,7 @@ export default function CreateDocBtn() {
 
             {
                 dialogOpen ?
-                    <DocumentDialog tempFile={tempFile} setTempFile={setTempFile} id={null} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} /> : null
+                    <DocumentDialog setRefreshTable={() => { }} tempFile={tempFile} setTempFile={setTempFile} id={null} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} /> : null
             }
         </div>
     )

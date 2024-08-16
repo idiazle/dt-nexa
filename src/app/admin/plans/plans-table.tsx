@@ -8,6 +8,7 @@ import { deletePlanById } from '@/api/admin/plan-api'
 import PlanDialog from '@/components/admin/plans/plan-dialog'
 import AlertDeleteDialog from '@/components/general/alert-delete-dialog'
 import { DataTable } from './data-table'
+import ModalViewMedia from '@/components/viewers/modal-viewer'
 
 
 interface PlanTableStructure {
@@ -19,11 +20,45 @@ export default function PlansTable({ data }: PlanTableStructure) {
     const [planSelected, setPlanSelected] = useState<any>(null)
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [openAlertDelete, setOpenAlertDelete] = useState<boolean>(false)
-    const router = useRouter()
 
+    const [openViewDoc, setOpenViewDoc] = useState<any>(null)
+
+    const router = useRouter()
+    const [informationView, setInformationView] = useState<{
+        data: {
+            image: string
+            type: string
+            name: string
+            title: string
+            file_url: string
+        }
+    } | null>(null)
     const onViewDocument = useCallback(async (plan: any, type: string) => {
-        setOpenAlertDelete(true)
+
+        if (type === 'image') {
+            setInformationView({
+                data: {
+                    image: plan.image,
+                    type: 'image',
+                    name: plan.name,
+                    title: '',
+                    file_url: ''
+                }
+            })
+        } else {
+            setInformationView({
+                data: {
+                    image: plan.image,
+                    type: 'document',
+                    title: plan.name,
+                    name: '',
+                    file_url: plan.documents[0].document_id.file_url
+
+                }
+            })
+        }
         setPlanSelected(plan)
+        setOpenViewDoc(true)
     }, []);
 
     const onDelete = useCallback(async (plan: any) => {
@@ -55,7 +90,7 @@ export default function PlansTable({ data }: PlanTableStructure) {
     }
 
     const columns = useMemo(() => columnsPlans({ onEdit, onDelete, onViewDocument }), [])
-    
+
     return (
         <div>
             <DataTable columns={columns} data={data} />
@@ -64,6 +99,9 @@ export default function PlansTable({ data }: PlanTableStructure) {
             }
             {
                 openAlertDelete && planSelected !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delEntity} objName={planSelected.name} /> : null
+            }
+            {
+                openViewDoc ? <ModalViewMedia open={openViewDoc} setOpen={setOpenViewDoc} type={String(informationView?.data.type)} information={informationView} /> : null
             }
         </div>
     )
