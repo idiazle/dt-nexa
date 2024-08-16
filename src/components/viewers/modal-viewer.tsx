@@ -24,6 +24,7 @@ interface ModalViewMediaStructure {
     type: string
 }
 export default function ModalViewMedia({ open, setOpen, information, type }: ModalViewMediaStructure) {
+console.log(information.data);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

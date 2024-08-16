@@ -43,7 +43,7 @@ export default function AdminAside() {
             icon_path: '/img/aside-icons/I_G. de imágenes.png',
             icon_tooltip: 'Gestión de Imágenes',
             route: '/admin/icons',
-            enable: true
+            enable: false
         },
         {
             id: 5,
@@ -57,7 +57,7 @@ export default function AdminAside() {
             icon_path: '/img/aside-icons/I_G. de troubleshooting.png',
             icon_tooltip: 'Gestión de Troubleshooting',
             route: '/admin/troubles',
-            enable: true
+            enable: false
         },
         {
             id: 7,

@@ -8,9 +8,9 @@ export default function CreateAuthorizBtn() {
 
   return (
     <div className='flex flex-row justify-between items-center'>
-      <h1 className='font-semibold text-2xl'>Usuarios registrados</h1>
+      <h1 className='font-semibold text-2xl'>Autorizaciones registradas</h1>
 
-      <Button onClick={() => { setDialogOpen(true) }}>Crear Usuario</Button>
+      <Button onClick={() => { setDialogOpen(true) }}>Crear autorización</Button>
 
       {
         dialogOpen ?

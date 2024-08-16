@@ -8,6 +8,8 @@ import AlertDeleteDialog from '@/components/general/alert-delete-dialog'
 import { deleteDocument, getDocumentsNoToken, getSearchDocuments } from '@/api/admin/documents-api'
 import { toast } from '@/components/ui/use-toast'
 import { DataTable } from './data-table'
+import ModalViewMedia from '@/components/viewers/modal-viewer'
+import LinkDocumentDialog from '@/components/admin/documents/link-document-dialog'
 
 
 interface DocumentTableStructure {
@@ -58,7 +60,7 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
                     setPage({
                         ...page,
                         pageSize: response.data.total_pages,
-                        pageIndex:1
+                        pageIndex: 1
                     })
                 }
 
@@ -74,7 +76,7 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
                     setPage({
                         ...page,
                         pageSize: query.data.total_pages,
-                        pageIndex:1
+                        pageIndex: 1
                     })
                 }
             } else {
@@ -91,8 +93,22 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
 
     const [documentSelected, setDocumentSelected] = useState<DocumentStructure | null>(null)
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+    const [dialogMediaView, setDialogMediaView] = useState<boolean>(false)
+    const [viewDocSelected, setViewDocSelected] = useState<{
+        data: any
+        type: string
+    } | null>(null)
     const [openAlertDelete, setOpenAlertDelete] = useState<boolean>(false)
     const router = useRouter()
+
+    const [documentReferenceDialog, setDocumentReferenceDialog] = useState<boolean>(false)
+
+    const [referenceObject, setReferenceObject] = useState<any>({
+        equipmentsReferences: [],
+        areasReferences: [],
+        documentsReferences: []
+    })
+
 
     const onDelete = useCallback(async (document: any) => {
         setOpenAlertDelete(true)
@@ -103,13 +119,55 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
         setDialogOpen(true);
     }, []);
     const onViewDoc = useCallback((document: any) => {
-        setDocumentSelected(document);
+
+        setDialogMediaView(true)
+        const fileExtension = document.file_url.split('.').pop().toLowerCase()
+        if (fileExtension === 'pdf') {
+            setViewDocSelected((prev: any) => {
+                return {
+                    ...prev,
+                    type: 'document',
+                    data: {
+                        file_url: document.file_url,
+                        type: '',
+                        title: document.title
+                    }
+                }
+            })
+        } else if (fileExtension === 'mp4' || fileExtension === 'mkv') {
+            setViewDocSelected((prev: any) => {
+                return {
+                    ...prev,
+                    type: 'video',
+                    data: {
+                        file_url: document.file_url,
+                        type: '',
+                        title: document.title
+                    }
+                }
+            })
+        }
     }, []);
+
+    const downloadFile = (file: any) => {
+        fetch(`${file.file_url}`).then(response => {
+            response.blob().then(blob => {
+                const fileURL = window.URL.createObjectURL(blob)
+                const linToDownload = document.createElement('a')
+                const fileExtension = file.file_url.split('.').pop()
+                // Establecer el nombre del archivo con la extensión correcta
+                linToDownload.href = fileURL
+                linToDownload.download = `${file.title}.${fileExtension}`
+                linToDownload.click()
+            })
+        })
+    }
     const onViewDownload = useCallback((document: any) => {
-        setDocumentSelected(document);
+
+        downloadFile(document);
     }, []);
     const onViewRefs = useCallback((document: any) => {
-        console.log(document);
+        setDocumentReferenceDialog(true)
         setDocumentSelected(document);
     }, []);
 
@@ -146,6 +204,16 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
             }
             {
                 openAlertDelete && documentSelected !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delDocument} objName={documentSelected.title} /> : null
+            }
+            {
+                dialogMediaView
+                    ? <ModalViewMedia setOpen={setDialogMediaView} open={dialogMediaView} information={viewDocSelected} type={String(viewDocSelected?.type)} />
+                    : null
+            }
+            {
+                documentReferenceDialog && documentSelected !== null
+                    ? <LinkDocumentDialog open={documentReferenceDialog} setOpen={setDocumentReferenceDialog} operationType='edit' setReferenceObject={setReferenceObject} idDocument={Number(documentSelected.id)} />
+                    : null
             }
         </div>
     )

@@ -201,3 +201,21 @@ export interface AllAuxListStructure {
   disciplines: OneAuxStructure[]
   types: OneAuxStructure[]
 }
+
+
+export interface PlanStructure {
+  data: any
+  id: number
+  image: string | null
+  description: string | null
+  active: boolean
+  name: string
+  code: string
+  type: number
+  blocked: boolean
+  parent: any
+  user_id: number
+  deleted: boolean
+  plan_image: string | null
+  documents: any[]
+}

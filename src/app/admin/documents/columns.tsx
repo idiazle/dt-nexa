@@ -158,8 +158,10 @@ export const columnsDocuments = ({ onEdit, onDelete, onViewDoc, onViewRefs, onVi
     },
     {
         id: 'actions',
-        header:'Acciones',
+        header: 'Acciones',
         cell: ({ row }) => {
+            console.log(row.original.file_url);
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger className="flex justify-center items-center w-full" asChild>
@@ -171,7 +173,7 @@ export const columnsDocuments = ({ onEdit, onDelete, onViewDoc, onViewRefs, onVi
                     <DropdownMenuContent align="center" className='p-3'>
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => { onViewDoc(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
+                        <DropdownMenuItem disabled={row.original.file_url === null ? true : false} onClick={() => { onViewDoc(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
                             <FaMagnifyingGlass size={18} />
                             <p>Ver documento</p>
                         </DropdownMenuItem>
@@ -179,7 +181,7 @@ export const columnsDocuments = ({ onEdit, onDelete, onViewDoc, onViewRefs, onVi
                             <SiFiles size={18} />
                             <p>Ver referencias</p>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => { onViewDownload(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
+                        <DropdownMenuItem disabled={row.original.file_url === null ? true : false} onClick={() => { onViewDownload(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
                             <FaFileArrowDown size={18} />
                             <p>Download</p>
                         </DropdownMenuItem>
