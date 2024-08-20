@@ -98,6 +98,12 @@ export const getDocumentsByArea = async (id: number, type: string) => {
   }>(`${process.env.NEXT_PUBLIC_BACK_URL}/docsById/${id}/${type}`)
 }
 
+export const getDocumentsByEntity = async (id: number, type: string) => {
+  return await axiosInstance.get<{
+    data: any[]
+  }>(`${process.env.NEXT_PUBLIC_BACK_URL}/docsById/${id}/${type}`)
+}
+
 export const getDocsByEquipmentIdByAreaid = async (id: number) => {
   return await axiosInstance.get<{
     data: any[]

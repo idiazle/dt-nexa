@@ -2,7 +2,7 @@
 import React, { useContext } from 'react'
 import { Button } from '../ui/button'
 import Image from 'next/image'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { OptionAsideContext } from '@/context/option-aside-context'
 
 interface UserAreaMenuStructure {

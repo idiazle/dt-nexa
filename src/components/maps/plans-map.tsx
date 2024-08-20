@@ -1,7 +1,14 @@
+import { PlanStructure } from '@/lib/utils'
 import dynamic from 'next/dynamic'
 import React, { useMemo } from 'react'
 
-export default function PlansMap() {
+
+
+interface PlansMapStructure {
+    plan: PlanStructure | null
+}
+
+export default function PlansMap({ plan }: PlansMapStructure) {
     const Map = useMemo(() => dynamic(
         () => import('@/components/maps/plans-map-container'),
         {
@@ -11,10 +18,10 @@ export default function PlansMap() {
     ), [])
 
     return (
-        <>
-            <div className="bg-white-700 mx-auto my-5 w-[98%] h-[480px]">
-                <Map posix={[4.79029, -75.69003]} />
-            </div>
-        </>
+
+        <div className='w-full h-full bg-white'>
+            <Map planSelected={plan} posix={[4.79029, -75.69003]} />
+        </div>
+
     )
 }

@@ -226,3 +226,14 @@ export interface DespieceInfoStructure {
   equipment_id: string
   control_interactive: string
 }
+
+export interface ShapeStructure {
+  shapes: {
+    type: string
+    coordinates: string
+    color: string
+  }
+  shape_type: string
+  entity_id: number
+  plan_id: number
+}

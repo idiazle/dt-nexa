@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import { DataTable } from './data-table'
 import { columns, Payment } from './columns-table'
 import { getEntities } from '@/api/admin/entities-api'
@@ -282,9 +282,13 @@ export default async function User() {
   const data = await getData()
   const etnitdades = await getEntidades()
 
+  console.log(etnitdades);
+  
 
 
   return (
-    <UserContainer data={data} />
+    <Suspense fallback={<p>Loading</p>}>
+      <UserContainer data={data} />
+    </Suspense>
   )
 }

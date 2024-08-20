@@ -20,12 +20,15 @@ async function refreshAccessToken(token: any) {
     });
 
     if (response.status === 200) {
-      return {
-        ...token,
-        access_token: response.data.access,
-        refresh_token: response.data.refresh ?? token.refresh_token,
-        accessTokenExpires: jwtDecode(response.data.access).exp * 1000,
-      };
+      const expired = jwtDecode(response.data.access).exp
+      if (expired) {
+        return {
+          ...token,
+          access_token: response.data.access,
+          refresh_token: response.data.refresh ?? token.refresh_token,
+          accessTokenExpires: expired * 1000,
+        };
+      }
     }
     throw response.data;
   } catch (error) {
@@ -65,7 +68,7 @@ export const authOptions: NextAuthOptions = {
           };
           // console.log("IN PROVIDER", token);
           return token;
-        } catch (e: any) {        
+        } catch (e: any) {
           const errorMessage = e.response?.data.message;
           throw new Error(errorMessage ? errorMessage : 'Problema al iniciar sesión');
         }
@@ -87,7 +90,11 @@ export const authOptions: NextAuthOptions = {
       if (token.access_token) {
         const decodedToken = jwtDecode(token.access_token);
         // console.log(decodedToken);
-        token.accessTokenExpires = decodedToken?.exp * 1000;
+
+        if (decodedToken && decodedToken.exp) {
+          token.accessTokenExpires = decodedToken?.exp * 1000;
+        }
+
       }
 
       if (account && user) {

@@ -113,9 +113,9 @@ export default function PlansTable({ data }: PlanTableStructure) {
             {
                 openViewDoc ? <ModalViewMedia open={openViewDoc} setOpen={setOpenViewDoc} type={String(informationView?.data.type)} information={informationView} /> : null
             }
-            {
-                openShapesPlanDialog ? <ShapesPlanDialog dialogOpen={openShapesPlanDialog} setDialogOpen={setOpenShapesPlanDialog} id={planSelected.id} /> : null
-            }
+            {/* {
+                openShapesPlanDialog ? <ShapesPlanDialog dialogOpen={openShapesPlanDialog} setDialogOpen={setOpenShapesPlanDialog} planObject={planSelected} /> : null
+            } */}
         </div>
     )
 }

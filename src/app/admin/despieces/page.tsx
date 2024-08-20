@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import React from 'react'
 import DespiecesTable from './despieces-table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import PlansMap from '@/components/maps/plans-map'
 
 const getDataDespieces = async (token: any): Promise<any[]> => {
   // const response = await getUsers()
@@ -25,19 +26,19 @@ export default async function Despieces() {
 
   return (
     <div className='h-full w-full'>
-      <Tabs defaultValue="despieces" className="h-full w-full">
+      {/* <Tabs defaultValue="despieces" className="h-full w-full">
         <TabsList>
           <TabsTrigger value="despieces">Despieces</TabsTrigger>
           <TabsTrigger value="interactives">Interactivos</TabsTrigger>
         </TabsList>
-        <TabsContent value="despieces">
+        <TabsContent value="despieces"> */}
           <CreateDespieceBtn />
           <DespiecesTable data={response} />
-        </TabsContent>
+        {/* </TabsContent>
         <TabsContent value="interactives">
-          
-        </TabsContent>
-      </Tabs>
+          <PlansMap/>
+        </TabsContent> */}
+      {/* </Tabs> */}
 
     </div>
   )

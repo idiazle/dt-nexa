@@ -10,13 +10,14 @@ import {
 import { Button } from '@/components/ui/button'
 import { FaFileImage, FaFilePdf, FaFilePen, FaTrash, FaMapLocationDot } from 'react-icons/fa6'
 import PlanDialog from '@/components/admin/plans/plan-dialog'
+import Link from 'next/link'
 
 interface ColumnsPlansStructure extends ColumnsPropsStructure {
     onViewDocument: (obj: any, type: string) => void
     onCreateShapes: (obj: any) => void
 }
 
-export const columnsPlans = ({ onEdit, onDelete, onViewDocument, onCreateShapes}: ColumnsPlansStructure): ColumnDef<PlanStructure>[] => [
+export const columnsPlans = ({ onEdit, onDelete, onViewDocument, onCreateShapes }: ColumnsPlansStructure): ColumnDef<PlanStructure>[] => [
     {
         header: 'Código',
         accessorKey: 'code'
@@ -81,8 +82,16 @@ export const columnsPlans = ({ onEdit, onDelete, onViewDocument, onCreateShapes}
                         <div className='flex flex-row gap-2 justify-center items-center w-full h-full'>
                             <Tooltip>
                                 <TooltipTrigger className='relative' asChild>
-                                    <Button disabled={row.original.image === null} variant="outline" size="icon" onClick={() => { onCreateShapes(row.original) }}>
+                                    {/* <Button disabled={row.original.image === null} variant="outline" size="icon" onClick={() => { onCreateShapes(row.original) }}>
                                         <FaMapLocationDot />
+                                    </Button> */}
+                                    <Button disabled={row.original.image === null} variant="outline" size="icon" onClick={() => { onCreateShapes(row.original) }}>
+                                        <Link href={{
+                                            pathname: '/interactives/',
+                                            query: { id: row.original.id }
+                                        }} as={`/interactives?plan-id=${row.original.id}`}>
+                                            <FaMapLocationDot />
+                                        </Link>
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent className='absolute right-5'>

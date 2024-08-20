@@ -20,7 +20,7 @@ import { FaRegUser } from "react-icons/fa6";
 import { FaLock } from "react-icons/fa6";
 import { signIn, useSession } from 'next-auth/react'
 import { toast } from "../ui/use-toast"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import { useState } from "react"
 import { EyeIcon } from "lucide-react"
 import { EyeClosedIcon } from "@radix-ui/react-icons"
@@ -31,6 +31,15 @@ const formSchema = z.object({
 })
 
 export default function LoginForm() {
+
+    const {data:session, status} = useSession()
+
+
+    if(status === 'authenticated'){
+        location.href='/user'
+    }
+    
+
 
     const [showPass, setShowPass] = useState<boolean>(false)
     const form = useForm<z.infer<typeof formSchema>>({
@@ -85,6 +94,9 @@ export default function LoginForm() {
             // setLoading(false)
         }
     }
+
+
+
 
     return (
         <Form {...form}>
