@@ -21,6 +21,12 @@ export const getEntityById = async (id: number) => {
     }>(`${process.env.NEXT_PUBLIC_BACK_URL}/entity/${id}`)
 }
 
+export const getEntityInfo = async (id: number) => {
+    return await axiosInstance.get<{
+        data: EntityStructure
+    }>(`${process.env.NEXT_PUBLIC_BACK_URL}/getEntityInfo/${id}`)
+}
+
 export const putEntity = async (id: number, formValue: FormData) => {
     return await axiosInstance.put(`${process.env.NEXT_PUBLIC_BACK_URL}/entity/${id}`, formValue, {
         headers: {

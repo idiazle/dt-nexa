@@ -1,5 +1,5 @@
 "use client"
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, ImageOverlay, FeatureGroup, useMapEvents } from "react-leaflet";
 import { LatLngExpression, LatLngTuple } from 'leaflet';
 import L from 'leaflet'
@@ -7,19 +7,23 @@ import 'leaflet-draw/dist/leaflet.draw.css'
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { PlanStructure, ShapeStructure } from '@/lib/utils';
+import { DocumentStructure, EntityStructure, EquipmentStructure, PlanStructure, ShapeStructure } from '@/lib/utils';
 import { bounds, centerLat, centerLng, maxBounds } from './static-data';
 import { AspectRatio } from '../ui/aspect-ratio';
 import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
 import { Button } from '../ui/button';
 import { TbTriangleSquareCircleFilled } from "react-icons/tb";
-import { FaSquareMinus, FaSquarePlus } from "react-icons/fa6";
+import { FaFile, FaSquareMinus, FaSquarePlus } from "react-icons/fa6";
 import ShapesPlanDialog from '../admin/plans/shapes-plan-dialog';
 import { EyeClosedIcon } from '@radix-ui/react-icons';
 import { EyeIcon } from 'lucide-react';
 import ViewShapes from './view-shapes';
 import { getDocumentsByEntity } from '@/api/admin/documents-api';
+import { getEntityInfo } from '@/api/admin/entities-api';
+import Spinner from '../ui/spinner';
+import { FaWindowClose } from "react-icons/fa";
+import ModalViewMedia from '../viewers/modal-viewer';
 
 interface MapProps {
     planSelected: PlanStructure | null
@@ -85,11 +89,7 @@ export default function PlansMapContainer(Map: MapProps) {
     }
 
     const _onDelete = (e: any) => {
-        // setShapesRender((prevstate)=>prevstate?.map((obj)=>{
-        //     if(obj.shapes.shape_id_on_map === ){
 
-        //     }
-        // }))
         console.log("on dele222", e);
     }
 
@@ -132,16 +132,131 @@ export default function PlansMapContainer(Map: MapProps) {
 
     const mapRef = useRef(null)
 
-    const getDataInfoShape = async () =>{
-        try {
-            const response = await getDocumentsByEntity()
-        } catch (error) {
-            return null
+    const [renderLeftInformation, setRenderLeftInformation] = useState<{
+        entity_data: EntityStructure | EquipmentStructure
+        documents: DocumentStructure[]
+    } | null>(null)
+
+    const [closeInformation, setCloseInformation] = useState<boolean>(false)
+
+
+    const [openViewMedia, setOpenViewMedia] = useState<boolean>(false)
+
+    const [openMediaInfo, setOpenMediaInfo] = useState<{
+        data: {
+            file_url: string
+            title: string
+        },
+        type: string
+    }>({
+        data: {
+            file_url: '',
+            title: ''
+        },
+        type: ''
+    })
+
+
+    const entityType = selectedShape?.entity_type
+
+    const onSetViewDoc = (document: DocumentStructure) => {
+        console.log(document.file_url.includes('pdf'));
+
+        setOpenViewMedia(true)
+        if (document.file_url.includes('pdf')) {
+            setOpenMediaInfo((prev: any) => {
+                return {
+                    ...prev,
+                    type: 'document',
+                    data: {
+                        file_url: document.file_url,
+                        type: '',
+                        title: document.title
+                    }
+                }
+            })
+        } else if (document.file_url.includes('mp4') || document.file_url.includes('mkv')) {
+            setOpenMediaInfo((prev: any) => {
+                return {
+                    ...prev,
+                    type: 'video',
+                    data: {
+                        file_url: document.file_url,
+                        type: '',
+                        title: document.title
+                    }
+                }
+            })
         }
     }
 
-console.log(selectedShape);
 
+
+
+    const renderLefInfo = (type: number) => {
+
+        if (selectedShape !== null && renderLeftInformation !== null) {
+            const equipmentInfo = renderLeftInformation?.entity_data as EquipmentStructure
+            const entityInfo = renderLeftInformation?.entity_data as EntityStructure
+            switch (type) {
+                case 3:
+                    return (
+                        <div className='mt-5 gap-5 rounded h-full w-full flex flex-col overflow-hidden'>
+                            <div className='w-full border-b bg-[#030F2E] rounded'>
+                                <h1 className='text-right text-white mx-2'>{equipmentInfo.tag + "-" + renderLeftInformation?.entity_data.name}</h1>
+                            </div>
+                            <div>
+                                <div className='w-full border-b bg-[#030F2E] rounded'>
+                                    <h1 className='text-right text-white mx-2'>Propiedades del Equipo</h1>
+                                </div>
+
+                                {
+                                    JSON.parse(equipmentInfo?.properties as any)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
+                                        return (
+                                            <div className='flex flex-row justify-between items-center' key={index}>
+                                                <p>{obj.label}</p>
+                                                <p>{obj.value}</p>
+                                            </div>
+                                        )
+                                    }) ?? null
+                                }
+                            </div>
+                            <div className='w-full h-full overflow-hidden flex flex-col'>
+                                <div className='w-full border-b bg-[#030F2E] rounded'>
+                                    <h1 className='text-right text-white mx-2'>Documentos del Equipo</h1>
+                                </div>
+                                <div className='h-full w-full overflow-auto'>
+                                    {
+                                        renderLeftInformation.documents.map((obj: any) => {
+                                            const document = obj.document_id as DocumentStructure
+
+                                            return (
+
+                                                <button title={document.file_url === null ? 'Sin archivo' : ''} disabled={document.file_url === null} key={obj.id} className={`rounded w-full transition-all duration-300 gap-1 p-1 flex flex-row justify-start items-center ${document.file_url === null ? '' : 'hover:bg-slate-300'}`}
+                                                    onClick={() => {
+                                                        onSetViewDoc(document)
+                                                    }}>
+                                                    <FaFile size={15} color={`${document.file_url === null ? 'gray' : 'black'}`} />
+                                                    <p key={obj.id} className={`text-xs ml-3 text-left font-semibold ${document.file_url === null ? 'text-gray-500' : 'text-black'}`}>{document?.title}</p>
+                                                </button>
+                                            )
+                                        })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    )
+                default:
+                    return (
+                        <div className='h-full w-full mt-5'>
+                            <div className='w-full border-b'>
+                                <h1 className='text-right'>{renderLeftInformation?.entity_data.name}</h1>
+                            </div>
+                        </div>
+                    )
+            }
+        }
+    }
 
     return (
         <div className='flex flex-col w-full h-full'>
@@ -196,7 +311,7 @@ console.log(selectedShape);
                                         marker: false
                                     }}
                                 />
-                                <ViewShapes setSelectedShape={setSelectedShape} shapesRender={shapesRender} setShapesRender={setShapesRender} />
+                                <ViewShapes setRenderLeftInformation={setRenderLeftInformation} setCloseInformation={setCloseInformation} setSelectedShape={setSelectedShape} shapesRender={shapesRender} setShapesRender={setShapesRender} />
                             </FeatureGroup> : null
                     }
                 </MapContainer>
@@ -227,7 +342,18 @@ console.log(selectedShape);
             </div>
 
             {/* LEFT DATA INFORMATION SHOW */}
-            <div className={`absolute transition-all duration-700 h-5/6 left-0 m-auto top-0 bottom-0 ${selectedShape !== null ? 'w-1/4 opacity-100' : 'w-0 opacity-0'} bg-slate-200 z-50 rounded-r border`}>
+            <div className={`absolute  text-black p-3 flex flex-col  transition-all duration-700 h-5/6 left-0 m-auto top-0 bottom-0 ${selectedShape !== null && !closeInformation ? 'w-1/4 opacity-100' : 'w-0 opacity-0'} bg-slate-200 z-50 rounded-r border`}>
+                {
+                    renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
+                        <Spinner />
+                    </div> : <div className='h-full w-full overflow-hidden flex flex-col'>
+                        {renderLefInfo(Number(entityType))}
+                    </div>
+                }
+                <div className='absolute flex flex-row justify-between items-center right-0 top-0 -mt-0.5 bg-[#030F2E] w-full h-[23px]'>
+                    <p className='text-white ml-2'>Información adicional de {entityType === 3 ? 'equipo' : 'área'}</p>
+                    <FaWindowClose onClick={() => { setCloseInformation(true) }} size={25} color='white' />
+                </div>
 
             </div>
 
@@ -238,6 +364,9 @@ console.log(selectedShape);
                 openShapeDialog ? <ShapesPlanDialog dialogOpen={openShapeDialog} setDialogOpen={setopenShapeDialog} planShape={planShape} setPlanShape={setPlanShape} /> : null
             }
 
+            {
+                openViewMedia ? <ModalViewMedia open={openViewMedia} setOpen={setOpenViewMedia} information={openMediaInfo} type={openMediaInfo.type} /> : null
+            }
         </div>
     )
 }

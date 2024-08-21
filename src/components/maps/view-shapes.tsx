@@ -1,6 +1,8 @@
 'use client'
+import { getDocumentsByEntity } from '@/api/admin/documents-api'
+import { getEntityInfo } from '@/api/admin/entities-api'
 import { getAllShapes } from '@/api/shapes-api'
-import { ShapeStructure } from '@/lib/utils'
+import { DocumentStructure, PlanStructure, ShapeStructure } from '@/lib/utils'
 import { LatLngExpression } from 'leaflet'
 import React, { useEffect, useState } from 'react'
 import { Circle, Polygon } from 'react-leaflet'
@@ -10,21 +12,21 @@ interface ViewShapesStructure {
     shapesRender: ShapeStructure[] | null
     setShapesRender: (val: ShapeStructure[]) => void
     setSelectedShape: (val: ShapeStructure) => void
+    setCloseInformation: (val: boolean) => void
+    setRenderLeftInformation: (val: any) => void
 }
 
-export default function ViewShapes({ shapesRender, setShapesRender, setSelectedShape }: ViewShapesStructure) {
+export default function ViewShapes({ shapesRender, setShapesRender, setSelectedShape, setCloseInformation, setRenderLeftInformation }: ViewShapesStructure) {
     const getShapesAll = async () => {
         try {
             const response = await getAllShapes()
-            console.log(response.data.data);
-            
             if (response.status === 200) {
                 const converted = response.data.data.map((obj: any) => {
                     return {
                         id: obj.id,
                         entity_id: obj.entity_id,
                         entity_type: obj.entity_type,
-                        shape_type:obj.shape_type,
+                        shape_type: obj.shape_type,
                         shapes: JSON.parse(obj.shapes)
                     }
                 })
@@ -38,6 +40,23 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
     useEffect(() => {
         getShapesAll()
     }, [])
+
+    const getDataInfoShape = async (shapeSelected: ShapeStructure) => {
+        console.log("EJECUTo");
+        try {
+            const responseEntity = await getEntityInfo(Number(shapeSelected?.entity_id))
+            const response = await getDocumentsByEntity(Number(shapeSelected?.entity_id), Number(shapeSelected?.entity_type))
+            setRenderLeftInformation((prevstate: any) => {
+                return {
+                    ...prevstate,
+                    entity_data: responseEntity.data.data,
+                    documents: response.data.data as DocumentStructure[]
+                }
+            })
+        } catch (error) {
+            return null
+        }
+    }
 
     return (
 
@@ -61,10 +80,12 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
                                 // console.log("Poligono fuera: ", e)
                                 e.target.closePopup()
                             },
-                            click: (e) => {
-                                console.log("Clickeed circle: ", e)
-                                console.log("Clickeed circle OBJECT: ", obj)
+                            click: async (e) => {
+                                // console.log("Clickeed circle: ", e)
+                                // console.log("Clickeed circle OBJECT: ", obj)
+                                await getDataInfoShape(obj)
                                 setSelectedShape(obj)
+                                setCloseInformation(false)
                             }
                         }}>
                     </Circle>
@@ -88,9 +109,12 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
                                     // console.log("Poligono fuera: ", e)
                                     e.target.closePopup()
                                 },
-                                click: (e) => {
-                                    console.log("Click polygon: ", e)
+                                click: async (e) => {
+                                    // console.log("Click polygon: ", e)
+                                    await getDataInfoShape(obj)
                                     setSelectedShape(obj)
+                                    setCloseInformation(false)
+
                                 }
                             }}
                         >
