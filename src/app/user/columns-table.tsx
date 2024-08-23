@@ -45,6 +45,7 @@ export const columns: ColumnDef<Payment>[] = [
                             },
                         })
                     }} className="flex flex-row justify-start items-center h-full w-full gap-0.5">
+                        
                         <FaRegFilePdf size={18} color="red" />
                         <p className="w-full text-left">{row.getValue('id')}</p>
                     </button>

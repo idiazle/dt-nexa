@@ -8,7 +8,7 @@ interface OptionAsideStructure {
 
 const authContextDefaultValues: OptionAsideStructure = {
     option: null,
-    setOption: () => { }
+    setOption: () => { },
 }
 
 export const OptionAsideContext = createContext<OptionAsideStructure>(authContextDefaultValues);
@@ -19,6 +19,7 @@ export function OptionAsideProvider({
     children: React.ReactNode
 }) {
     const [option, setOption] = useState<any>(null);
+    const [objectSelected, setObjectSelected] = useState<any>(null);
 
 
     return (

@@ -42,7 +42,6 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
     }, [])
 
     const getDataInfoShape = async (shapeSelected: ShapeStructure) => {
-        console.log("EJECUTo");
         try {
             const responseEntity = await getEntityInfo(Number(shapeSelected?.entity_id))
             const response = await getDocumentsByEntity(Number(shapeSelected?.entity_id), Number(shapeSelected?.entity_type))

@@ -3,7 +3,8 @@ import React from 'react'
 import UserRenderTitle from './user-render-title'
 import { DataTable } from '@/app/user/data-table'
 import { columns } from '@/app/user/columns-table'
-import {  useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import UserAreaContainer from './user-area-container'
 
 interface UserContainerStructure {
     data: any
@@ -11,6 +12,7 @@ interface UserContainerStructure {
 
 export default function UserContainer({ data }: UserContainerStructure) {
     const optionType = useSearchParams().get('option-type')
+    console.log(optionType);
     
     return (
         <div className={`h-full w-full pr-7 ${optionType === null ? 'hidden' : 'bg-white flex'} flex-col overflow-auto text-black`}>
@@ -19,7 +21,11 @@ export default function UserContainer({ data }: UserContainerStructure) {
             </div>
             {/* <p>{session?.access_token}</p> */}
             <div className='mt-8 ml-10 overflow-auto'>
-                <DataTable columns={columns} data={data} />
+                {
+                    optionType === '1' ?
+                        <DataTable columns={columns} data={data} />
+                        : <UserAreaContainer />
+                }
                 {/* {JSON.stringify(data)} */}
             </div>
         </div>

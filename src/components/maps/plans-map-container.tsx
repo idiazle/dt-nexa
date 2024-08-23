@@ -294,8 +294,7 @@ export default function PlansMapContainer(Map: MapProps) {
                             <FeatureGroup ref={refFeature}>
                                 <EditControl
                                     edit={{
-                                        edit: false,
-                                        remove: false
+                                        edit: false
                                     }}
 
                                     position='bottomright'

@@ -7,6 +7,9 @@ function UserRenderTitle() {
     const { option } = useContext(OptionAsideContext)
     const optionType = useSearchParams().get('option-type')
 
+    console.log(option);
+    
+    
     const renderTitle = () => {
         if (option) {
             if (optionType === '1') {

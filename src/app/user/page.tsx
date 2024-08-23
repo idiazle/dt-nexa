@@ -262,28 +262,13 @@ async function getData(): Promise<Payment[]> {
   ]
 }
 
-const getEntidades = async () => {
-  try {
-    const resp = await getEntities()
-    if (resp.status === 200) {
-      return resp.data.data
-    }
-  } catch (error: any) {
-    console.log(error.message);
-    if (error.message === '401') {
-      // redirect('/auth/login')
-    }
-  }
-}
+
 
 export default async function User() {
   // console.log(session);
 
   const data = await getData()
-  const etnitdades = await getEntidades()
 
-  console.log(etnitdades);
-  
 
 
   return (
