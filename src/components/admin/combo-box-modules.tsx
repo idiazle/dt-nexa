@@ -52,7 +52,6 @@ export default function ComboBoxModules({ data, title, defaultValue, onChange, .
     const [open, setOpen] = useState<boolean>(false)
     const [value, setValue] = useState<string>(String(defaultValue))
 
-    console.log(value);
     
     
     return (

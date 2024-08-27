@@ -50,6 +50,8 @@ export default function EntitiesTable({ data }: EntitiesTableStructure) {
 
     const columns = useMemo(() => columnsEntities({ onEdit, onDelete }), [])
 
+    
+
     return (
         <div>
             <DataTable columns={columns} data={data} />

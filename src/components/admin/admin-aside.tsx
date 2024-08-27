@@ -86,7 +86,6 @@ export default function AdminAside() {
 
 
     const colorNav = 'bg-gradient-to-r from-[#aa945e] to-[#030F2E]'
-    console.log(theme);
 
 
     return (

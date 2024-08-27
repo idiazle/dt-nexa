@@ -17,13 +17,11 @@ interface DocumentDialogStructure {
   setDialogOpen: (value: boolean) => void
   tempFile: any
   setTempFile: (value: any) => void
-  setRefreshTable: (value: boolean) => void
-
+  onRefresh: () => void
 }
 
-export default function DocumentDialog({ id, dialogOpen, setDialogOpen, tempFile, setTempFile, setRefreshTable }: DocumentDialogStructure) {
-
-
+export default function DocumentDialog({ id, onRefresh, dialogOpen, setDialogOpen, tempFile, setTempFile }: DocumentDialogStructure) {
+  
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent className="min-w-[98vw] min-h-[98vh]">
@@ -31,18 +29,8 @@ export default function DocumentDialog({ id, dialogOpen, setDialogOpen, tempFile
           <DialogTitle>{id === null ? 'Crear' : 'Editar'} documento</DialogTitle>
         </DialogHeader>
         {
-          <FormDocDialog setRefreshTable={setRefreshTable} id={id} setTempFile={setTempFile} tempFile={tempFile} setDialogOpen={setDialogOpen} />
+          <FormDocDialog onRefresh={onRefresh} id={id} setTempFile={setTempFile} tempFile={tempFile} setDialogOpen={setDialogOpen} />
         }
-        {/* <DialogFooter className="w-full h-full">
-          <div className='flex flex-row justify-end items-center gap-3 w-full'>
-            <Button onClick={() => { console.log("aw") }} className='w-1/5' type="button" variant="secondary" >
-              {id === null ? 'Guardar' : 'Editar'}
-            </Button>
-            <Button onClick={() => { setDialogOpen(false) }} className='w-1/5' type="button" variant="secondary">
-              Cerrar
-            </Button>
-          </div>
-        </DialogFooter> */}
       </DialogContent>
 
     </Dialog>

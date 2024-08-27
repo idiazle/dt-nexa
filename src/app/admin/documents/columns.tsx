@@ -160,7 +160,6 @@ export const columnsDocuments = ({ onEdit, onDelete, onViewDoc, onViewRefs, onVi
         id: 'actions',
         header: 'Acciones',
         cell: ({ row }) => {
-            console.log(row.original.file_url);
 
             return (
                 <DropdownMenu>

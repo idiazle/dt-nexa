@@ -24,6 +24,7 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
 
 
 
+    const [refreshTable, setRefreshTable] = useState<boolean>(false)
 
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [myData, setMyData] = useState<any[]>([])
@@ -45,11 +46,13 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
     const loadingState = isLoading || data.length === 0 ? true : false
 
 
-    const [refreshTable, setRefreshTable] = useState<boolean>(false)
     const [actualCountRowPage, setActualCountRowPage] = useState<number>(30)
+
+    const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
 
     const getData = async () => {
+
         if (page.paginationType === 'normal') {
             const response = await getDocumentsNoToken(actualCountRowPage === 1 ? 1 : page.pageIndex)
             if (response.status === 200) {
@@ -70,6 +73,7 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
         } else {
             const query = await getSearchDocuments(actualCountRowPage === 1 ? 1 : page.pageIndex, page.searchDocuments)
             if (query.status === 200) {
+                setIsLoading(false)
                 setMyData(query.data.results)
                 setActualCountRowPage(query.data.quantity_in_page)
                 if (actualCountRowPage === 1) {
@@ -87,12 +91,10 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
     }
     useEffect(() => {
         getData()
-        // console.log(myData)
-    }, [page, isLoading, refreshTable])
+    }, [page, refreshTable])
 
 
     const [documentSelected, setDocumentSelected] = useState<DocumentStructure | null>(null)
-    const [dialogOpen, setDialogOpen] = useState<boolean>(false)
     const [dialogMediaView, setDialogMediaView] = useState<boolean>(false)
     const [viewDocSelected, setViewDocSelected] = useState<{
         data: any
@@ -109,6 +111,12 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
         documentsReferences: []
     })
 
+
+
+
+    const onRefresh = () => {
+        setRefreshTable(!refreshTable)
+    }
 
     const onDelete = useCallback(async (document: any) => {
         setOpenAlertDelete(true)
@@ -196,11 +204,14 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
             }
         }
     }
+
+
+
     return (
         <div>
             <DataTable loading={loadingState} columns={columns} data={myData} setPagination={setPage} pagination={page} setMyData={setMyData} />
             {
-                dialogOpen && documentSelected !== null ? <DocumentDialog setRefreshTable={setRefreshTable} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} setTempFile={() => { }} tempFile={null} id={documentSelected.id} /> : null
+                dialogOpen && documentSelected !== null ? <DocumentDialog onRefresh={onRefresh} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} setTempFile={() => { }} tempFile={null} id={documentSelected.id} /> : null
             }
             {
                 openAlertDelete && documentSelected !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delDocument} objName={documentSelected.title} /> : null

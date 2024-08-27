@@ -1,4 +1,3 @@
-
 'use client'
 import { zodResolver } from '@hookform/resolvers/zod'
 import React, { ChangeEvent, useEffect, useState } from 'react'
@@ -27,13 +26,15 @@ import { AxiosError } from 'axios'
 import LinkDocumentDialog from './link-document-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { revalidatePath } from 'next/cache'
+import { revalidaTeRoute } from '@/lib/actions'
 
 interface FormDocDialogStructure {
     tempFile: any
     setTempFile: (value: any) => void
     setDialogOpen: (value: boolean) => void
-    setRefreshTable: (value: any) => void
     id: number | null
+    onRefresh: () => void
 }
 
 export interface CheckValuesForm {
@@ -42,7 +43,7 @@ export interface CheckValuesForm {
     client: boolean
 }
 
-export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen, setRefreshTable }: FormDocDialogStructure) {
+export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen, onRefresh }: FormDocDialogStructure) {
     const [modules, setModules] = useState<ModuleStructure[]>([])
     const [disciplines, setDisciplines] = useState<ModuleStructure[]>([])
     const [types, setTypes] = useState<ModuleStructure[]>([])
@@ -324,14 +325,6 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
 
     const handleGeneralSubmit = async () => {
         const isValidForm1 = await form.trigger()
-        const isValidFormClient = await formClient.trigger()
-        const isValidFormVendor = await formVendor.trigger()
-
-        // if (isValidForm1 && isValidFormClient && isValidFormVendor) {
-        //     const dataForm = form.getValues()
-        //     const dataFormClient = form.getValues()
-        //     const dataFormVendor = form.getValues()
-        // }
 
         if (id === null) {
             let temp = {}
@@ -477,12 +470,12 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                         throw new Error("ERROR EN FormCreateDocument - postObjVsDocs");
 
                     }
-
                     router.refresh()
+                    onRefresh()
                     setDialogOpen(false)
                 }
 
-            } catch (error) {
+            } catch (error: any) {
                 if (error instanceof AxiosError) {
                     toast({
                         duration: 7000,
@@ -506,10 +499,12 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                         </div>
                     });
                 }
+                console.log(error);
 
-                throw new Error("ERROR EN FormCreateDocument");
+                throw new Error("ERROR EN FormCreateDocument", error);
 
             }
+
         } else {
             const finalResponse = {
                 ...form.getValues(),
@@ -555,10 +550,9 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                     } else {
                         console.log("LUEGO LO SUBO ");
                     }
-                    console.log("Refresshh");
 
                     router.refresh()
-                    setRefreshTable((prevstate: boolean) => !prevstate)
+                    onRefresh()
                     setDialogOpen(false)
                 }
             } catch (error) {
@@ -567,7 +561,9 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
             }
         }
 
+        // setRefreshTable(!refreshTable)
 
+        router.refresh()
 
     }
 
@@ -611,8 +607,6 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
 
     const [openLinkDialog, setOpenLinkDialog] = useState<boolean>(false)
 
-
-    console.log(formVendor.watch());
 
 
     return (
