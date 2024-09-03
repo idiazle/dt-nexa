@@ -17,3 +17,11 @@ export const getShapeById = async (id: number) => {
 export const getMap2dIcons = async () => {
   return await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/map2d-icons`)
 }
+
+export const putShapeById = async (id: number, data:any) => {
+  return await axiosInstance.put(`${process.env.NEXT_PUBLIC_BACK_URL}/navigation2d/${id}`,data)
+}
+
+export const deleteShapeById = async (id: number) => {
+  return await axiosInstance.delete(`${process.env.NEXT_PUBLIC_BACK_URL}/navigation2d/${id}`)
+}

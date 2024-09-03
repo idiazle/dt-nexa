@@ -26,16 +26,16 @@ export default function AdminAside() {
         },
         {
             id: 2,
-            icon_path: '/img/aside-icons/I_G. de documentos.png',
-            icon_tooltip: 'Gestión de Documentos',
-            route: '/admin/documents',
+            icon_path: '/img/aside-icons/I_G. de tags.png',
+            icon_tooltip: 'Gestión de Equipos',
+            route: '/admin/equipments',
             enable: true
         },
         {
             id: 3,
-            icon_path: '/img/aside-icons/I_G. de tags.png',
-            icon_tooltip: 'Gestión de Equipos',
-            route: '/admin/equipments',
+            icon_path: '/img/aside-icons/I_G. de documentos.png',
+            icon_tooltip: 'Gestión de Documentos',
+            route: '/admin/documents',
             enable: true
         },
         {

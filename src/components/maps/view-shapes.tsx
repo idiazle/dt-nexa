@@ -5,7 +5,7 @@ import { getAllShapes } from '@/api/shapes-api'
 import { DocumentStructure, PlanStructure, ShapeStructure } from '@/lib/utils'
 import { LatLngExpression } from 'leaflet'
 import React, { useEffect, useState } from 'react'
-import { Circle, Polygon } from 'react-leaflet'
+import { Circle, Polygon, Rectangle } from 'react-leaflet'
 
 
 interface ViewShapesStructure {
@@ -14,9 +14,11 @@ interface ViewShapesStructure {
     setSelectedShape: (val: ShapeStructure) => void
     setCloseInformation: (val: boolean) => void
     setRenderLeftInformation: (val: any) => void
+    showShapes: boolean
+    flagRefresh: boolean
 }
 
-export default function ViewShapes({ shapesRender, setShapesRender, setSelectedShape, setCloseInformation, setRenderLeftInformation }: ViewShapesStructure) {
+export default function ViewShapes({ flagRefresh, showShapes, shapesRender, setShapesRender, setSelectedShape, setCloseInformation, setRenderLeftInformation }: ViewShapesStructure) {
     const getShapesAll = async () => {
         try {
             const response = await getAllShapes()
@@ -39,7 +41,7 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
 
     useEffect(() => {
         getShapesAll()
-    }, [])
+    }, [flagRefresh])
 
     const getDataInfoShape = async (shapeSelected: ShapeStructure) => {
         try {
@@ -61,13 +63,14 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
 
         shapesRender?.map((obj: ShapeStructure | any, index: number) => {
             const type = obj?.shapes?.type
+
             return (
                 type === 'circle' ?
                     <Circle
                         key={`circle_${index}`}
-                        className={'transition-colors duration-1000'}
-                        pathOptions={{ fillColor: obj.shapes.color, color: obj.shapes.color, fillOpacity: 0.6, weight: 0.5 }}
-                        radius={10}
+                        className={'transition-colors duration-500'}
+                        pathOptions={{ fillColor: showShapes ? obj.shapes.color : 'transparent', color: showShapes ? obj.shapes.color : 'transparent', fillOpacity: 0.6, weight: 0.5 }}
+                        radius={obj.shapes.radius}
                         //    zIndex={10}
                         center={obj.shapes.coordinates as any}
                         eventHandlers={{
@@ -82,9 +85,11 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
                             click: async (e) => {
                                 // console.log("Clickeed circle: ", e)
                                 // console.log("Clickeed circle OBJECT: ", obj)
-                                await getDataInfoShape(obj)
-                                setSelectedShape(obj)
-                                setCloseInformation(false)
+                                if (showShapes) {
+                                    await getDataInfoShape(obj)
+                                    setSelectedShape(obj)
+                                    setCloseInformation(false)
+                                }
                             }
                         }}>
                     </Circle>
@@ -94,7 +99,8 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
                             smoothFactor={1}
                             lineJoin={'round'}
                             lineCap={'round'}
-                            pathOptions={{ color: obj.shapes.color, fillColor: obj.shapes.color, opacity: 1, weight: 1.5, dashArray: '4' }}
+                            className='transition-colors duration-500'
+                            pathOptions={{ fillColor: showShapes ? obj.shapes.color : 'transparent', color: showShapes ? obj.shapes.color : 'transparent', fillOpacity: 0.6, weight: 1.5, dashArray: '4' }}
                             //  pathOptions={{ color: 'red' }}
                             opacity={0.1}
                             //    zIndex={1}
@@ -110,9 +116,11 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
                                 },
                                 click: async (e) => {
                                     // console.log("Click polygon: ", e)
-                                    await getDataInfoShape(obj)
-                                    setSelectedShape(obj)
-                                    setCloseInformation(false)
+                                    if (showShapes) {
+                                        await getDataInfoShape(obj)
+                                        setSelectedShape(obj)
+                                        setCloseInformation(false)
+                                    }
 
                                 }
                             }}
@@ -124,7 +132,23 @@ export default function ViewShapes({ shapesRender, setShapesRender, setSelectedS
                            </Popup> */}
 
                         </Polygon>
-                        : null
+                        : type === 'rectangle' ?
+                            <Rectangle
+                            key={`rectangle_${index}`}
+                                className='transition-colors duration-500'
+                                pathOptions={{ fillColor: showShapes ? obj.shapes.color : 'transparent', color: showShapes ? obj.shapes.color : 'transparent', fillOpacity: 0.6, weight: 1.5, dashArray: '4' }}
+                                eventHandlers={{
+                                    click: async () => {
+                                        if (showShapes) {
+                                            await getDataInfoShape(obj)
+                                            setSelectedShape(obj)
+                                            setCloseInformation(false)
+                                        }
+                                    }
+                                }}
+                                bounds={obj.shapes.coordinates}
+                            />
+                            : null
             )
         })
 

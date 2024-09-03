@@ -228,12 +228,14 @@ export interface DespieceInfoStructure {
 }
 
 export interface ShapeStructure {
+  id?: number
   shapes: {
     type: string
     coordinates: string
     color: string
+    radius?:string
   }
-  entity_type:number|string
+  entity_type?:number|string
   shape_type: string
   entity_id: number
   plan_id: number

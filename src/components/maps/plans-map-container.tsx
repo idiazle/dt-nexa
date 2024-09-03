@@ -1,6 +1,6 @@
 "use client"
-import React, { useEffect, useRef, useState } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, ImageOverlay, FeatureGroup, useMapEvents } from "react-leaflet";
+import React, { useRef, useState } from 'react'
+import { MapContainer, ImageOverlay, FeatureGroup } from "react-leaflet";
 import { LatLngExpression, LatLngTuple } from 'leaflet';
 import L from 'leaflet'
 import 'leaflet-draw/dist/leaflet.draw.css'
@@ -9,21 +9,28 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 import { DocumentStructure, EntityStructure, EquipmentStructure, PlanStructure, ShapeStructure } from '@/lib/utils';
 import { bounds, centerLat, centerLng, maxBounds } from './static-data';
-import { AspectRatio } from '../ui/aspect-ratio';
 import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
 import { Button } from '../ui/button';
 import { TbTriangleSquareCircleFilled } from "react-icons/tb";
-import { FaFile, FaSquareMinus, FaSquarePlus } from "react-icons/fa6";
+import { FaFile, FaSquarePlus, FaTrash } from "react-icons/fa6";
 import ShapesPlanDialog from '../admin/plans/shapes-plan-dialog';
 import { EyeClosedIcon } from '@radix-ui/react-icons';
 import { EyeIcon } from 'lucide-react';
 import ViewShapes from './view-shapes';
-import { getDocumentsByEntity } from '@/api/admin/documents-api';
-import { getEntityInfo } from '@/api/admin/entities-api';
 import Spinner from '../ui/spinner';
 import { FaWindowClose } from "react-icons/fa";
 import ModalViewMedia from '../viewers/modal-viewer';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { deleteShapeById, putShapeById } from '@/api/shapes-api'
+import { toast } from '../ui/use-toast'
+import AlertDeleteDialog from '../general/alert-delete-dialog';
+
 
 interface MapProps {
     planSelected: PlanStructure | null
@@ -47,9 +54,11 @@ interface MenuBtns {
 
 
 export default function PlansMapContainer(Map: MapProps) {
-    const { zoom = defaults.zoom, posix } = Map
+    // const { zoom = defaults.zoom, posix } = Map
+    const [flagRefresh, setFlagRefresh] = useState<boolean>(false)
     const [shapesRender, setShapesRender] = useState<ShapeStructure[] | null>([])
     const [selectedShape, setSelectedShape] = useState<ShapeStructure | null>(null)
+    const [alertDeleteShape, setAlertDeleteShape] = useState<boolean>(false)
     const { data: session } = useSession()
 
     const [openShapeDialog, setopenShapeDialog] = useState<boolean>(false)
@@ -61,12 +70,21 @@ export default function PlansMapContainer(Map: MapProps) {
 
     const _onCreate = (e: any) => {
         console.log("ON CREATEEE111", e);
+        console.log("ON CREATEEE111", e.layerType);
         // console.log("ON CREATEEE222", e.layer._latlngs);
 
         if (e.layer._latlngs || e.layer._latlng) {
-            const objShape = {
+            let objShape = {
                 type: String(e.layerType),
                 coordinates: e.layer._latlng || e.layer._latlngs
+            } as any
+
+
+            if (e.layerType === 'circle') {
+                objShape = {
+                    ...objShape,
+                    radius: e.layer._mRadius
+                }
             }
 
             if (objShape) {
@@ -83,24 +101,112 @@ export default function PlansMapContainer(Map: MapProps) {
         }
     }
 
-    const _onEditPath = (e: any) => {
-        console.log("on first", e);
+
+    const _onEditPath = async (e: any) => {
+        console.log("on selecte shape id", selectedShape);
+        // console.log("on EDIT PATH", e);
+        // console.log("on EDIT LayerType", e.layers._layers );
+        const shapeType = selectedShape?.shapes.type
+        const dataShape = Object.values(e.layers._layers)[0] as any
+        console.log("on EDIT aDATA", Object.values(e.layers._layers));
+
+        if (dataShape._latlngs || dataShape._latlng) {
+            let objShape = {
+                type: shapeType,
+                coordinates: dataShape._latlng || dataShape._latlngs,
+                color: selectedShape?.shapes.color
+            } as any
+
+
+            if (shapeType === 'circle') {
+                objShape = {
+                    ...objShape,
+                    radius: dataShape._mRadius
+                }
+            }
+
+            if (objShape) {
+                console.log("FINAL SHAPE", objShape)
+            }
+            // setopenShapeDialog(true)
+            // setSendShapes({ ...sendShapes, shapes: objShape })
+            // addShapeModalDisc.onOpen()
+            // setOpenAddShape(true)
+
+            const sendDataShape = {
+                shapes: JSON.stringify(objShape),
+                shape_type: selectedShape?.shape_type
+            }
+            console.log("ID SHAEPES", {
+                idShapes: selectedShape?.id,
+                data: sendDataShape
+            });
+
+            if (selectedShape !== null) {
+                try {
+                    const response = await putShapeById(Number(selectedShape.id), sendDataShape)
+                    if (response.status === 200) {
+                        toast({
+                            duration: 3000,
+                            variant: 'default',
+                            title: 'Edición',
+                            description: 'Shape editado correctamente'
+                        })
+                        setCloseInformation(true)
+                        setSelectedShape(null)
+                        location.reload();
+                        setFlagRefresh(!flagRefresh)
+                    }
+                } catch (error) {
+                    toast({
+                        duration: 3000,
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: 'Ocurrió un error al editar el shape'
+                    })
+                    throw new Error("ERROR AL PUT")
+                }
+            }
+
+
+        }
 
     }
 
-    const _onDelete = (e: any) => {
+    const onDelete = async () => {
+        try {
+            if (selectedShape !== null) {
+                const response = await deleteShapeById(Number(selectedShape.id))
+                if (response.status === 200) {
+                    toast({
+                        duration: 3000,
+                        variant: 'default',
+                        title: 'Eliminación',
+                        description: 'Shape eliminado correctamente'
+                    })
+                    setFlagRefresh(!flagRefresh)
+                }
+            }
 
-        console.log("on dele222", e);
+        } catch (error) {
+            toast({
+                duration: 3000,
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Ocurrió un error al eliminar el shape'
+            })
+            throw new Error("ERROR AL Eliminar")
+        }
     }
 
     const initialStateMenuBtns: MenuBtns[] = [
-        {
-            id: 1,
-            show_name: 'Mostrar formas',
-            hide_name: 'Ocultar formas',
-            icon: <TbTriangleSquareCircleFilled size={25} />,
-            active: true
-        },
+        // {
+        //     id: 1,
+        //     show_name: 'Mostrar formas',
+        //     hide_name: 'Ocultar formas',
+        //     icon: <TbTriangleSquareCircleFilled size={25} />,
+        //     active: true
+        // },
         {
             id: 2,
             show_name: 'Mostrar edición',
@@ -258,6 +364,10 @@ export default function PlansMapContainer(Map: MapProps) {
         }
     }
 
+
+
+
+
     return (
         <div className='flex flex-col w-full h-full'>
             <div className='relative w-full h-full'>
@@ -290,49 +400,90 @@ export default function PlansMapContainer(Map: MapProps) {
                     />
 
                     {
-                        admin !== undefined && actionMenuBtns[1].active ?
+                        admin !== undefined ?
                             <FeatureGroup ref={refFeature}>
-                                <EditControl
-                                    edit={{
-                                        edit: false
-                                    }}
+                                <>
+                                    {
+                                        selectedShape !== null ?
+                                            <EditControl
+                                                edit={{
+                                                    edit: true,
+                                                    remove: false
+                                                }}
 
-                                    position='bottomright'
-                                    onCreated={_onCreate}
-                                    // onEdited={_onEditPath}
-                                    onDeleted={_onDelete}
-                                    draw={{
-                                        polyline: false,
-                                        polygon: true,
-                                        circle: true,
-                                        circlemarker: false,
-                                        rectangle: false,
-                                        marker: false
-                                    }}
-                                />
-                                <ViewShapes setRenderLeftInformation={setRenderLeftInformation} setCloseInformation={setCloseInformation} setSelectedShape={setSelectedShape} shapesRender={shapesRender} setShapesRender={setShapesRender} />
+                                                position='bottomright'
+                                                onCreated={_onCreate}
+                                                onEdited={_onEditPath}
+                                                draw={{
+                                                    polyline: false,
+                                                    polygon: false,
+                                                    circle: false,
+                                                    circlemarker: false,
+                                                    rectangle: false,
+                                                    marker: false
+                                                }}
+                                            /> : null
+
+
+                                    }
+                                    {
+                                        closeInformation || selectedShape === null ? <EditControl
+                                            edit={{
+                                                edit: false,
+                                                remove: false
+                                            }}
+
+
+                                            position='bottomright'
+                                            onCreated={_onCreate}
+                                            onEdited={_onEditPath}
+                                            draw={{
+                                                polyline: false,
+                                                polygon: true,
+                                                circle: true,
+                                                circlemarker: false,
+                                                rectangle: true,
+                                                marker: false
+                                            }}
+                                        /> : null
+                                    }
+                                </>
+                                <ViewShapes flagRefresh={flagRefresh} showShapes={actionMenuBtns[0].active} setRenderLeftInformation={setRenderLeftInformation} setCloseInformation={setCloseInformation} setSelectedShape={setSelectedShape} shapesRender={shapesRender} setShapesRender={setShapesRender} />
+                                : null
+
                             </FeatureGroup> : null
                     }
                 </MapContainer>
             </div>
 
             {/* TOP MENU CONTROL */}
-            <div className={`absolute transition-all duration-500 m-auto left-0 right-0 flex justify-center items-center ${!controlMinimized ? 'h-[65px] opacity-100' : 'h-0 opacity-0'} w-1/3`}>
-                <div className='flex justify-center items-center w-full h-full bg-[#030F2E] text-white transition-all duration-300 rounded-b'>
-                    <FaSquareMinus size={20} className='absolute right-0 top-0 hover:cursor-pointer' onClick={() => { setControlMinimized(true) }} />
+            <div className={`absolute transition-all duration-500 m-auto left-2 bottom-10 flex justify-center items-center ${!controlMinimized ? 'opacity-100' : 'opacity-0'} w-7 h-7`}>
+                <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
+                    {/* <FaSquareMinus size={20} className='absolute right-0 top-0 hover:cursor-pointer' onClick={() => { setControlMinimized(true) }} /> */}
                     {
                         actionMenuBtns.map((obj) => {
                             return (
-                                <Button key={obj.id} className='h-full w-full' size={'icon'} variant={'outline'} onClick={() => handleClickBtn(obj)}>
-                                    <div className='flex flex-col justify-center items-center'>
-                                        <div className='flex flex-row justify-center items-center gap-3'>
-                                            {obj.icon}
-                                            {obj.active ? <EyeIcon /> : <EyeClosedIcon />}
-                                        </div>
-                                        {/* <EyeIcon/> */}
-                                        <p className='text-xs'>{!obj.active ? obj.show_name : obj.hide_name}</p>
-                                    </div>
-                                </Button>
+                                <TooltipProvider delayDuration={300} key={obj.id}>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button key={obj.id} className='rounded-sm h-full w-full bg-[#ffffff] border-[#cccccc] hover:bg-[#eeeeee]' size={'icon'} variant={'outline'} onClick={() => handleClickBtn(obj)}>
+                                                {/* <div className='flex flex-col justify-center items-center'>
+                                                    <div className='flex flex-row justify-center items-center gap-3'> */}
+                                                {/* {obj.icon} */}
+                                                {obj.active ? <EyeIcon size={20} color='#464646' /> : <EyeClosedIcon fontSize={20} color='#464646' />}
+                                                {/* </div> */}
+                                                {/* <EyeIcon/> */}
+                                                {/* <p className='text-xs'>{!obj.active ? obj.show_name : obj.hide_name}</p> */}
+                                                {/* </div> */}
+                                            </Button>
+
+                                        </TooltipTrigger>
+                                        <TooltipContent side='right'>
+                                            <p>{!obj.active ? obj.show_name : obj.hide_name}</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+
                             )
                         })
                     }
@@ -347,11 +498,17 @@ export default function PlansMapContainer(Map: MapProps) {
                         <Spinner />
                     </div> : <div className='h-full w-full overflow-hidden flex flex-col'>
                         {renderLefInfo(Number(entityType))}
+                        <Button onClick={() => {
+                            setAlertDeleteShape(true)
+                        }} className='flex flex-row justify-between items-center'>
+                            <h1>Eliminar Shape</h1>
+                            <FaTrash />
+                        </Button>
                     </div>
                 }
                 <div className='absolute flex flex-row justify-between items-center right-0 top-0 -mt-0.5 bg-[#030F2E] w-full h-[23px]'>
                     <p className='text-white ml-2'>Información adicional de {entityType === 3 ? 'equipo' : 'área'}</p>
-                    <FaWindowClose onClick={() => { setCloseInformation(true) }} size={25} color='white' />
+                    <FaWindowClose className='cursor-pointer' onClick={() => { setCloseInformation(true), setSelectedShape(null) }} size={25} color='white' />
                 </div>
 
             </div>
@@ -360,11 +517,14 @@ export default function PlansMapContainer(Map: MapProps) {
                 controlMinimized ? <FaSquarePlus onClick={() => { setControlMinimized(false) }} className='absolute top-0 right-0' size={30} color='black' /> : null
             }
             {
-                openShapeDialog ? <ShapesPlanDialog dialogOpen={openShapeDialog} setDialogOpen={setopenShapeDialog} planShape={planShape} setPlanShape={setPlanShape} /> : null
+                openShapeDialog ? <ShapesPlanDialog setFlagRefresh={setFlagRefresh} dialogOpen={openShapeDialog} setDialogOpen={setopenShapeDialog} planShape={planShape} setPlanShape={setPlanShape} /> : null
             }
 
             {
                 openViewMedia ? <ModalViewMedia open={openViewMedia} setOpen={setOpenViewMedia} information={openMediaInfo} type={openMediaInfo.type} /> : null
+            }
+            {
+                alertDeleteShape ? <AlertDeleteDialog executeMethod={onDelete} objName='Shape' open={alertDeleteShape} setOpen={setAlertDeleteShape} /> : null
             }
         </div>
     )

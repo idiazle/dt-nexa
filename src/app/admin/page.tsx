@@ -10,6 +10,7 @@ import { getSession } from 'next-auth/react'
 import { authOptions } from '@/lib/authOptions'
 import { getServerSession } from 'next-auth'
 import CardAdmin from '@/components/admin/card-admin'
+import { ChangeTheme } from '@/components/change-theme'
 
 const getData = async (token: any): Promise<any> => {
   try {
@@ -94,6 +95,7 @@ export default async function Admin() {
   return (
     <div className='flex flex-col justify-center items-center h-full p-2'>
       <h1 className='text-left w-full'>DASHBOARD</h1>
+      {/* <ChangeTheme/> */}
       <div className='flex flex-col justify-center items-center h-full'>
         {
           <Link href={cardArray[0].route}>

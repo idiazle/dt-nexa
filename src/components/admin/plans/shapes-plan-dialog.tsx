@@ -48,10 +48,11 @@ interface ShapesPlanDialogStructure {
     setPlanShape: (value: ShapeStructure) => void
     dialogOpen: boolean
     setDialogOpen: (value: boolean) => void
+    setFlagRefresh: (value: any) => void
 }
 
 
-export default function ShapesPlanDialog({ planShape, setPlanShape, dialogOpen, setDialogOpen }: ShapesPlanDialogStructure) {
+export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanShape, dialogOpen, setDialogOpen }: ShapesPlanDialogStructure) {
     const [radioSelected, setRadioSelected] = useState<string>('areas')
 
     const [areas, setAreas] = useState<EntityStructure[] | null>(null)
@@ -177,6 +178,7 @@ export default function ShapesPlanDialog({ planShape, setPlanShape, dialogOpen, 
                         description: 'Shape creado correctamente'
                     })
                     setDialogOpen(false)
+                    setFlagRefresh((prev: boolean) => !prev)
                 }
             } catch (error) {
                 throw new Error('Error in postSaveShape - dialog-add-shape component')

@@ -43,6 +43,7 @@ export default async function UserAside() {
 
   const dataAreas = await getData()
 
+  console.log(dataAreas);
   
 
   return (
