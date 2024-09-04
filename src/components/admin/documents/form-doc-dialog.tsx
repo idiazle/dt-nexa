@@ -28,6 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { revalidatePath } from 'next/cache'
 import { revalidaTeRoute } from '@/lib/actions'
+import { useSession } from 'next-auth/react'
 
 interface FormDocDialogStructure {
     tempFile: any
@@ -44,6 +45,9 @@ export interface CheckValuesForm {
 }
 
 export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen, onRefresh }: FormDocDialogStructure) {
+
+    const { data: session } = useSession()
+
     const [modules, setModules] = useState<ModuleStructure[]>([])
     const [disciplines, setDisciplines] = useState<ModuleStructure[]>([])
     const [types, setTypes] = useState<ModuleStructure[]>([])
@@ -313,7 +317,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
             date_load: defaultDate,
             date_expired: null,
             days_expired: '0',
-            user_id: 123456789
+            user_id: session?.user.id
         }
     })
 
@@ -362,6 +366,9 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                         title: 'Creación exitosa',
                         description: 'Documento creado correctamente'
                     })
+                    router.refresh()
+                    onRefresh()
+                    location.reload()
                     if (documentFile) {
                         try {
                             let fileData = new FormData()
@@ -420,7 +427,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                 document_id: [response.data.data.id],
                                 entity_id: referenceObject.equipmentsReferences,
                                 type: 3,
-                                user_id: 123456789
+                                user_id:  Number(session?.user.id)
                             }
                             const resObjVsDoc = await postObjVsDocs(jsonEquipments)
                             if (resObjVsDoc.status !== 200) {
@@ -437,7 +444,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                 document_id: [response.data.data.id],
                                 entity_id: referenceObject.areasReferences.map((obj: any) => { return obj.id }),
                                 type: 5,
-                                user_id: 123456789
+                                user_id:  Number(session?.user.id)
                             }
                             const resObjVsDocArea = await postObjVsDocs(jsonAreas)
                             if (resObjVsDocArea.status !== 200) {
@@ -453,7 +460,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                             const jsonToSend = {
                                 document_id: response.data.data.id,
                                 refer_id: referenceObject.documentsReferences.map((obj: any) => { return obj.id }),
-                                user_id: 12345789,
+                                user_id:  Number(session?.user.id),
                             };
                             const resRefToDoc = await postRefDocToDoc(jsonToSend)
                             if (resRefToDoc.status !== 200) {
@@ -502,7 +509,6 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                 console.log(error);
 
                 throw new Error("ERROR EN FormCreateDocument", error);
-
             }
 
         } else {

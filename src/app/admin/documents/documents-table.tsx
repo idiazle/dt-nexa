@@ -50,27 +50,42 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
 
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
 
+    const [pressingButtons, setPressingButtons] = useState<boolean>(false)
 
     const getData = async () => {
-
+        
         if (page.paginationType === 'normal') {
+            console.log("EJECUTANDO IF");
             const response = await getDocumentsNoToken(actualCountRowPage === 1 ? 1 : page.pageIndex)
             if (response.status === 200) {
                 setIsLoading(false)
                 setMyData(response.data.data)
+                console.log(response.data);
+                
                 setActualCountRowPage(response.data.quantity_in_page)
                 if (actualCountRowPage === 1) {
                     setPage({
                         ...page,
                         pageSize: response.data.total_pages,
+                        totalDocuments:response.data.count,
                         pageIndex: 1
                     })
+                } else {
+                    
                 }
-
+                setPage({
+                    ...page,
+                    pageSize: response.data.total_pages,
+                    totalDocuments:response.data.count,
+                })
+                console.log(response.data.total_pages);
+                
+                
             } else {
                 setIsLoading(true)
             }
         } else {
+            console.log("EJECUTANDO ELSE");
             const query = await getSearchDocuments(actualCountRowPage === 1 ? 1 : page.pageIndex, page.searchDocuments)
             if (query.status === 200) {
                 setIsLoading(false)
@@ -80,18 +95,27 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
                     setPage({
                         ...page,
                         pageSize: query.data.total_pages,
+                        totalDocuments:query.data.count,
                         pageIndex: 1
                     })
+                } else {
+
                 }
+                setPage({
+                    ...page,
+                    pageSize: query.data.total_pages,
+                    totalDocuments:query.data.count
+                })
             } else {
                 setIsLoading(true)
             }
 
         }
     }
+
     useEffect(() => {
         getData()
-    }, [page, refreshTable])
+    }, [refreshTable, dialogOpen, pressingButtons])
 
 
     const [documentSelected, setDocumentSelected] = useState<DocumentStructure | null>(null)
@@ -205,11 +229,12 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
         }
     }
 
+    console.log(page);
 
 
     return (
         <div>
-            <DataTable loading={loadingState} columns={columns} data={myData} setPagination={setPage} pagination={page} setMyData={setMyData} />
+            <DataTable setPressingButtons={setPressingButtons} loading={loadingState} columns={columns} data={myData} setPagination={setPage} pagination={page} setMyData={setMyData} />
             {
                 dialogOpen && documentSelected !== null ? <DocumentDialog onRefresh={onRefresh} dialogOpen={dialogOpen} setDialogOpen={setDialogOpen} setTempFile={() => { }} tempFile={null} id={documentSelected.id} /> : null
             }

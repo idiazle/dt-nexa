@@ -21,6 +21,7 @@ import { type EntityStructure } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/use-toast'
+import { useSession } from 'next-auth/react'
 
 interface FormEntityStructure {
     setDialogOpen: (value: boolean) => void
@@ -28,6 +29,8 @@ interface FormEntityStructure {
 }
 
 export default function FormEntity({ setDialogOpen, id }: FormEntityStructure) {
+
+    const {data:session} = useSession()
     const [gerencies, setGerencies] = useState<EntityStructure[]>([])
 
     const getGerencies = async () => {
@@ -67,7 +70,7 @@ export default function FormEntity({ setDialogOpen, id }: FormEntityStructure) {
             type: '4',
             code: '',
             name: '',
-            user_id: 123,
+            user_id:  Number(session?.user.id),
             parent_id: null,
             image: null,
             description: ''

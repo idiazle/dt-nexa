@@ -48,6 +48,7 @@ interface DataTableProps<TData, TValue> {
   setPagination: (value: any) => void
   setMyData: (value: any) => void
   loading: boolean
+  setPressingButtons: (value: any) => void
 }
 
 export function DataTable<TData, TValue>({
@@ -56,6 +57,7 @@ export function DataTable<TData, TValue>({
   pagination,
   setPagination,
   setMyData,
+  setPressingButtons,
   loading
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
@@ -97,6 +99,8 @@ export function DataTable<TData, TValue>({
 
   const [openDialog, setOpenDialog] = useState<boolean>(false)
 
+  console.log(pagination);
+
   return (
     <div>
       <div className="flex items-center py-4">
@@ -136,6 +140,7 @@ export function DataTable<TData, TValue>({
         </DropdownMenu>
       </div>
       <h1 className='text-right'>Mostrando {table.getRowCount()} de {pagination.totalDocuments} documentos</h1>
+      <h1>{JSON.stringify(table.getState().pagination)}</h1>
       <div className="rounded-md border">
         <Table wrapperClassName='overflow-clip'>
           <TableHeader className="sticky -top-5 bg-secondary">
@@ -177,7 +182,7 @@ export function DataTable<TData, TValue>({
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
                     {
-                      loading ? 'Cargando':'No results.'
+                      loading ? 'Cargando' : 'No results.'
                     }
                   </TableCell>
                 </TableRow>
@@ -218,7 +223,7 @@ export function DataTable<TData, TValue>({
             <Button
               variant="outline"
               className="h-8 w-8 p-0 lg:flex"
-              onClick={() => { table.setPageIndex(1) }}
+              onClick={() => { table.setPageIndex(1), setPressingButtons((prev: boolean) => !prev) }}
               disabled={table.getState().pagination.pageIndex === 1 ? true : false}
             >
               <DoubleArrowLeftIcon className="h-4 w-4" />
@@ -226,7 +231,7 @@ export function DataTable<TData, TValue>({
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => { table.previousPage() }}
+              onClick={() => { table.previousPage(), setPressingButtons((prev: boolean) => !prev) }}
               disabled={table.getState().pagination.pageIndex === 1 ? true : false}
             >
               <ChevronLeftIcon className="h-4 w-4" />
@@ -234,7 +239,7 @@ export function DataTable<TData, TValue>({
             <Button
               variant="outline"
               className="h-8 w-8 p-0"
-              onClick={() => { table.nextPage() }}
+              onClick={() => { table.nextPage(), setPressingButtons((prev: boolean) => !prev) }}
               disabled={table.getState().pagination.pageIndex === table.getState().pagination.pageSize ? true : false}
             >
               <ChevronRightIcon className="h-4 w-4" />
@@ -242,7 +247,7 @@ export function DataTable<TData, TValue>({
             <Button
               variant="outline"
               className="h-8 w-8 p-0 lg:flex"
-              onClick={() => { table.setPageIndex(table.getState().pagination.pageSize) }}
+              onClick={() => { table.setPageIndex(table.getState().pagination.pageSize), setPressingButtons((prev: boolean) => !prev) }}
               disabled={table.getState().pagination.pageIndex === table.getState().pagination.pageSize ? true : false}
             >
               <DoubleArrowRightIcon className="h-4 w-4" />

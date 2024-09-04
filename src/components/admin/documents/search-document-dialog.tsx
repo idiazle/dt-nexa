@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/select'
 import { CheckIcon, ChevronsUpDown } from 'lucide-react'
 import { FaMagnifyingGlass } from 'react-icons/fa6'
+import { useSession } from 'next-auth/react'
 
 interface SearchDocumentDialogStructure {
     openDialog: boolean
@@ -46,6 +47,9 @@ interface SearchDocumentDialogStructure {
 }
 
 export default function SearchDocumentDialog({ openDialog, setOpenDialog, setPagination, setMyData }: SearchDocumentDialogStructure) {
+
+    const {data:session} = useSession()
+
     const [searchObject, setSearchObject] = useState<SearchInput>({
         title: '',
         filename: '',
@@ -118,7 +122,7 @@ export default function SearchDocumentDialog({ openDialog, setOpenDialog, setPag
                 type: 5,
                 blocked: false,
                 parent_id: null,
-                user_id: 1234,
+                user_id:  Number(session?.user.id),
                 deleted: false,
                 plan_image: null,
                 children: []

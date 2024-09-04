@@ -69,8 +69,6 @@ export default function PlansMapContainer(Map: MapProps) {
     const refFeature = useRef<any>()
 
     const _onCreate = (e: any) => {
-        console.log("ON CREATEEE111", e);
-        console.log("ON CREATEEE111", e.layerType);
         // console.log("ON CREATEEE222", e.layer._latlngs);
 
         if (e.layer._latlngs || e.layer._latlng) {
@@ -103,12 +101,10 @@ export default function PlansMapContainer(Map: MapProps) {
 
 
     const _onEditPath = async (e: any) => {
-        console.log("on selecte shape id", selectedShape);
         // console.log("on EDIT PATH", e);
         // console.log("on EDIT LayerType", e.layers._layers );
         const shapeType = selectedShape?.shapes.type
         const dataShape = Object.values(e.layers._layers)[0] as any
-        console.log("on EDIT aDATA", Object.values(e.layers._layers));
 
         if (dataShape._latlngs || dataShape._latlng) {
             let objShape = {
@@ -125,9 +121,9 @@ export default function PlansMapContainer(Map: MapProps) {
                 }
             }
 
-            if (objShape) {
-                console.log("FINAL SHAPE", objShape)
-            }
+            // if (objShape) {
+            //     console.log("FINAL SHAPE", objShape)
+            // }
             // setopenShapeDialog(true)
             // setSendShapes({ ...sendShapes, shapes: objShape })
             // addShapeModalDisc.onOpen()
@@ -137,10 +133,6 @@ export default function PlansMapContainer(Map: MapProps) {
                 shapes: JSON.stringify(objShape),
                 shape_type: selectedShape?.shape_type
             }
-            console.log("ID SHAEPES", {
-                idShapes: selectedShape?.id,
-                data: sendDataShape
-            });
 
             if (selectedShape !== null) {
                 try {
@@ -266,7 +258,6 @@ export default function PlansMapContainer(Map: MapProps) {
     const entityType = selectedShape?.entity_type
 
     const onSetViewDoc = (document: DocumentStructure) => {
-        console.log(document.file_url.includes('pdf'));
 
         setOpenViewMedia(true)
         if (document.file_url.includes('pdf')) {

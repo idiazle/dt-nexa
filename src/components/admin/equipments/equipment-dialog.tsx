@@ -38,6 +38,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
+import { useSession } from 'next-auth/react'
 
 interface EquipmentType {
   id: number
@@ -62,6 +63,9 @@ interface EquipmentExtraInfoStructure {
 }
 
 export default function EquipmentDialog({ id, dialogOpen, setDialogOpen, entities, manufacturers, equipments }: EquipmentDialogStructure) {
+
+  const {data:session} = useSession()
+
   const [loading, setLoading] = useState<boolean>(false)
   const FormEquipmentSchema = z.object({
     name: z.string().min(2, {
@@ -82,7 +86,7 @@ export default function EquipmentDialog({ id, dialogOpen, setDialogOpen, entitie
       code: '',
       description: '',
       type: 3,
-      user_id: 123,
+      user_id:  Number(session?.user.id),
       parent_id: ''
     }
   })

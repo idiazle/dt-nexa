@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { useSession } from 'next-auth/react'
 
 interface LinkDocumentDialogStructure {
     open: boolean
@@ -33,6 +34,8 @@ interface LinkDocumentDialogStructure {
 }
 
 export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, operationType, idDocument }: LinkDocumentDialogStructure) {
+
+    const {data:session} = useSession()
 
     const [equipments, setEquipments] = useState<EquipmentStructure[]>([])
     const [entities, setEntities] = useState<EntityStructure[]>([])
@@ -614,7 +617,7 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                     document_id: [idDocument],
                     entity_id: equipmentsSelected,
                     type: 3,
-                    user_id: 123456789
+                    user_id: Number(session?.user.id)
                 }
                 try {
                     const response = await postObjVsDocs(jsonEquipments)
@@ -635,7 +638,7 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                     document_id: [idDocument],
                     entity_id: areasSelected.map((obj) => { return obj.id }),
                     type: 5,
-                    user_id: 123456789
+                    user_id:  Number(session?.user.id)
                 }
                 try {
                     const response = await postObjVsDocs(jsonEquipments)
@@ -658,7 +661,7 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                     const jsonToSend = {
                         document_id: idDocument,
                         refer_id: finalArray,
-                        user_id: 12345789,
+                        user_id:  Number(session?.user.id),
                     }
                     const response = await postRefDocToDoc(jsonToSend)
                     if (response.status === 200) {
