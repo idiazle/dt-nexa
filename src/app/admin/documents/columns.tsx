@@ -182,7 +182,7 @@ export const columnsDocuments = ({ onEdit, onDelete, onViewDoc, onViewRefs, onVi
                         </DropdownMenuItem>
                         <DropdownMenuItem disabled={row.original.file_url === null ? true : false} onClick={() => { onViewDownload(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
                             <FaFileArrowDown size={18} />
-                            <p>Download</p>
+                            <p>Descargar</p>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => { onEdit(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
                             <FaFilePen size={18} />

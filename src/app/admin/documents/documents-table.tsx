@@ -60,7 +60,7 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
             if (response.status === 200) {
                 setIsLoading(false)
                 setMyData(response.data.data)
-                console.log(response.data);
+                // console.log(response.data);
                 
                 setActualCountRowPage(response.data.quantity_in_page)
                 if (actualCountRowPage === 1) {
@@ -78,7 +78,7 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
                     pageSize: response.data.total_pages,
                     totalDocuments:response.data.count,
                 })
-                console.log(response.data.total_pages);
+                // console.log(response.data.total_pages);
                 
                 
             } else {
@@ -229,7 +229,7 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
         }
     }
 
-    console.log(page);
+    // console.log(page);
 
 
     return (

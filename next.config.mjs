@@ -2,7 +2,7 @@
 const nextConfig = {
     images:
     {
-        domains: ['192.168.0.109', 'almdigital1.blob.core.windows.net', 'localhost'],
+        domains: ['192.168.0.109', 'smptesting.blob.core.windows.net', 'localhost'],
         remotePatterns: [
             {
                 protocol: 'http',
@@ -18,7 +18,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'almdigital1.blob.core.windows.net',
+                hostname: 'smptesting.blob.core.windows.net',
                 port: '',
                 pathname: '/admin/despieces/**',
             },

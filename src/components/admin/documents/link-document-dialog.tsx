@@ -24,6 +24,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useSession } from 'next-auth/react'
+import { FaArrowRightLong } from "react-icons/fa6";
+import { useRouter } from 'next/navigation'
 
 interface LinkDocumentDialogStructure {
     open: boolean
@@ -35,7 +37,10 @@ interface LinkDocumentDialogStructure {
 
 export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, operationType, idDocument }: LinkDocumentDialogStructure) {
 
-    const {data:session} = useSession()
+    console.log("OPERATION TYPE: ", operationType);
+
+    const router = useRouter()
+    const { data: session } = useSession()
 
     const [equipments, setEquipments] = useState<EquipmentStructure[]>([])
     const [entities, setEntities] = useState<EntityStructure[]>([])
@@ -52,7 +57,7 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
     const getAllData = async () => {
         try {
             const response = await getEquipments()
-            let temp = response.data.data.map((obj:any) => {
+            let temp = response.data.data.map((obj: any) => {
                 return {
                     ...obj,
                     isChecked: false
@@ -68,6 +73,7 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                     isChecked: false
                 }
             })
+
             // setEntities(temp2)
 
             const responseDocuments = await getDocumentsLightList()
@@ -83,6 +89,9 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
 
                 const tempGetRefsDocs = await getObjVsDoc(idDocument)
 
+                console.log("tempGetRefsDocs", tempGetRefsDocs);
+
+
                 const equipmentSacados: any = [];
 
                 const tempDataEquipments = response.data.data.filter((objd) => {
@@ -97,6 +106,8 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                 setEquipmentsSelected(equipmentSacados)
 
                 const entitiesSacados: any = [];
+
+
                 const tempDataAreas = responseEntities.data.data.filter((objd) => {
                     const match = tempGetRefsDocs.data.data.find((obj2: any) => objd.id === obj2.entity_id);
                     if (match) {
@@ -149,10 +160,11 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
 
 
     const handleChangeCheckbox = (checked: boolean, ele: any, tag: string) => {
+
         if (tag == 'tags') {
             if (checked == true) {
-                setEquipments(prevstate => prevstate.map((obj:EquipmentStructure) => {
-                    if (obj.equipment_id == ele.id) {
+                setEquipments(prevstate => prevstate.map((obj: EquipmentStructure) => {
+                    if (obj.equipment_id == ele.equipment_id) {
                         return {
                             ...obj,
                             isChecked: true
@@ -161,11 +173,14 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                         return obj
                     }
                 }))
-                setEquipmentsSelected([...equipmentsSelected, ele])
+                setEquipmentsSelected([...equipmentsSelected, {
+                    ...ele,
+                    isNewSelected: true
+                }])
             }
             else if (checked == false) {
-                setEquipments(prevstate => prevstate.map((obj:EquipmentStructure) => {
-                    if (obj.equipment_id == ele.id) {
+                setEquipments(prevstate => prevstate.map((obj: EquipmentStructure) => {
+                    if (obj.equipment_id == ele.equipment_id) {
                         return {
                             ...obj,
                             isChecked: false
@@ -176,7 +191,7 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                     }
                 }))
                 const filtered = equipmentsSelected.filter(item => {
-                    return item.id !== ele.id
+                    return item.equipment_id !== ele.equipment_id
                 })
                 setEquipmentsSelected(filtered)
             }
@@ -192,7 +207,10 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                         return obj
                     }
                 }))
-                setAreasSelected([...areasSelected, ele])
+                setAreasSelected([...areasSelected, {
+                    ...ele,
+                    isNewSelected: true
+                }])
             }
             else if (checked == false) {
                 setEntities(prevstate => prevstate.map((obj) => {
@@ -222,7 +240,10 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                         return obj
                     }
                 }))
-                setDocumentsSelected([...documentsSelected, ele])
+                setDocumentsSelected([...documentsSelected, {
+                    ...ele,
+                    isNewSelected: true
+                }])
             }
             else if (checked == false) {
                 setDocuments(prevstate => prevstate.map((obj) => {
@@ -323,6 +344,9 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                     description: 'Se eliminó la referencia de entidad-documento correctamente'
                 })
             }
+            getReferences()
+            getAllData()
+            router.refresh()
         } catch (error) {
             throw new Error("ERROR EN DELETEREFERENCE");
 
@@ -339,7 +363,11 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                     title: 'Eliminación correcta',
                     description: 'Se eliminó la referencia de documento-documento correctamente'
                 })
+                getAllData()
+                getReferences()
+                router.refresh()
             }
+
         } catch (error) {
             throw new Error("Error in DELETEDOCVSDOCID");
 
@@ -402,11 +430,15 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                                     filteredItems.length == 0 ?
                                         <h1>No existen documentos con los criterios de búsqueda ingresados</h1> :
                                         filteredItems.map((ele, index) => {
-
                                             return (
                                                 <li key={index} className="flex items-center gap-2 text-sm m-1">
                                                     <Checkbox defaultChecked={ele.isChecked} checked={ele.isChecked} onCheckedChange={(val: boolean) => handleChangeCheckbox(val, ele, 'tags')} />
-                                                    {ele.title || ele.name}
+
+                                                    <div className='flex flex-row justify-start items-center gap-5 w-full'>
+                                                        <p className='w-1/3'>{ele.tag}</p>
+                                                        <FaArrowRightLong />
+                                                        <p className='w-2/3'>{ele.title || ele.name}</p>
+                                                    </div>
                                                 </li>
                                             )
                                         })
@@ -423,7 +455,13 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                                     equipmentsSelected.length > 0 ?
                                         equipmentsSelected.map((e, index) => {
                                             return <li className="flex items-center text-sm m-1" key={index}>
-                                                {e.name || e.code}
+
+                                                <div className='flex flex-row justify-start items-center gap-5 w-full'>
+                                                    <p>{e.tag}</p>
+                                                    <FaArrowRightLong />
+                                                    <p>{e.name || e.code}</p>
+                                                </div>
+
                                             </li>
                                         })
                                         :
@@ -471,8 +509,9 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                                 {
                                     areasSelected.length > 0 ?
                                         areasSelected.map((e, index) => {
+
                                             return <li className="flex items-center text-sm m-1" key={index}>
-                                                {e.name || e.code}
+                                                {e?.code} - {e.name || e.code}
                                             </li>
                                         })
                                         :
@@ -601,6 +640,9 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
 
     }
     // console.log("OEPRATION TYUPE", operationType);
+    // console.log("EQUIPMENTSS", equipmentsSelected);
+    // console.log("REFERENCESSEND", equipmentsSelected.filter((obj) => obj.isNewSelected));
+
 
     const saveData = async () => {
 
@@ -615,7 +657,7 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
             if (tabSelected === 'tags') {
                 let jsonEquipments = {
                     document_id: [idDocument],
-                    entity_id: equipmentsSelected,
+                    entity_id: equipmentsSelected.filter((obj) => obj.isNewSelected),
                     type: 3,
                     user_id: Number(session?.user.id)
                 }
@@ -634,14 +676,16 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
                 }
 
             } else if (tabSelected === 'areas') {
-                let jsonEquipments = {
+                let jsonAreas = {
                     document_id: [idDocument],
-                    entity_id: areasSelected.map((obj) => { return obj.id }),
+                    entity_id: areasSelected.filter((obj) => obj.isNewSelected).map((obj) => { return obj.id }),
                     type: 5,
-                    user_id:  Number(session?.user.id)
+                    user_id: Number(session?.user.id)
                 }
+                console.log("RELACION AREAS", jsonAreas);
+
                 try {
-                    const response = await postObjVsDocs(jsonEquipments)
+                    const response = await postObjVsDocs(jsonAreas)
                     if (response.status === 200) {
                         toast({
                             duration: 3000,
@@ -657,11 +701,11 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
             } else if (tabSelected === 'documents') {
                 // console.log("DOCUMENTS SELECTED", documentsSelected);
                 try {
-                    const finalArray = documentsSelected.map((e) => { return e.id })
+                    const finalArray = documentsSelected.filter((obj) => obj.isNewSelected).map((e) => { return e.id })
                     const jsonToSend = {
                         document_id: idDocument,
                         refer_id: finalArray,
-                        user_id:  Number(session?.user.id),
+                        user_id: Number(session?.user.id),
                     }
                     const response = await postRefDocToDoc(jsonToSend)
                     if (response.status === 200) {
@@ -678,6 +722,9 @@ export default function LinkDocumentDialog({ open, setOpen, setReferenceObject, 
             }
         }
     }
+
+    console.log("areasSelected", areasSelected);
+
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

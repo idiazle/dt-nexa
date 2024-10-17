@@ -14,6 +14,8 @@ const getData = async (): Promise<EntityStructure[]> => {
     return response.data.data as EntityStructure[]
 
   } catch (error) {
+    console.log(error.response);
+    
     throw new Error("error")
   }
 }

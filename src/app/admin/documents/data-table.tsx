@@ -22,7 +22,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import {
   DropdownMenu,
@@ -64,7 +64,23 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
     []
   )
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    id:true,
+    title:true,
+    filename:true,
+    author:false,
+    vendor_status:false,
+    vendor_code:false,
+    vendor_revision:false,
+    vendor_revision_by:false,
+    confidential:false,
+    client_po_contract:false,
+    doc_expiracy:false,
+    days_expired:false,
+    client_code:false,
+    client_revision_alt:false,
+    client_revision_by:false,
+  })
 
 
 
@@ -89,6 +105,11 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       pagination
     },
+    // initialState: {
+    //   columnVisibility: {
+        
+    //   }
+    // }
     // initialState:{
     //   pagination:{
     //     pageIndex:pagination.pageIndex,
@@ -97,9 +118,10 @@ export function DataTable<TData, TValue>({
     // }
   })
 
+
   const [openDialog, setOpenDialog] = useState<boolean>(false)
 
-  console.log(pagination);
+
 
   return (
     <div>
@@ -124,6 +146,7 @@ export function DataTable<TData, TValue>({
                 (column) => column.getCanHide()
               )
               .map((column) => {
+
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
@@ -140,7 +163,6 @@ export function DataTable<TData, TValue>({
         </DropdownMenu>
       </div>
       <h1 className='text-right'>Mostrando {table.getRowCount()} de {pagination.totalDocuments} documentos</h1>
-      <h1>{JSON.stringify(table.getState().pagination)}</h1>
       <div className="rounded-md border">
         <Table wrapperClassName='overflow-clip'>
           <TableHeader className="sticky -top-5 bg-secondary">

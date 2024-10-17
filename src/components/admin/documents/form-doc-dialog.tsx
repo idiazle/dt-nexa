@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { FaFile, FaLink } from 'react-icons/fa6'
 import { Input } from '@/components/ui/input'
 import { ModuleStructure } from '@/lib/utils'
-import { getDocumentById, getOptionsById, postDocument, postObjVsDocs, postRefDocToDoc, postTemFileToDoc, putDocumentById, uploadDocument } from '@/api/admin/documents-api'
+import { getDocumentById, getOptionsById, getVerifyDocExists, postDocument, postObjVsDocs, postRefDocToDoc, postTemFileToDoc, putDocumentById, uploadDocument } from '@/api/admin/documents-api'
 import { Checkbox } from '@/components/ui/checkbox'
 import { CheckCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -327,8 +327,15 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
         documentsReferences: []
     })
 
+    console.log("MY REFERENCE OBJECTT", referenceObject);
+
+
     const handleGeneralSubmit = async () => {
         const isValidForm1 = await form.trigger()
+
+        if (documentFile !== null) {
+            form.setValue('filename', documentFile.name)
+        }
 
         if (id === null) {
             let temp = {}
@@ -337,6 +344,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                 if (checkExpired.vendor && checkExpired.client) {
                     temp = {
                         ...form.getValues(),
+
                         vendor: formVendor.getValues(),
                         client: formClient.getValues()
                     }
@@ -358,6 +366,8 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
             }
 
             try {
+                console.log("MY TEMP");
+
                 const response = await postDocument(temp)
                 if (response.status === 201) {
                     toast({
@@ -366,9 +376,6 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                         title: 'Creación exitosa',
                         description: 'Documento creado correctamente'
                     })
-                    router.refresh()
-                    onRefresh()
-                    location.reload()
                     if (documentFile) {
                         try {
                             let fileData = new FormData()
@@ -419,15 +426,15 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                         }
 
                     }
-
-
                     try {
                         if (referenceObject.equipmentsReferences.length > 0) {
+                            console.log("ESTOY AQUíIIIIIIII", referenceObject.equipmentsReferences);
+
                             const jsonEquipments = {
                                 document_id: [response.data.data.id],
                                 entity_id: referenceObject.equipmentsReferences,
                                 type: 3,
-                                user_id:  Number(session?.user.id)
+                                user_id: Number(session?.user.id)
                             }
                             const resObjVsDoc = await postObjVsDocs(jsonEquipments)
                             if (resObjVsDoc.status !== 200) {
@@ -444,7 +451,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                 document_id: [response.data.data.id],
                                 entity_id: referenceObject.areasReferences.map((obj: any) => { return obj.id }),
                                 type: 5,
-                                user_id:  Number(session?.user.id)
+                                user_id: Number(session?.user.id)
                             }
                             const resObjVsDocArea = await postObjVsDocs(jsonAreas)
                             if (resObjVsDocArea.status !== 200) {
@@ -460,7 +467,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                             const jsonToSend = {
                                 document_id: response.data.data.id,
                                 refer_id: referenceObject.documentsReferences.map((obj: any) => { return obj.id }),
-                                user_id:  Number(session?.user.id),
+                                user_id: Number(session?.user.id),
                             };
                             const resRefToDoc = await postRefDocToDoc(jsonToSend)
                             if (resRefToDoc.status !== 200) {
@@ -479,6 +486,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                     }
                     router.refresh()
                     onRefresh()
+                    location.reload()
                     setDialogOpen(false)
                 }
 
@@ -605,11 +613,33 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
         getTypes()
     }, [form.watch('aux_discipline_id')])
 
-    useEffect(() => {
-        if (documentFile !== null) {
-            form.setValue('filename', documentFile.name)
+
+    const [disableSaveDocExist, setDisableSaveDocExist] = useState<boolean>(false)
+    const getVerifyDocExist = async (filename: string) => {
+        const response = await getVerifyDocExists(filename)
+        console.log("VERIFY EXISTE", response.data);
+
+        if (response.data.data > 0) {
+            setDisableSaveDocExist(true)
+            toast({
+                duration: 5000,
+                variant: 'destructive',
+                title: 'Advertencia',
+                description: 'El Documento existe en la base de datos'
+            })
+        } else {
+            setDisableSaveDocExist(false)
         }
-    }, [documentFile])
+
+
+    }
+
+    const settingFilename = (file: File) => {
+        if (file !== null) {
+            form.setValue('filename', file.name)
+            getVerifyDocExist(file.name)
+        }
+    }
 
     const [openLinkDialog, setOpenLinkDialog] = useState<boolean>(false)
 
@@ -794,7 +824,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                 <h1>{tempFile?.filename}</h1>
                             </div> :
                                 <div className='w-2/3'>
-                                    <Input
+                                    <input
                                         defaultValue={''}
                                         className='hidden'
                                         type='file'
@@ -803,6 +833,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                         onChange={(e: ChangeEvent<HTMLInputElement>) => {
                                             if (e.target.files != null) {
                                                 setDocumentFile(e.target.files[0])
+                                                settingFilename(e.target.files[0])
                                             }
                                         }}
                                     />
@@ -821,6 +852,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                         onDrop={(e) => {
                                             e.preventDefault();
                                             setDocumentFile(e.dataTransfer.files[0]);
+                                            settingFilename(e.dataTransfer.files[0])
                                         }
                                         }
                                         onDragOver={(e) => { e.preventDefault() }}
@@ -1051,14 +1083,14 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                 <FaLink size={20} />
                                 <p>Referenciar documento</p>
                             </Button>
-                            <LinkDocumentDialog operationType='create' setReferenceObject={setReferenceObject} setOpen={setOpenLinkDialog} open={openLinkDialog} idDocument={null} />
+                            <LinkDocumentDialog operationType={id === null ? 'create':'edit'} setReferenceObject={setReferenceObject} setOpen={setOpenLinkDialog} open={openLinkDialog} idDocument={id} />
                         </div>
                         {/* <div className='flex flex-row gap-3 justify-center items-center mt-5'>
                             <Button className='w-32' type="submit">Crear documento</Button>
                             <Button className='w-32' type='button' onClick={() => router.replace('/admin/documents')}>Cancelar</Button>
                         </div> */}
                         <div className='flex flex-row justify-end items-center gap-3 w-full'>
-                            <Button onClick={() => { handleGeneralSubmit() }} className='w-1/5' type="button" variant="secondary" >
+                            <Button disabled={disableSaveDocExist} onClick={() => { handleGeneralSubmit() }} className='w-1/5' type="button" variant="secondary" >
                                 Guardar
                             </Button>
                             <Button onClick={() => { setDialogOpen(false) }} className='w-1/5' type="button" variant="secondary">
