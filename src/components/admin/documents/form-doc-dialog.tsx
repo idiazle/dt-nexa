@@ -273,7 +273,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
         }
     })
     const formSchemaClient = z.object({
-        aux_status_client: z.string(),
+        aux_status_client: z.any(),
         code_client: z.string().min(2, {
             message: 'Code client must be at least 2 characters.'
         }),
@@ -294,7 +294,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
         reValidateMode: 'onChange',
         resolver: zodResolver(formSchemaClient),
         defaultValues: {
-            aux_status_client: '0',
+            aux_status_client: null,
             code_client: '',
             revision_client: '',
             revision_client_alt: '',
@@ -302,6 +302,10 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
             po_contract: ''
         }
     })
+
+    console.log("FORMCLIENTT", formClient.watch());
+    
+
     const form = useForm<z.infer<typeof formSchema>>({
         reValidateMode: 'onChange',
         resolver: zodResolver(formSchema),
