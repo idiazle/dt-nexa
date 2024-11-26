@@ -15,7 +15,7 @@ const getData = async (): Promise<EntityStructure[]> => {
 
   } catch (error) {
     console.log(error.response);
-    
+
     throw new Error("error")
   }
 }
@@ -48,6 +48,7 @@ export default async function UserAside() {
   console.log(dataAreas);
   
 
+
   return (
     <div className='bg-[#001d39] w-full h-full p-7 flex flex-col text-white'>
       {/* <ChangeTheme/> */}
@@ -75,9 +76,9 @@ export default async function UserAside() {
 
       <div className='flex flex-col justify-start items-center w-full overflow-hidden h-1/2'>
         <div className='w-full border-b border-white'>
-          <h4 className='text-sm w-full'>Áreas</h4>
+          <h4 className='text-sm w-full'>Plantas</h4>
         </div>
-        <UserAreaMenu data={dataAreas} />
+        <UserAreaMenu data={dataAreas.filter((obj)=>obj.type===4)} />
 
       </div>
 

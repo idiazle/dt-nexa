@@ -28,3 +28,7 @@ export const getEquipments = async () => {
   export const putEquipment = async (id: number, formValue: any) => {
     return await axiosInstance.put(`${process.env.NEXT_PUBLIC_BACK_URL}/equipment/${id}`, formValue)
   }
+  
+  export const getEquipmentsByEntityId = async(id:number) =>{
+    return await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/equipmentsByEntity/${id}`)
+  }

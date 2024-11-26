@@ -5,7 +5,7 @@ import { columnsDocuments } from './columns'
 import { useRouter } from 'next/navigation'
 import DocumentDialog from '@/components/admin/documents/document-dialog'
 import AlertDeleteDialog from '@/components/general/alert-delete-dialog'
-import { deleteDocument, getDocumentsNoToken, getSearchDocuments } from '@/api/admin/documents-api'
+import { deleteDocument, getDocsByAreaByEq, getDocumentsNoToken, getSearchDocuments } from '@/api/admin/documents-api'
 import { toast } from '@/components/ui/use-toast'
 import { DataTable } from './data-table'
 import ModalViewMedia from '@/components/viewers/modal-viewer'
@@ -18,9 +18,11 @@ interface DocumentTableStructure {
     totalPages: number
     rowsPerPage: number
     totalDocuments: number
+    viewType?: string
+    areaId?:number
 }
 
-export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPage, totalDocuments }: DocumentTableStructure) {
+export default function DocumentsTable({areaId, data, pageNumber, totalPages, rowsPerPage, totalDocuments, viewType }: DocumentTableStructure) {
 
 
 
@@ -54,62 +56,98 @@ export default function DocumentsTable({ data, pageNumber, totalPages, rowsPerPa
 
     const getData = async () => {
         
-        if (page.paginationType === 'normal') {
-            console.log("EJECUTANDO IF");
-            const response = await getDocumentsNoToken(actualCountRowPage === 1 ? 1 : page.pageIndex)
-            if (response.status === 200) {
-                setIsLoading(false)
-                setMyData(response.data.data)
-                // console.log(response.data);
-                
-                setActualCountRowPage(response.data.quantity_in_page)
-                if (actualCountRowPage === 1) {
+        if(viewType === 'user'){
+            console.log("ESTOY AQUI", areaId)
+            if(areaId !== null && areaId !== undefined){
+                const response = await getDocsByAreaByEq(areaId)
+                if (response.status === 200) {
+                    setIsLoading(false)
+                    setMyData(response.data.data)
+                    // console.log(response.data);
+                    
+                    setActualCountRowPage(response.data.quantity_in_page)
+                    if (actualCountRowPage === 1) {
+                        setPage({
+                            ...page,
+                            pageSize: response.data.total_pages,
+                            totalDocuments:response.data.count,
+                            pageIndex: 1
+                        })
+                    } else {
+                        
+                    }
                     setPage({
                         ...page,
                         pageSize: response.data.total_pages,
                         totalDocuments:response.data.count,
-                        pageIndex: 1
                     })
-                } else {
+                    // console.log(response.data.total_pages);
                     
+                    
+                } else {
+                    setIsLoading(true)
                 }
-                setPage({
-                    ...page,
-                    pageSize: response.data.total_pages,
-                    totalDocuments:response.data.count,
-                })
-                // console.log(response.data.total_pages);
                 
-                
-            } else {
-                setIsLoading(true)
             }
-        } else {
-            console.log("EJECUTANDO ELSE");
-            const query = await getSearchDocuments(actualCountRowPage === 1 ? 1 : page.pageIndex, page.searchDocuments)
-            if (query.status === 200) {
-                setIsLoading(false)
-                setMyData(query.data.results)
-                setActualCountRowPage(query.data.quantity_in_page)
-                if (actualCountRowPage === 1) {
+
+        }else{
+            if (page.paginationType === 'normal') {
+                console.log("EJECUTANDO IF");
+                const response = await getDocumentsNoToken(actualCountRowPage === 1 ? 1 : page.pageIndex)
+                if (response.status === 200) {
+                    setIsLoading(false)
+                    setMyData(response.data.data)
+                    // console.log(response.data);
+                    
+                    setActualCountRowPage(response.data.quantity_in_page)
+                    if (actualCountRowPage === 1) {
+                        setPage({
+                            ...page,
+                            pageSize: response.data.total_pages,
+                            totalDocuments:response.data.count,
+                            pageIndex: 1
+                        })
+                    } else {
+                        
+                    }
+                    setPage({
+                        ...page,
+                        pageSize: response.data.total_pages,
+                        totalDocuments:response.data.count,
+                    })
+                    // console.log(response.data.total_pages);
+                    
+                    
+                } else {
+                    setIsLoading(true)
+                }
+            } else {
+                console.log("EJECUTANDO ELSE");
+                const query = await getSearchDocuments(actualCountRowPage === 1 ? 1 : page.pageIndex, page.searchDocuments)
+                if (query.status === 200) {
+                    setIsLoading(false)
+                    setMyData(query.data.results)
+                    setActualCountRowPage(query.data.quantity_in_page)
+                    if (actualCountRowPage === 1) {
+                        setPage({
+                            ...page,
+                            pageSize: query.data.total_pages,
+                            totalDocuments:query.data.count,
+                            pageIndex: 1
+                        })
+                    } else {
+    
+                    }
                     setPage({
                         ...page,
                         pageSize: query.data.total_pages,
-                        totalDocuments:query.data.count,
-                        pageIndex: 1
+                        totalDocuments:query.data.count
                     })
                 } else {
-
+                    setIsLoading(true)
                 }
-                setPage({
-                    ...page,
-                    pageSize: query.data.total_pages,
-                    totalDocuments:query.data.count
-                })
-            } else {
-                setIsLoading(true)
+    
             }
-
         }
     }
 

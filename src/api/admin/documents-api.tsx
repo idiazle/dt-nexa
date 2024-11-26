@@ -161,3 +161,8 @@ export const getVerifyDocExists = async (filename: any) => {
   return await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/unique-doc?filename=${filename}`)
 
 }
+
+//Esto obtiene los documentos relacionados al equipo según el área al que pertenece, es decir, del equipo, saco su parent_id y lo hago desde ahí
+export const getDocsByAreaByEq = async (id: number) => {
+  return await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/docsByAreaByEq/${id}`)
+}

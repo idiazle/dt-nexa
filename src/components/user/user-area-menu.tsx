@@ -22,7 +22,7 @@ export default function UserAreaMenu({ data }: UserAreaMenuStructure) {
 
 
     return (
-        <div className='flex flex-row justify-center items-center gap-3 flex-wrap overflow-auto mt-4 w-full'>
+        <div className='flex flex-row justify-center items-center gap-1 flex-wrap overflow-auto mt-4 w-full'>
             {
                 data.map((obj: any, index: number) => {
                     return (

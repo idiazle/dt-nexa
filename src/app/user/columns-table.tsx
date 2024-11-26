@@ -1,5 +1,6 @@
 "use client"
 
+import { Button } from "@/components/ui/button";
 import ModalViewMedia from "@/components/viewers/modal-viewer";
 import { ColumnDef } from "@tanstack/react-table"
 import { useState } from "react";
@@ -14,8 +15,20 @@ export type Payment = {
     status: "pending" | "processing" | "success" | "failed"
     email: string
 }
-
-export const columns: ColumnDef<Payment>[] = [
+const downloadFile = (file: any) => {
+    fetch(`${file.file_url}`).then(response => {
+        response.blob().then(blob => {
+            const fileURL = window.URL.createObjectURL(blob)
+            const linToDownload = document.createElement('a')
+            const fileExtension = file.file_url.split('.').pop()
+            // Establecer el nombre del archivo con la extensión correcta
+            linToDownload.href = fileURL
+            linToDownload.download = `${file.title}.${fileExtension}`
+            linToDownload.click()
+        })
+    })
+}
+export const columns: ColumnDef<any>[] = [
     {
         accessorKey: 'id',
         header: () => <div className="text-left">Nombres</div>,
@@ -36,18 +49,19 @@ export const columns: ColumnDef<Payment>[] = [
             return (
                 <>
                     <button onClick={() => {
+                        console.log(row.original.document)
                         setOpenMedia(true), setInformation({
                             data: {
-                                file_url: 'https://almdigital1.blob.core.windows.net/tintaya/files/3/1.1. Descripción General de las Operaciones.pdf.pdf',
-                                title: 'Manual de uso Digital Portal - TINTAYA',
-                                name: 'Manual de uso (Video) Digital Portal - TINTAYA',
+                                file_url: row.original?.document?.file_url,
+                                title: row.original?.document?.title,
+                                name: row.original?.document?.filename,
                                 type: 'document'
                             },
                         })
                     }} className="flex flex-row justify-start items-center h-full w-full gap-0.5">
                         
                         <FaRegFilePdf size={18} color="red" />
-                        <p className="w-full text-left">{row.getValue('id')}</p>
+                        <p className="w-full text-left">{row.original?.document?.title}</p>
                     </button>
                     {
                         openMedia ?
@@ -58,20 +72,15 @@ export const columns: ColumnDef<Payment>[] = [
         },
     },
     {
-        accessorKey: "status",
-        header: "Código"
-    },
-    {
-        accessorKey: "email",
-        header: "Email",
-    },
-    {
         accessorKey: "amount",
         header: () => <div>Descargar</div>,
         cell: ({ row }) => {
             // const image = row.getValue('tag') || '/img/logo_main_dp.png' as any
             return (
-                <button className="flex flex-row justify-center items-center h-full w-full">
+                <button className="flex flex-row justify-center items-center h-full w-full" onClick={()=>{
+                    downloadFile(row.original.document)
+                    
+                }}>
                     <FaDownload size={18} />
                 </button>
             )
