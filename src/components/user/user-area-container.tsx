@@ -23,6 +23,8 @@ export default function UserAreaContainer() {
     const { option } = useContext(OptionAsideContext)
     const [areaInfo, setAreaInfo] = useState<EntityStructure | null>(null)
 
+
+
     const getAreaInfo = async () => {
         setAreaInfo(null)
         try {
@@ -72,17 +74,45 @@ export default function UserAreaContainer() {
             id: 4,
             name: 'Planos Interactivos P&ID',
             isSelected: false,
-            disabled: false
+            disabled: true
         },
         {
             id: 5,
             name: 'Planos de Proceso',
             isSelected: false,
-            disabled: false
+            disabled: true
         },
+    ]
+    const initialOptionsGeneralArray = [
+        {
+            id: 1,
+            name: 'Planos P&ID',
+            isSelected: false,
+            disabled: true
+        },
+        {
+            id: 2,
+            name: 'Procedimientos',
+            isSelected: false,
+            disabled: true
+        },
+        {
+            id: 3,
+            name: 'Criterios y filosofías',
+            isSelected: false,
+            disabled: true
+        },
+        {
+            id: 4,
+            name: 'Información de ingeniería',
+            isSelected: false,
+            disabled: true
+        }
     ]
 
     const [optionsArray, setOptionsArray] = useState<any[]>(initialOptionsArray)
+
+    const [optionsGeneralArray, setOptionsGeneralArray] = useState<any[]>(initialOptionsGeneralArray)
 
     const [showMenuone, setShowMenuone] = useState<boolean>(false)
 
@@ -107,20 +137,39 @@ export default function UserAreaContainer() {
         })
     }
 
-    const handleClickOption = (id: number) => {
-        setOptionsArray((prevstate: any[]) => prevstate.map((obj) => {
-            if (obj.id === id) {
-                return {
-                    ...obj,
-                    isSelected: !obj.isSelected
+    const handleClickOption = (id: number, type: string) => {
+
+        if (type === 'subareas') {
+            setOptionsArray((prevstate: any[]) => prevstate.map((obj) => {
+                if (obj.id === id) {
+                    return {
+                        ...obj,
+                        isSelected: !obj.isSelected
+                    }
+                } else {
+                    return {
+                        ...obj,
+                        isSelected: false
+                    }
                 }
-            } else {
-                return {
-                    ...obj,
-                    isSelected: false
+            }))
+        } else {
+            setOptionsGeneralArray((prevstate: any[]) => prevstate.map((obj) => {
+                if (obj.id === id) {
+                    return {
+                        ...obj,
+                        isSelected: !obj.isSelected
+                    }
+                } else {
+                    return {
+                        ...obj,
+                        isSelected: false
+                    }
                 }
-            }
-        }))
+            }))
+
+        }
+
     }
     const data: any[] = [
         {
@@ -376,8 +425,6 @@ export default function UserAreaContainer() {
     const optionSelected = optionsArray.find((obj) => obj.isSelected)
     const areasssSelected = areaInfo?.children.find((obj: any) => obj.isSelected)
 
-    console.log("AREA SELECTED ", areasssSelected);
-    console.log("OPTION SELECTED ", optionSelected);
 
     const [areaDocuments, setAreaDocuments] = useState<any[] | null>(null)
     const [equipmentsByArea, setEquipmentsByArea] = useState<any[] | null>(null)
@@ -482,7 +529,40 @@ export default function UserAreaContainer() {
 
     const equipmentSelected = equipmentsByArea?.find((obj) => obj.isSelected)
 
-    console.log("EQUIPMENT SELECTED", equipmentSelected)
+    const [docsByEquipment, setDocsByEquipment] = useState<{
+        dataSheet: any
+        detailPlans: any
+        electricPlans: any
+        others: any
+        lists: any
+    } | null>(null)
+
+    const getDocsByEquipmentId = async () => {
+        try {
+            const response = await getDocumentsByArea(equipmentSelected.equipment_id, '3')
+            console.log(response.data)
+
+            setDocsByEquipment({
+                ...docsByEquipment,
+                dataSheet: response.data.data.filter((obj) => obj.document_id.aux_module_id.id === 102 && obj.document_id.aux_discipline_id.id === 205 && obj.document_id.aux_type_id.id === 334),
+                detailPlans: response.data.data.filter((obj) => obj.document_id.aux_module_id.id === 102 && obj.document_id.aux_discipline_id.id === 205 && obj.document_id.aux_type_id.id === 339),
+                electricPlans: response.data.data.filter((obj) => obj.document_id.aux_module_id.id === 102 && obj.document_id.aux_discipline_id.id === 203 && obj.document_id.aux_type_id.id === 324),
+                others: [],
+                lists: response.data.data.filter((obj) => obj.document_id.aux_module_id.id === 102 && obj.document_id.aux_discipline_id.id === 205 && obj.document_id.aux_type_id.id === 335),
+            })
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(() => {
+        if (equipmentSelected !== undefined) {
+            getDocsByEquipmentId()
+        }
+    }, [equipmentSelected])
+
+
 
 
     const renderOptions = () => {
@@ -491,7 +571,22 @@ export default function UserAreaContainer() {
                 {optionsArray.map((obj) => {
 
                     return (
-                        <Button disabled={obj.disabled} onClick={() => handleClickOption(obj.id)} className={`flex flex-row justify-center items-center gap-2 w-full hover:bg-slate-300 p-1 border-slate-200 border ${obj.isSelected ? 'bg-slate-300' : ''}`} key={obj.id}>
+                        <Button disabled={obj.disabled} onClick={() => handleClickOption(obj.id, 'subareas')} className={`flex flex-row justify-center items-center gap-2 w-full hover:bg-slate-300 p-1 border-slate-200 border ${obj.isSelected ? 'bg-slate-300' : ''}`} key={obj.id}>
+                            <p className='text-sm'>{obj.name}</p>
+                        </Button>
+                    )
+                })}
+            </div>
+        )
+    }
+
+    const renderOptionsGeneralInfo = () => {
+        return (
+            <div className='flex flex-row justify-between items-center w-full bg-[#f8f8fd] rounded-b'>
+                {optionsGeneralArray.map((obj) => {
+
+                    return (
+                        <Button disabled={obj.disabled} onClick={() => handleClickOption(obj.id, 'generalinfo')} className={`flex flex-row justify-center items-center gap-2 w-full hover:bg-slate-300 p-1 border-slate-200 border ${obj.isSelected ? 'bg-slate-300' : ''}`} key={obj.id}>
                             <p className='text-sm'>{obj.name}</p>
                         </Button>
                     )
@@ -510,31 +605,81 @@ export default function UserAreaContainer() {
                     <AccordionItem value="item-1">
                         <AccordionTrigger className='h-10'>Hoja de Datos</AccordionTrigger>
                         <AccordionContent>
-                            Docs
+                            <div className='w-full h-full overflow-auto'>
+                                {
+                                    equipmentSelected !== null ?
+                                        docsByEquipment?.dataSheet.length > 0 ?
+                                            <div className='w-full h-full overflow-auto'>
+                                                <DataTable columns={columns} data={docsByEquipment?.dataSheet} />
+                                            </div>
+                                            : <p>No posee documentos</p>
+                                        : null
+                                }
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-2">
                         <AccordionTrigger className='h-10'>Planos de detalle</AccordionTrigger>
                         <AccordionContent>
-                            Docs2
+                            <div className='w-full h-full overflow-auto'>
+                                {
+                                    equipmentSelected !== null ?
+                                        docsByEquipment?.detailPlans.length > 0 ?
+                                            <div className='w-full h-full overflow-auto'>
+                                                <DataTable columns={columns} data={docsByEquipment?.detailPlans} />
+                                            </div>
+                                            : <p>No posee documentos</p>
+                                        : null
+                                }
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-3">
                         <AccordionTrigger className='h-10'>Planos eléctricos</AccordionTrigger>
                         <AccordionContent>
-                            Docs3
+                            <div className='w-full h-full overflow-auto'>
+                                {
+                                    equipmentSelected !== null ?
+                                        docsByEquipment?.electricPlans.length > 0 ?
+                                            <div className='w-full h-full overflow-auto'>
+                                                <DataTable columns={columns} data={docsByEquipment?.electricPlans} />
+                                            </div>
+                                            : <p>No posee documentos</p>
+                                        : null
+                                }
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-4">
                         <AccordionTrigger className='h-10'>Otros</AccordionTrigger>
                         <AccordionContent>
-                            Docs4
+                            <div className='w-full h-full overflow-auto'>
+                                {
+                                    equipmentSelected !== null ?
+                                        docsByEquipment?.others.length > 0 ?
+                                            <div className='w-full h-full overflow-auto'>
+                                                <DataTable columns={columns} data={docsByEquipment?.others} />
+                                            </div>
+                                            : <p>No posee documentos</p>
+                                        : null
+                                }
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                     <AccordionItem value="item-5">
                         <AccordionTrigger className='h-10'>Listados</AccordionTrigger>
                         <AccordionContent>
-                            Docs5
+                            <div className='w-full h-full overflow-auto'>
+                                {
+                                    equipmentSelected !== null ?
+                                        docsByEquipment?.lists.length > 0 ?
+                                            <div className='w-full h-full overflow-auto'>
+                                                <DataTable columns={columns} data={docsByEquipment?.lists} />
+                                            </div>
+                                            : <p>No posee documentos</p>
+                                        : null
+                                }
+                            </div>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
@@ -543,34 +688,51 @@ export default function UserAreaContainer() {
     }
 
 
+    console.log("Option selected", optionSelected);
+    console.log("Equipment selected", equipmentSelected);
+    console.log("DOCUMENTS BY EQUIPMENT OBJECT", docsByEquipment);
+
 
 
 
     return (
         <div className='flex flex-col w-full h-full overflow-hidden'>
-            <div className='border-slate-200 border rounded flex flex-col h-full overflow-auto'>
-                <div className='bg-[#1bb398] p-1 rounded-t'>
-                    <h1 className='text-md text-white ml-2'>Sub Áreas</h1>
-                </div>
-                <div className='flex flex-row justify-between items-center w-full bg-[#f8f8fd] rounded-b'>
-                    {areaInfo === null ? <p>Cargando...</p> : areaInfo?.children.map((obj: any) => {
-                        return (
-                            <button onClick={() => { handleClickArea(obj.id) }} className={`flex flex-row justify-center items-center gap-2 w-full hover:bg-slate-300 p-1 border-slate-200 border ${obj.isSelected ? 'bg-slate-300' : ''}`} key={obj.id}>
-                                <FaDiceD6 />
-                                <p className='text-sm'>{obj.name}</p>
-                            </button>
-                        )
-                    })}
-                </div>
-                {areasssSelected !== undefined ? renderOptions() : null}
-                <div className='h-full overflow-hidden'>
-                    {areasssSelected !== undefined && optionSelected !== undefined ? renderDocuments(optionSelected.id) : null}
-                </div>
-                {
-                    equipmentSelected !== undefined ? renderDocsByEqSelected() : null
-                }
+            {
+                option === null ? <p>Debe seleccionar una planta</p> :
+                    <div className='h-full w-full overflow-auto my-9'>
+                        <div className='border-slate-200 border rounded flex flex-col overflow-hidden'>
+                            <div className='bg-[#1bb398] p-1 rounded-t'>
+                                <h1 className='text-md text-white ml-2'>Sub Áreas</h1>
+                            </div>
+                            <div className='flex flex-row justify-between items-center w-full bg-[#f8f8fd] rounded-b'>
+                                {areaInfo === null ? <p>Cargando...</p> : areaInfo?.children.map((obj: any) => {
+                                    return (
+                                        <button onClick={() => { handleClickArea(obj.id) }} className={`flex flex-row justify-center items-center gap-2 w-full hover:bg-slate-300 p-1 border-slate-200 border ${obj.isSelected ? 'bg-slate-300' : ''}`} key={obj.id}>
+                                            <FaDiceD6 />
+                                            <p className='text-sm'>{obj.name}</p>
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                            {areasssSelected !== undefined ? renderOptions() : null}
+                            <div className='h-full overflow-hidden'>
+                                {areasssSelected !== undefined && optionSelected !== undefined ? renderDocuments(optionSelected.id) : null}
+                            </div>
+                            {
+                                equipmentSelected !== undefined && optionSelected?.id === 3 ? renderDocsByEqSelected() : null
+                            }
+                        </div>
+                        <div className='border-slate-200 border rounded flex flex-col overflow-hidden mt-5'>
+                            <div className='bg-[#1bb398] p-1 rounded-t'>
+                                <h1 className='text-md text-white ml-2'>Información general</h1>
+                            </div>
+                            {renderOptionsGeneralInfo()}
+                        </div>
+                    </div>
 
-            </div>
+            }
+
+
 
         </div>
     )

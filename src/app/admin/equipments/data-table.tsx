@@ -58,6 +58,8 @@ export function DataTable<TData, TValue> ({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
+  const [globalFilter, setGlobalFilter] = useState<any>('');
+
   const table = useReactTable({
     data,
     columns,
@@ -69,24 +71,29 @@ export function DataTable<TData, TValue> ({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onGlobalFilterChange: setGlobalFilter,
     autoResetPageIndex: false,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection
+      rowSelection,
+      globalFilter
     }
   })
   const [bulkDialogEdit, setBulkDialogEdit] = useState<boolean>(false)
   const [selectToolValue, setSelectToolValue] = useState<string>('')
+  
   return (
     <div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filtrar nombre..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          // value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={globalFilter as string ?? ''}
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            // table.getColumn('name')?.setFilterValue(event.target.value)
+            table.setGlobalFilter(event.target.value)
           }
           className="max-w-sm"
         />

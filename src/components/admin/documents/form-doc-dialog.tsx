@@ -71,8 +71,19 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
     const fillDropdowns = async () => {
         try {
             const resModules = await getOptionsById({ ids: '1' })
+            
+            const resDisciplines = await getOptionsById({ ids: '2' })
+            
+
+            const resTypes = await getOptionsById({ ids: '3' })
             if (resModules.status === 200) {
                 setModules(resModules.data.data)
+            }
+            if (resDisciplines.status === 200) {
+                setDisciplines(resDisciplines.data.data)
+            }
+            if (resTypes.status === 200) {
+                setTypes(resTypes.data.data)
             }
         } catch (error) {
             throw new Error('error obteniendo resm')
@@ -187,14 +198,14 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                 })
             }
 
-            const disciplines = await getOptionsById({ ids: String(data.aux_module_id?.id) })
-            if (disciplines.status === 200) {
-                setDisciplines(disciplines.data.data)
-            }
-            const typess = await getOptionsById({ ids: String(data.aux_discipline_id?.id) })
-            if (typess.status === 200) {
-                setTypes(typess.data.data)
-            }
+            // const disciplines = await getOptionsById({ ids: String(data.aux_module_id?.id) })
+            // if (disciplines.status === 200) {
+            //     setDisciplines(disciplines.data.data)
+            // }
+            // const typess = await getOptionsById({ ids: String(data.aux_discipline_id?.id) })
+            // if (typess.status === 200) {
+            //     setTypes(typess.data.data)
+            // }
             form.setValue('title', data.title)
             form.setValue('filename', data.filename)
             form.setValue('author', data.author)
@@ -588,34 +599,34 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
     const [uploadDocLoading, setUploadDocLoading] = useState<number | null>(null)
 
 
-    const getDisciplines = async () => {
-        try {
-            if (form.getValues('aux_module_id') !== null && form.getValues('aux_module_id') !== 0) {
-                const resDisciplines = await getOptionsById({ ids: String(form.getValues('aux_module_id')) })
-                setDisciplines(resDisciplines.data.data)
-            }
-        } catch (error) {
-            throw new Error('Error in getDisciplines')
-        }
-    }
-    useEffect(() => {
-        getDisciplines()
-    }, [form.watch('aux_module_id')])
+    // const getDisciplines = async () => {
+    //     try {
+    //         if (form.getValues('aux_module_id') !== null && form.getValues('aux_module_id') !== 0) {
+    //             const resDisciplines = await getOptionsById({ ids: String(form.getValues('aux_module_id')) })
+    //             setDisciplines(resDisciplines.data.data)
+    //         }
+    //     } catch (error) {
+    //         throw new Error('Error in getDisciplines')
+    //     }
+    // }
+    // useEffect(() => {
+    //     getDisciplines()
+    // }, [form.watch('aux_module_id')])
 
-    const getTypes = async () => {
-        try {
-            if (form.getValues('aux_discipline_id') !== null && form.getValues('aux_discipline_id') !== 0) {
-                const resTypes = await getOptionsById({ ids: String(form.getValues('aux_discipline_id')) })
-                setTypes(resTypes.data.data)
-            }
-        } catch (error) {
-            throw new Error('Error in getTypes')
-        }
-    }
+    // const getTypes = async () => {
+    //     try {
+    //         if (form.getValues('aux_discipline_id') !== null && form.getValues('aux_discipline_id') !== 0) {
+    //             const resTypes = await getOptionsById({ ids: String(form.getValues('aux_discipline_id')) })
+    //             setTypes(resTypes.data.data)
+    //         }
+    //     } catch (error) {
+    //         throw new Error('Error in getTypes')
+    //     }
+    // }
 
-    useEffect(() => {
-        getTypes()
-    }, [form.watch('aux_discipline_id')])
+    // useEffect(() => {
+    //     getTypes()
+    // }, [form.watch('aux_discipline_id')])
 
 
     const [disableSaveDocExist, setDisableSaveDocExist] = useState<boolean>(false)

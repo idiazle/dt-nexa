@@ -38,7 +38,7 @@ export function DataTable<TData, TValue>({
     columns,
     data,
 }: DataTableProps<TData, TValue>) {
-    
+
 
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
@@ -67,8 +67,8 @@ export function DataTable<TData, TValue>({
     })
     const [selectToolValue, setSelectToolValue] = useState<string>('')
 
-    const {option} = useContext(OptionAsideContext)
-    
+    const { option } = useContext(OptionAsideContext)
+
 
     return (
 

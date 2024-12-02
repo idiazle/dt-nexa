@@ -49,19 +49,19 @@ export const columns: ColumnDef<any>[] = [
             return (
                 <>
                     <button onClick={() => {
-                        console.log(row.original.document)
+                        console.log(row.original)
                         setOpenMedia(true), setInformation({
                             data: {
-                                file_url: row.original?.document?.file_url,
-                                title: row.original?.document?.title,
-                                name: row.original?.document?.filename,
+                                file_url: row.original?.document?.file_url || row.original?.document_id?.file_url,
+                                title: row.original?.document?.title || row.original?.document_id?.title,
+                                name: row.original?.document?.filename || row.original?.document_id?.filename,
                                 type: 'document'
                             },
                         })
                     }} className="flex flex-row justify-start items-center h-full w-full gap-0.5">
-                        
+
                         <FaRegFilePdf size={18} color="red" />
-                        <p className="w-full text-left">{row.original?.document?.title}</p>
+                        <p className="w-full text-left">{row.original?.document?.title || row.original?.document_id?.title}</p>
                     </button>
                     {
                         openMedia ?
@@ -72,14 +72,36 @@ export const columns: ColumnDef<any>[] = [
         },
     },
     {
-        accessorKey: "amount",
+        accessorKey: 'revision',
+        header: () => <div className="text-center">Revisión</div>,
+        cell: ({ row }) => {
+            return (
+                <div>
+                    <p>{row.original?.document?.client?.revision_client || row.original?.document_id?.client?.revision_client}</p>
+                </div>
+            )
+        }
+    },
+    {
+        accessorKey: 'code',
+        header: () => <div className="text-center">Código|Nombre de archivo?</div>,
+        cell: ({ row }) => {
+            return (
+                <div>
+                    <p>{row.original?.document?.filename || row.original?.document_id?.filename}</p>
+                </div>
+            )
+        }
+    },
+    {
+        accessorKey: "actions",
         header: () => <div>Descargar</div>,
         cell: ({ row }) => {
             // const image = row.getValue('tag') || '/img/logo_main_dp.png' as any
             return (
-                <button className="flex flex-row justify-center items-center h-full w-full" onClick={()=>{
+                <button className="flex flex-row justify-center items-center h-full w-full" onClick={() => {
                     downloadFile(row.original.document)
-                    
+
                 }}>
                     <FaDownload size={18} />
                 </button>

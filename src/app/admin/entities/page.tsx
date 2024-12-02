@@ -35,13 +35,27 @@ export default async function Entities() {
 
   const data = await getData(session?.access_token)
 
+  const plants = data.filter((obj: EntityStructure) => obj.type === 4)
+
+  const areas = data.filter((obj: EntityStructure) => obj.type === 5)
+
 
 
   return (
-    <div className='h-full w-full'>
+    <div className='h-full w-full overflow-hidden'>
       <CreateEntityBtn />
       {/* <DataTable columns={columns} data={data} /> */}
-      <EntitiesTable data={data} />
+      <div className='flex gap-10 flex-row justify-between items-start mt-5 border-t pt-5 h-full overflow-auto'>
+        <div className='w-full'>
+          <h1 className='font-semibold text-2xl'>Plantas</h1>
+          <EntitiesTable data={plants} />
+        </div>
+        <div className='h-full border-l-2'></div>
+        <div className='w-full'>
+          <h1 className='font-semibold text-2xl'>Áreas</h1>
+          <EntitiesTable data={areas} />
+        </div>
+      </div>
     </div>
   )
 }
