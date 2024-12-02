@@ -5,23 +5,46 @@ import UserAreaMenu from './user-area-menu'
 import { ChangeTheme } from '../change-theme'
 import { EntityStructure } from '@/lib/utils'
 import { getEntities } from '@/api/admin/entities-api'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/authOptions'
 
 
-const getData = async (): Promise<EntityStructure[]> => {
-  try {
-    const response = await getEntities()
-    console.log(response.data.data);
-    return response.data.data as EntityStructure[]
+// const getData = async (): Promise<EntityStructure[]> => {
+//   try {
+//     const response = await getEntities()
+//     return response.data.data as EntityStructure[]
 
-  } catch (error) {
-    console.log(error.response);
+//   } catch (error: any) {
+//     console.log(error.response);
 
-    throw new Error("error")
-  }
+//     throw new Error("error")
+//   }
+// }
+
+const getData = async (token: string): Promise<EntityStructure[]> => {
+  // const response = await getEntities()
+  const rpta = await fetch(`${process.env.NEXT_PUBLIC_BACK_URL}/entity`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      cache: 'no-store'
+    })
+  const response = await rpta.json()
+
+  return response.data
 }
 
-export default async function UserAside() {
 
+export default async function UserAside() {
+  const session = await getServerSession(authOptions)
+
+  const dataAreas = await getData(String(session?.access_token))
+
+  console.log("MY DAATA ALL", dataAreas);
+  
+
+  
   const optionArray = [
     {
       id: 1,
@@ -43,10 +66,10 @@ export default async function UserAside() {
     }
   ]
 
-  const dataAreas = await getData()
+  // const dataAreas = await getData()
 
-  console.log(dataAreas);
-  
+  // console.log(dataAreas);
+
 
 
   return (
@@ -78,7 +101,7 @@ export default async function UserAside() {
         <div className='w-full border-b border-white'>
           <h4 className='text-sm w-full'>Plantas</h4>
         </div>
-        <UserAreaMenu data={dataAreas.filter((obj)=>obj.type===4)} />
+        <UserAreaMenu data={dataAreas.filter((obj) => obj.type === 4)} />
 
       </div>
 

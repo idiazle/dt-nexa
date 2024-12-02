@@ -1,6 +1,6 @@
 import { getEntityById } from '@/api/admin/entities-api'
 import { OptionAsideContext } from '@/context/option-aside-context'
-import { EntityStructure } from '@/lib/utils'
+import { EntityStructure, EquipmentStructure } from '@/lib/utils'
 import React, { useContext, useEffect, useState } from 'react'
 import { Button } from '../ui/button'
 import { FaDiceD6 } from 'react-icons/fa6'
@@ -426,8 +426,8 @@ export default function UserAreaContainer() {
     const areasssSelected = areaInfo?.children.find((obj: any) => obj.isSelected)
 
 
-    const [areaDocuments, setAreaDocuments] = useState<any[] | null>(null)
-    const [equipmentsByArea, setEquipmentsByArea] = useState<any[] | null>(null)
+    const [areaDocuments, setAreaDocuments] = useState<any[] | null | any>(null)
+    const [equipmentsByArea, setEquipmentsByArea] = useState<any[] | null | any>(null)
 
     const getInfo = async () => {
         if (areasssSelected) {
@@ -492,7 +492,7 @@ export default function UserAreaContainer() {
                     <div className='h-full w-full flex justify-center items-center'>
                         <Carousel className="w-[94%]">
                             <CarouselContent className="-ml-1 w-full">
-                                {equipmentsByArea?.map((obj, index) => (
+                                {equipmentsByArea?.map((obj: any, index: number) => (
                                     <CarouselItem onClick={() => handleSelectedEquipment(obj.equipment_id)} key={index} className={`transition-all duration-300 pl-1 md:basis-1/2 lg:basis-[230px] border-none hover:bg-slate-300 cursor-pointer ${obj.isSelected ? 'bg-slate-300' : ''}`}>
                                         <div className="p-1 flex flex-col justify-center items-center border-r">
                                             <span className="text-md text-center">{obj.tag}</span>
@@ -527,7 +527,7 @@ export default function UserAreaContainer() {
     }
 
 
-    const equipmentSelected = equipmentsByArea?.find((obj) => obj.isSelected)
+    const equipmentSelected = equipmentsByArea?.find((obj: any) => obj.isSelected)
 
     const [docsByEquipment, setDocsByEquipment] = useState<{
         dataSheet: any
