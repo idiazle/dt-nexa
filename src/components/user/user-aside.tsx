@@ -40,8 +40,6 @@ export default async function UserAside() {
   const session = await getServerSession(authOptions)
 
   const dataAreas = await getData(String(session?.access_token))
-
-  console.log("MY DAATA ALL", dataAreas);
   
 
   

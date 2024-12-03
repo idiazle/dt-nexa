@@ -40,6 +40,7 @@ import {
 import { DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import SearchDocumentDialog from '@/components/admin/documents/search-document-dialog'
+import SearchDocumentBlock from '@/components/admin/documents/search-document-block'
 
 interface DataTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -65,21 +66,21 @@ export function DataTable<TData, TValue>({
     []
   )
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    id:true,
-    title:true,
-    filename:true,
-    author:false,
-    vendor_status:false,
-    vendor_code:false,
-    vendor_revision:false,
-    vendor_revision_by:false,
-    confidential:false,
-    client_po_contract:false,
-    doc_expiracy:false,
-    days_expired:false,
-    client_code:false,
-    client_revision_alt:false,
-    client_revision_by:false,
+    id: true,
+    title: true,
+    filename: true,
+    author: false,
+    vendor_status: false,
+    vendor_code: false,
+    vendor_revision: false,
+    vendor_revision_by: false,
+    confidential: false,
+    client_po_contract: false,
+    doc_expiracy: false,
+    days_expired: false,
+    client_code: false,
+    client_revision_alt: false,
+    client_revision_by: false,
   })
 
 
@@ -107,7 +108,7 @@ export function DataTable<TData, TValue>({
     },
     // initialState: {
     //   columnVisibility: {
-        
+
     //   }
     // }
     // initialState:{
@@ -125,14 +126,22 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <Button variant={'outline'} onClick={() => setOpenDialog(true)}>
-          Buscar Documento
-        </Button>
+      <div className="flex flex-col  items-center py-4">
+        <div className='w-full flex justify-start items-start'>
+          <Button variant={'outline'} onClick={() => setOpenDialog(!openDialog)}>
+            Buscar Documento
+          </Button>
+        </div>
         {
+          <div className={`transition-all duration-500 ${openDialog ? 'hidden' : ''} overflow-hidden my-5`}>
+            <SearchDocumentBlock setShow={setOpenDialog} setMyData={setMyData} setPagination={setPagination} />
+          </div>
+        }
+
+        {/* {
           openDialog ?
             <SearchDocumentDialog setPagination={setPagination} openDialog={openDialog} setOpenDialog={setOpenDialog} setMyData={setMyData} /> : null
-        }
+        } */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
