@@ -128,12 +128,16 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex flex-col  items-center py-4">
         <div className='w-full flex justify-start items-start'>
-          <Button variant={'outline'} onClick={() => setOpenDialog(!openDialog)}>
-            Buscar Documento
-          </Button>
+          {
+            !openDialog ?
+              <Button variant={'outline'} onClick={() => setOpenDialog(!openDialog)}>
+                Buscar Documento
+              </Button>
+              : null
+          }
         </div>
         {
-          <div className={`transition-all duration-500 ${openDialog ? 'hidden' : ''} overflow-hidden my-5`}>
+          <div className={`transition-all duration-500 ${!openDialog ? 'hidden' : ''} overflow-hidden my-5`}>
             <SearchDocumentBlock setShow={setOpenDialog} setMyData={setMyData} setPagination={setPagination} />
           </div>
         }
