@@ -577,7 +577,7 @@ export default function SearchDocumentBlock({ setPagination, setMyData, setShow 
                                 })
                             }}>
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="El documento es confidencial" />
+                                    <SelectValue placeholder="Seleccione alguna opción" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
