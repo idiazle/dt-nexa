@@ -113,7 +113,7 @@ export default function SearchDocumentBlock({ setPagination, setMyData, setShow 
 
         try {
             const response = await getEntities()
-            const temResEnt = [...response.data.data, {
+            const temResEnt = [...response.data.data,{
                 id: 0,
                 image: null,
                 description: null,
@@ -376,8 +376,122 @@ export default function SearchDocumentBlock({ setPagination, setMyData, setShow 
                                         <CommandInput placeholder={'Buscar a...'} />
                                         <CommandList>
                                             <CommandEmpty>No se encontró a.</CommandEmpty>
-                                            <CommandGroup>
-                                                {areasPlantas?.sort(function (a, b) {
+                                            <CommandItem
+
+                                                value={{
+                                                    id: 0,
+                                                    image: null,
+                                                    description: null,
+                                                    active: false,
+                                                    name: 'Sin filtros',
+                                                    code: '',
+                                                    type: 5,
+                                                    blocked: false,
+                                                    parent_id: null,
+                                                    user_id: Number(session?.user.id),
+                                                    deleted: false,
+                                                    plan_image: null,
+                                                    children: []
+                                                }.name}
+                                                onSelect={(currentValue: any) => {
+                                                    habdleChange({
+                                                        id: 0,
+                                                        image: null,
+                                                        description: null,
+                                                        active: false,
+                                                        name: 'Sin filtros',
+                                                        code: '',
+                                                        type: 5,
+                                                        blocked: false,
+                                                        parent_id: null,
+                                                        user_id: Number(session?.user.id),
+                                                        deleted: false,
+                                                        plan_image: null,
+                                                        children: []
+                                                    }, 'entities')
+                                                    setValueEntity({
+                                                        id: 0,
+                                                        image: null,
+                                                        description: null,
+                                                        active: false,
+                                                        name: 'Sin filtros',
+                                                        code: '',
+                                                        type: 5,
+                                                        blocked: false,
+                                                        parent_id: null,
+                                                        user_id: Number(session?.user.id),
+                                                        deleted: false,
+                                                        plan_image: null,
+                                                        children: []
+                                                    })
+                                                    //   setValue(currentValue === value ? '' : currentValue)
+
+                                                    setOpenEntities(false)
+                                                }}
+                                            >
+                                                <CheckIcon
+                                                    className={cn(
+                                                        'mr-2 h-4 w-4',
+                                                        String(valueEntity?.id) === String({
+                                                            id: 0,
+                                                            image: null,
+                                                            description: null,
+                                                            active: false,
+                                                            name: 'Sin filtros',
+                                                            code: '',
+                                                            type: 5,
+                                                            blocked: false,
+                                                            parent_id: null,
+                                                            user_id: Number(session?.user.id),
+                                                            deleted: false,
+                                                            plan_image: null,
+                                                            children: []
+                                                        }.id) ? 'opacity-100' : 'opacity-0'
+                                                    )}
+                                                />
+                                                {{
+                                                    id: 0,
+                                                    image: null,
+                                                    description: null,
+                                                    active: false,
+                                                    name: 'Sin filtros',
+                                                    code: '',
+                                                    type: 5,
+                                                    blocked: false,
+                                                    parent_id: null,
+                                                    user_id: Number(session?.user.id),
+                                                    deleted: false,
+                                                    plan_image: null,
+                                                    children: []
+                                                }.name}
+                                            </CommandItem>
+                                            <CommandGroup heading='Plantas'>
+                                                {areasPlantas?.filter((obj) => obj.type === 4)?.sort(function (a, b) {
+                                                    return a.id - b.id
+                                                })?.map((entity: EntityStructure) => (
+                                                    <CommandItem
+                                                        key={entity.id}
+                                                        value={String(entity.name)}
+                                                        onSelect={(currentValue: any) => {
+                                                            habdleChange(entity, 'entities')
+                                                            setValueEntity(entity)
+                                                            //   setValue(currentValue === value ? '' : currentValue)
+
+                                                            setOpenEntities(false)
+                                                        }}
+                                                    >
+                                                        <CheckIcon
+                                                            className={cn(
+                                                                'mr-2 h-4 w-4',
+                                                                String(valueEntity?.id) === String(entity.id) ? 'opacity-100' : 'opacity-0'
+                                                            )}
+                                                        />
+                                                        {entity.name}
+                                                    </CommandItem>
+                                                ))}
+                                            </CommandGroup>
+                                            <CommandGroup heading='Áreas'>
+                                                {areasPlantas?.filter((obj) => obj.type === 5 && obj.id!==0)?.sort(function (a, b) {
                                                     return a.id - b.id
                                                 })?.map((entity: EntityStructure) => (
                                                     <CommandItem

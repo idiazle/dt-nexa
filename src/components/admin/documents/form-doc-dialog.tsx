@@ -71,9 +71,9 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
     const fillDropdowns = async () => {
         try {
             const resModules = await getOptionsById({ ids: '1' })
-            
+
             const resDisciplines = await getOptionsById({ ids: '2' })
-            
+
 
             const resTypes = await getOptionsById({ ids: '3' })
             if (resModules.status === 200) {
@@ -315,7 +315,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
     })
 
     console.log("FORMCLIENTT", formClient.watch());
-    
+
 
     const form = useForm<z.infer<typeof formSchema>>({
         reValidateMode: 'onChange',
@@ -342,8 +342,8 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
         documentsReferences: []
     })
 
-    console.log("MY REFERENCE OBJECTT", referenceObject);
 
+    const [sendingFile, setSendingFile] = useState(false)
 
     const handleGeneralSubmit = async () => {
         const isValidForm1 = await form.trigger()
@@ -392,6 +392,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                         description: 'Documento creado correctamente'
                     })
                     if (documentFile) {
+                        setSendingFile(true)
                         try {
                             let fileData = new FormData()
                             fileData.append('attachment', documentFile)
@@ -408,6 +409,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
 
                             const fileUploaded = await uploadDocument(response.data.data.id, fileData, config)
                             if (fileUploaded.status === 200) {
+                                setSendingFile(false)
                                 toast({
                                     duration: 3000,
                                     variant: 'default',
@@ -1098,14 +1100,18 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                 <FaLink size={20} />
                                 <p>Referenciar documento</p>
                             </Button>
-                            <LinkDocumentDialog operationType={id === null ? 'create':'edit'} setReferenceObject={setReferenceObject} setOpen={setOpenLinkDialog} open={openLinkDialog} idDocument={id} />
+                            <LinkDocumentDialog operationType={id === null ? 'create' : 'edit'} setReferenceObject={setReferenceObject} setOpen={setOpenLinkDialog} open={openLinkDialog} idDocument={id} />
                         </div>
+                        {
+                            referenceObject.equipmentsReferences.length != 0 || referenceObject.areasReferences.length != 0 || referenceObject.documentsReferences.length != 0 ? null : 
+                            <p className='text-center animate-pulse text-red-500 text-lg'>Atención: No está referenciando el documento con algún equipo | área | documento</p>
+                        }
                         {/* <div className='flex flex-row gap-3 justify-center items-center mt-5'>
                             <Button className='w-32' type="submit">Crear documento</Button>
                             <Button className='w-32' type='button' onClick={() => router.replace('/admin/documents')}>Cancelar</Button>
                         </div> */}
                         <div className='flex flex-row justify-end items-center gap-3 w-full'>
-                            <Button disabled={disableSaveDocExist} onClick={() => { handleGeneralSubmit() }} className='w-1/5' type="button" variant="secondary" >
+                            <Button disabled={disableSaveDocExist || sendingFile} onClick={() => { handleGeneralSubmit() }} className='w-1/5' type="button" variant="secondary" >
                                 Guardar
                             </Button>
                             <Button onClick={() => { setDialogOpen(false) }} className='w-1/5' type="button" variant="secondary">
