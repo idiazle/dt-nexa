@@ -179,7 +179,7 @@ export default function SearchDocumentDialog({ openDialog, setOpenDialog, setPag
             // throw new Error('Error al obtener Documentos auxiliares')
         }
         try {
-            const resModules = await getOptionsById({ ids: '4' })
+            const resModules = await getOptionsById({ ids: '3' })
             if (resModules.status === 200) {
                 setStatusVendor(resModules.data.data as ModuleStructure[])
             }
@@ -187,7 +187,7 @@ export default function SearchDocumentDialog({ openDialog, setOpenDialog, setPag
             throw new Error('error GAA')
         }
         try {
-            const resModules = await getOptionsById({ ids: '5' })
+            const resModules = await getOptionsById({ ids: '4' })
             if (resModules.status === 200) {
                 setStatusClient(resModules.data.data as ModuleStructure[])
             }

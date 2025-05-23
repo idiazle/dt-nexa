@@ -107,7 +107,7 @@ export default function PlanCreateForm({ id, setDialogOpen }: PlanCreateFormStru
       throw new Error('error obteniendo resm')
     }
     try {
-      const resModules = await getOptionsById({ ids: '4' })
+      const resModules = await getOptionsById({ ids: '3' })
       if (resModules.status === 200) {
         setStatusVendor(resModules.data.data)
       }
@@ -115,7 +115,7 @@ export default function PlanCreateForm({ id, setDialogOpen }: PlanCreateFormStru
       throw new Error('error GAA')
     }
     try {
-      const resModules = await getOptionsById({ ids: '5' })
+      const resModules = await getOptionsById({ ids: '4' })
       // console.log("resModules", resModules.data.data);
 
       if (resModules.status === 200) {

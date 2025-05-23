@@ -72,10 +72,10 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
         try {
             const resModules = await getOptionsById({ ids: '1' })
 
-            const resDisciplines = await getOptionsById({ ids: '2' })
+            const resDisciplines = await getOptionsById({ ids: '5' })
 
 
-            const resTypes = await getOptionsById({ ids: '3' })
+            const resTypes = await getOptionsById({ ids: '6' })
             if (resModules.status === 200) {
                 setModules(resModules.data.data)
             }
@@ -89,7 +89,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
             throw new Error('error obteniendo resm')
         }
         try {
-            const resModules = await getOptionsById({ ids: '4' })
+            const resModules = await getOptionsById({ ids: '3' })
             if (resModules.status === 200) {
                 setStatusVendor(resModules.data.data)
             }
@@ -97,7 +97,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
             throw new Error('error GAA')
         }
         try {
-            const resModules = await getOptionsById({ ids: '5' })
+            const resModules = await getOptionsById({ ids: '4' })
             // console.log("resModules", resModules.data.data);
 
             if (resModules.status === 200) {
@@ -122,7 +122,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
             throw new Error('error GAA')
         }
         try {
-            const resModules = await getOptionsById({ ids: '4' })
+            const resModules = await getOptionsById({ ids: '3' })
             if (resModules.status === 200) {
                 setStatusVendor(resModules.data.data)
             }
@@ -130,7 +130,7 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
             throw new Error('error GAA')
         }
         try {
-            const resModules = await getOptionsById({ ids: '5' })
+            const resModules = await getOptionsById({ ids: '4' })
             if (resModules.status === 200) {
                 setStatusClient(resModules.data.data)
             }
