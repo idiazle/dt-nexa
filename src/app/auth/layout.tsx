@@ -5,7 +5,7 @@ export default function AuthLayout({
 }) {
   return (
     <div className="w-full h-full bg-login-background bg-no-repeat bg-cover">
-      <div className="w-full h-full bg-black/75 contrast-150 ">
+      <div className="w-full h-full">
         {children}
       </div>
     </div>

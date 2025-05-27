@@ -233,10 +233,28 @@ export interface ShapeStructure {
     type: string
     coordinates: string
     color: string
-    radius?:string
+    radius?: string
   }
-  entity_type?:number|string
+  entity_type?: number | string
   shape_type: string
   entity_id: number
   plan_id: number
+}
+
+
+export interface MenuIconsStructure {
+  id: number,
+  icon_name: string,
+  icon_image: string,
+  tooltip: string | null,
+  blocked: boolean,
+  parent: any
+  children: MenuIconsStructure[] | null
+
+}
+
+export interface IconStructure {
+  id: number
+  name: string
+  file: string
 }

@@ -1,0 +1,114 @@
+'use client'
+import { UserInfoMenu } from '@/components/auth/user-info-menu'
+import Image from 'next/image'
+import React, { useEffect, useState } from 'react'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import ModulesMenu from '@/components/menu/modules-menu'
+import {
+    Menubar,
+    MenubarCheckboxItem,
+    MenubarContent,
+    MenubarItem,
+    MenubarMenu,
+    MenubarRadioGroup,
+    MenubarRadioItem,
+    MenubarSeparator,
+    MenubarShortcut,
+    MenubarSub,
+    MenubarSubContent,
+    MenubarSubTrigger,
+    MenubarTrigger,
+} from "@/components/ui/menubar"
+import { EntityStructure, MenuIconsStructure } from '@/lib/utils'
+
+interface RenderDataMenuStructure {
+    data: MenuIconsStructure[]
+    dataPlants: EntityStructure[]
+}
+export default function RenderDataMenu({ data, dataPlants }: RenderDataMenuStructure) {
+    const [selectedPlant, setSelectedPlant] = useState<any>('')
+    console.log("SELECTED PLANT", selectedPlant);
+
+    return (
+        <div className='h-full w-full flex flex-col justify-between items-stretch'>
+            <div>
+                <div className='flex justify-end p-2'>
+                    <UserInfoMenu />
+                </div>
+                {/* IMAGEN CENTRAL */}
+                <div className='flex flex-col justify-center items-center mt-16'>
+                    <Image
+                        style={{
+                            width: 'auto',
+                            height: 'auto'
+                        }}
+                        src="/img/icons/portal-digital.png"
+                        width={200}
+                        height={200}
+                        alt="Picture of the author"
+                    />
+                    <p className='text-2xl'>Portal Digital</p>
+                    <div className='flex flex-col justify-center items-start w-full pl-24 gap-3'>
+                        <h1 className='uppercase text-2xl'>Módulos</h1>
+                        <Select onValueChange={(val) => { setSelectedPlant(val) }}>
+                            <SelectTrigger className="w-1/3 h-8 bg-transparent border-white">
+                                <SelectValue placeholder="Seleccione planta" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {
+                                    dataPlants.map((obj) => {
+                                        return (
+                                            <SelectItem key={obj.id} value={String(obj.id)}>{obj.name}</SelectItem>
+                                        )
+                                    })
+                                }
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+            </div>
+
+            {/* Zona de Módulos */}
+            <div className='flex justify-center items-center mb-16'>
+
+                <ModulesMenu data={data} selectedPlant={dataPlants.find((obj) => obj.id === Number(selectedPlant))} />
+                <div className='absolute right-10'>
+                    <Menubar className="flex flex-row flex-wrap-reverse bg-transparent border-none gap-5">
+                        <MenubarMenu>
+                            <div className="flex flex-col items-center max-w-24 min-h-[160px] gap-2">
+                                <MenubarTrigger className="flex flex-col items-center gap-2 p-0 rounded-2xl focus:bg-white/35 data-[state=open]:bg-white/60">
+                                    <div className="border border-white/50 p-4 rounded-2xl">
+                                        <div className="relative h-[67px] w-[67px] overflow-hidden">
+                                            <Image
+                                                src={'/img/menu-icons/manual-usuario.png'}
+                                                alt={'manual-usuario'}
+                                                fill
+                                                style={{ objectFit: 'contain' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </MenubarTrigger>
+                                <p className="text-center text-xs leading-tight h-[32px] overflow-hidden text-ellipsis">
+                                    Manual de Usuario
+                                </p>
+                            </div>
+                            <MenubarContent side="top" className="bg-[#385b6d]">
+                                <MenubarItem >
+                                    <div className="border-b border-white w-full p-1">
+                                        Opción 1
+                                    </div>
+                                </MenubarItem>
+                            </MenubarContent>
+                        </MenubarMenu>
+                    </Menubar>
+                </div>
+            </div>
+        </div>
+    )
+}

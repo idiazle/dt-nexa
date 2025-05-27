@@ -54,27 +54,34 @@ export default function AdminAside() {
         },
         {
             id: 6,
+            icon_path: '/img/aside-icons/icon_icon.png',
+            icon_tooltip: 'Gestión de Íconos en Mapa2d',
+            route: '/admin/map2d-icons',
+            enable: true
+        },
+        {
+            id: 7,
             icon_path: '/img/aside-icons/I_G. de troubleshooting.png',
             icon_tooltip: 'Gestión de Troubleshooting',
             route: '/admin/troubles',
             enable: false
         },
         {
-            id: 7,
+            id: 8,
             icon_path: '/img/aside-icons/I_G. de usuarios.png',
             icon_tooltip: 'Gestión de Usuarios',
             route: '/admin/users',
             enable: true
         },
         {
-            id: 8,
+            id: 9,
             icon_path: '/img/aside-icons/I_G. de autorizaciones.png',
             icon_tooltip: 'Gestión de Autorizaciones',
             route: '/admin/authorizations',
             enable: true
         },
         {
-            id: 9,
+            id: 10,
             icon_path: '/img/aside-icons/I_G. de despieces.png',
             icon_tooltip: 'Gestión de Despieces',
             route: '/admin/despieces',

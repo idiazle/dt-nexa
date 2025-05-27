@@ -103,7 +103,7 @@ const config = {
   			sans: ["var(--font-sans)", ...fontFamily.sans]
   		},
   		backgroundImage: {
-  			'login-background': 'url("/img/backgrounds/login-background.jpg")',
+  			'login-background': 'url("/img/backgrounds/login-background.png")',
   			'default-background': 'url("/img/backgrounds/base-image.jpg")'
   		}
   	}

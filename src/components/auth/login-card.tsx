@@ -12,19 +12,20 @@ import LoginForm from './login-form'
 
 export default function LoginCard() {
     return (
-        <Card className='bg-white/20 border border-white w-1/5 h-[550px] flex flex-col justify-center items-center gap-5 rounded-2xl'>
+        <Card className='bg-transparent border-none w-1/5 flex flex-col justify-center items-center gap-5 rounded-2xl'>
             <CardHeader>
-                <div className='flex justify-center items-center'>
+                <div className='flex flex-col justify-center items-center'>
                     <Image
                         style={{
                             width: 'auto',
                             height: 'auto'
                         }}
-                        src="/img/icons/login-logo.png"
+                        src="/img/icons/portal-digital.png"
                         width={200}
                         height={200}
                         alt="Picture of the author"
                     />
+                    <p className='text-2xl'>Portal Digital</p>
                 </div>
             </CardHeader>
             <CardContent className='w-full'>
