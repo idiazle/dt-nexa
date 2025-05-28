@@ -31,24 +31,59 @@ import { useRouter } from 'next/navigation'
 import { ToastAction } from '@/components/ui/toast'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { deleteMapPlans2dIcon, putMapPlans2dIcon } from '@/api/admin/maps2d-api'
 
 export default function IconImageCard({ icon }: { icon: any }) {
     const { toast } = useToast()
     const [dialogOpen, setDialogOpen] = useState<boolean>(false)
-  const [openToast, setOpenToast] = useState<boolean>(false)
-  const router = useRouter()
- const deleteImage = async (id: number) => {
-    setOpenToast(true)
-    // const response = await deleteImages(id)
-    // if (response.status === 200) {
-    //   toast({
-    //     variant: 'destructive',
-    //     title: 'Eliminación',
-    //     description: 'Imagen eliminada correctamente'
-    //   })
-    //   router.refresh()
-    // }
-  }
+    const [openToast, setOpenToast] = useState<boolean>(false)
+    const router = useRouter()
+    const [document, setDocument] = useState<File | null>(null)
+    const [name, setName] = useState(icon.name)
+    const deleteImage = async (id: number) => {
+        setOpenToast(true)
+        try {
+            const response = await deleteMapPlans2dIcon(id)
+            if (response.status === 200) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Eliminación',
+                    description: 'Imagen eliminada correctamente'
+                })
+                router.refresh()
+            }
+        } catch (error) {
+            console.log("MMY EERRROR", error)
+        }
+    }
+
+    const updateImage = async (id: number) => {
+        if (id !== null) {
+            const formD = new FormData()
+            if (document !== null) {
+                formD.append('file', document)
+            }
+            formD.append('name', name)
+            try {
+                const response = await putMapPlans2dIcon(id, formD)
+                if (response.status === 200) {
+                    router.refresh()
+                    toast({
+                        variant: 'default',
+                        title: 'Actualización',
+                        description: 'Imagen actualizada correctamente'
+                    })
+                    setDialogOpen(false)
+                    setDocument(null)
+                }
+            } catch (error) {
+                throw new Error('ERROR IN PUT IMAGES')
+            }
+        }
+    }
+
+    console.log("MY DOCUMENT", document);
+
     return (
         <Card className='max-w-72 max-h-72'>
             <CardHeader>
@@ -103,7 +138,9 @@ export default function IconImageCard({ icon }: { icon: any }) {
                     </ContextMenu>
                     <DialogContent className="max-h-[75vh] overflow-auto min-w-[50vw]">
                         <DialogHeader>
-                            <DialogTitle>{icon.name}</DialogTitle>
+                            <DialogTitle>
+                                <Input value={name} onChange={(e) => setName(e.target.value)} />
+                            </DialogTitle>
                             {/* <DialogDescription>
                                 This action cannot be undone. Are you sure you want to permanently
                                 delete this file from our servers?
@@ -120,8 +157,8 @@ export default function IconImageCard({ icon }: { icon: any }) {
 
                         <DialogFooter>
                             <div className='w-full flex justify-center items-center gap-10'>
-                                <Button disabled={document == null} 
-                                // onClick={async () => { await updateImage(icon.id) }}
+                                <Button
+                                    onClick={async () => { await updateImage(icon.id) }}
                                 >
                                     Guardar cambios
                                 </Button>
@@ -129,7 +166,7 @@ export default function IconImageCard({ icon }: { icon: any }) {
                                     <Input
                                         onChange={(e) => {
                                             if (e.target.files !== null) {
-                                                // setDocument(e.target.files[0])
+                                                setDocument(e.target.files[0])
                                             }
                                         }}
                                         className='opacity-0 absolute top-0 left-0'
