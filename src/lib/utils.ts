@@ -258,3 +258,11 @@ export interface IconStructure {
   name: string
   file: string
 }
+
+export interface Map2dStructure{
+  id: number
+  name : string
+  file : any
+  map_type: string
+  entity: any
+}

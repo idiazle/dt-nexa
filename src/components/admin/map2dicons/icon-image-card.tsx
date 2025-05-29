@@ -94,21 +94,6 @@ export default function IconImageCard({ icon }: { icon: any }) {
                 <Dialog open={dialogOpen} onOpenChange={setDialogOpen} >
                     <ContextMenu>
                         <ContextMenuTrigger className='flex items-center justify-center'>
-                            {/* <div>
-              <Image
-                alt={icon.filename}
-                src={icon.attachment}
-                fill
-                priority
-                className='image-responsive rounded'
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-
-                // layout='responsive'
-                // src={'/img/login-background.png'}
-                // width={200}
-                // height={150}
-              />
-              </div> */}
                             <div className="w-full relative pt-[50%]">
                                 <Image
                                     alt={icon.name}
