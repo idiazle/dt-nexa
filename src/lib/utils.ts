@@ -259,10 +259,31 @@ export interface IconStructure {
   file: string
 }
 
-export interface Map2dStructure{
+export interface Map2dStructure {
   id: number
-  name : string
-  file : any
+  name: string
+  file: any
   map_type: string
   entity: any
+}
+
+export interface PhotogrametryStructure {
+  id: number
+  map_shape_data: string
+  panorama: any
+  thumbnail: any
+  name: string
+  caption: string
+  links: string
+  markers: string
+  default_zoom_lvl: string
+}
+
+export interface Map2dShapesStructure {
+  id: number
+  shapes: string
+  entity: number
+  photogrammetry_node: number
+  mapplan2d: number
+  shape_icon: number
 }

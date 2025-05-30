@@ -68,30 +68,44 @@ export default function AdminAside() {
         },
         {
             id: 8,
+            icon_path: '',
+            icon_tooltip: 'Gestión de Shapes',
+            route: '/admin/map2d-shapes',
+            enable: true
+        },
+        {
+            id: 9,
             icon_path: '/img/aside-icons/I_G. de troubleshooting.png',
             icon_tooltip: 'Gestión de Troubleshooting',
             route: '/admin/troubles',
             enable: false
         },
         {
-            id: 9,
+            id: 10,
             icon_path: '/img/aside-icons/I_G. de usuarios.png',
             icon_tooltip: 'Gestión de Usuarios',
             route: '/admin/users',
             enable: true
         },
         {
-            id: 10,
+            id: 11,
             icon_path: '/img/aside-icons/I_G. de autorizaciones.png',
             icon_tooltip: 'Gestión de Autorizaciones',
             route: '/admin/authorizations',
             enable: true
         },
         {
-            id: 11,
+            id: 12,
             icon_path: '/img/aside-icons/I_G. de despieces.png',
             icon_tooltip: 'Gestión de Despieces',
             route: '/admin/despieces',
+            enable: true
+        },
+        {
+            id: 13,
+            icon_path: '',
+            icon_tooltip: 'Gestión de Nodos 360',
+            route: '/admin/nodes360-photos',
             enable: true
         },
     ]
