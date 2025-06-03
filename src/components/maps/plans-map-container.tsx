@@ -7,7 +7,7 @@ import 'leaflet-draw/dist/leaflet.draw.css'
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { DocumentStructure, EntityStructure, EquipmentStructure, PlanStructure, ShapeStructure } from '@/lib/utils';
+import { DocumentStructure, EntityStructure, EquipmentStructure, Map2dShapesStructure, Map2dStructure, PlanStructure, ShapeStructure } from '@/lib/utils';
 import { bounds, centerLat, centerLng, maxBounds } from './static-data';
 import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
@@ -33,7 +33,7 @@ import AlertDeleteDialog from '../general/alert-delete-dialog';
 
 
 interface MapProps {
-    planSelected: PlanStructure | null
+    mapSelected: Map2dStructure | null
     posix: LatLngExpression | LatLngTuple,
     zoom?: number,
 }
@@ -54,6 +54,7 @@ interface MenuBtns {
 
 
 export default function PlansMapContainer(Map: MapProps) {
+    
     // const { zoom = defaults.zoom, posix } = Map
     const [flagRefresh, setFlagRefresh] = useState<boolean>(false)
     const [shapesRender, setShapesRender] = useState<ShapeStructure[] | null>([])
@@ -89,7 +90,7 @@ export default function PlansMapContainer(Map: MapProps) {
                 setPlanShape({
                     ...planShape as ShapeStructure,
                     shapes: objShape as any,
-                    plan_id: Number(Map.planSelected?.id)
+                    plan_id: Number(Map.mapSelected?.id)
                 })
             }
             setopenShapeDialog(true)
@@ -387,7 +388,7 @@ export default function PlansMapContainer(Map: MapProps) {
                         bounds={bounds}
                         zIndex={1}
                         // attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url={String(Map.planSelected?.image)}
+                        url={String(Map.mapSelected?.file)}
                     />
 
                     {
@@ -439,7 +440,7 @@ export default function PlansMapContainer(Map: MapProps) {
                                         /> : null
                                     }
                                 </>
-                                <ViewShapes flagRefresh={flagRefresh} showShapes={actionMenuBtns[0].active} setRenderLeftInformation={setRenderLeftInformation} setCloseInformation={setCloseInformation} setSelectedShape={setSelectedShape} shapesRender={shapesRender} setShapesRender={setShapesRender} />
+                                <ViewShapes  flagRefresh={flagRefresh} showShapes={actionMenuBtns[0].active} setRenderLeftInformation={setRenderLeftInformation} setCloseInformation={setCloseInformation} setSelectedShape={setSelectedShape} shapesRender={shapesRender} setShapesRender={setShapesRender} />
                                 : null
 
                             </FeatureGroup> : null

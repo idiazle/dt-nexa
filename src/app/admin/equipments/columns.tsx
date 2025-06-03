@@ -52,10 +52,16 @@ export const columnsEquipments = ({ onEdit, onDelete }: ColumnsPropsStructure): 
             )
         }
     },
+    
     {
-        accessorKey: 'name',
-        header: 'Nombre'
+        accessorKey: 'level_data.name',
+        header:'Nombre'
     },
+    {
+        accessorKey: 'parent_data.name',
+        header:'Área'
+    },
+    
     {
         accessorKey: 'level_data.description',
         header: 'Description'

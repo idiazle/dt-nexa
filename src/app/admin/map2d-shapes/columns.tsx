@@ -1,4 +1,4 @@
-import { ColumnsPropsStructure, EntityStructure, Map2dStructure, UserStructure } from "@/lib/utils";
+import { ColumnsPropsStructure, Map2dShapesStructure } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import {
     DropdownMenu,
@@ -10,113 +10,35 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { FilePen, MoreHorizontal } from "lucide-react";
-import { FaFilePen, FaTrashCan } from "react-icons/fa6";
-import Image from "next/image";
-import {
-    ContextMenu,
-    ContextMenuContent,
-    ContextMenuItem,
-    ContextMenuTrigger,
-} from "@/components/ui/context-menu"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
+import {  FaTrashCan } from "react-icons/fa6";
 
-const renderMapType = (type: number) => {
-    let returnType = ''
-    if (type === 1) {
-        returnType = 'PFD'
-    } else if (type === 2) {
-        returnType = 'PLD'
-    } else if (type === 3) {
-        returnType = 'PND'
-    } else {
-        returnType = 'General'
-    }
-    return returnType
-}
 
-export const columnsMap2d = ({ onEdit, onDelete }: ColumnsPropsStructure): ColumnDef<Map2dStructure>[] => [
+
+export const columnsMapShapes2d = ({ onEdit, onDelete }: ColumnsPropsStructure): ColumnDef<Map2dShapesStructure>[] => [
 
     {
         accessorKey: 'id',
         header: 'Id'
     },
     {
-        accessorKey: 'name',
-        header: 'Nombre'
-    },
-    {
-        accessorKey: 'file',
-        header: 'Archivo',
-        cell: ({ row }) => {
-            return (
-                <div className="flex justify-center items-center">
-                    <Dialog>
-                        <ContextMenu>
-                            <ContextMenuTrigger className='flex items-center justify-center'>
-                                <div className="w-full relative">
-                                    <Image
-                                        alt={row.original.name}
-                                        src={row.original.file}
-                                        height={100}
-                                        width={100}
-                                    />
-                                </div>
-                            </ContextMenuTrigger>
-                            <ContextMenuContent hideWhenDetached={false}>
-                                <DialogTrigger asChild>
-                                    <ContextMenuItem>Ampliar</ContextMenuItem>
-                                </DialogTrigger>
-                            </ContextMenuContent>
-                        </ContextMenu>
-                        <DialogContent className="max-h-[75vh] overflow-auto min-w-[50vw]">
-                            <DialogHeader>
-                                <DialogTitle>
-                                    {row.original.name}
-                                </DialogTitle>
-                                {/* <DialogDescription>
-                                This action cannot be undone. Are you sure you want to permanently
-                                delete this file from our servers?
-                            </DialogDescription> */}
-                            </DialogHeader>
-                            <div className='flex justify-center items-center'>
-                                <Image
-                                    alt={row.original.name}
-                                    src={row.original.file}
-                                    width={750}
-                                    height={350}
-                                />
-                            </div>
-
-                        </DialogContent>
-                    </Dialog>
-                </div >
-            )
-        }
-    },
-    {
-        accessorKey: 'map_type',
-        header: 'Tipo de mapa',
-        cell: ({ row }) => {
-            return (
-                renderMapType(Number(row.original.map_type))
-            )
-        }
+        accessorKey: 'shapes',
+        header: 'Shapes'
     },
     {
         accessorKey: 'entity',
-        header: 'Entidad',
-        cell: ({ row }) => {
-            return (
-                <p>{row.original.entity.name}</p>
-            )
-        }
+        header: 'Entidad'
+    },
+    {
+        accessorKey: 'photogrammetry_node',
+        header: 'Node'
+    },
+    {
+        accessorKey: 'mappplan2d',
+        header: 'Mapa2d'
+    },
+    {
+        accessorKey: 'shape_icon',
+        header: 'Icono shape'
     },
     {
         id: 'actions',

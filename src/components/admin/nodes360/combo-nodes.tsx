@@ -19,10 +19,11 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 
-export default function ComboNodes({ data,linkData, setLinkData }: { data: any[], linkData: any, setLinkData: (value: any) => void }) {
+export default function ComboNodes({ data,linkData, setLinkData }: { data: any[] | null, linkData: any, setLinkData: (value: any) => void }) {
     const [open, setOpen] = React.useState(false)
 
-    console.log("MY DATAA", linkData)
+    console.log("MY DATAA", data)
+    console.log("MY DATAA2a2", linkData)
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>

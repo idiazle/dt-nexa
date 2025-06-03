@@ -227,20 +227,6 @@ export interface DespieceInfoStructure {
   control_interactive: string
 }
 
-export interface ShapeStructure {
-  id?: number
-  shapes: {
-    type: string
-    coordinates: string
-    color: string
-    radius?: string
-  }
-  entity_type?: number | string
-  shape_type: string
-  entity_id: number
-  plan_id: number
-}
-
 
 export interface MenuIconsStructure {
   id: number,
@@ -280,10 +266,25 @@ export interface PhotogrametryStructure {
 }
 
 export interface Map2dShapesStructure {
-  id: number
+  id?: number
   shapes: string
-  entity: number
-  photogrammetry_node: number
+  entity: number | null
+  photogrammetry_node: number | null
   mapplan2d: number
-  shape_icon: number
+  shape_icon: number | null
+  marker_type: number
+}
+
+export interface ShapeStructure {
+  id?: number
+  shapes: {
+    type: string
+    coordinates: string
+    color: string
+    radius?: string
+  }
+  entity_type?: number | string
+  shape_type: string
+  entity_id: number | null
+  plan_id: number
 }

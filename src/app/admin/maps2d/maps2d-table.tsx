@@ -29,6 +29,8 @@ export default function Maps2dTable({ data }: Map2dTableStructure) {
         setDialogOpen(true);
     }, []);
 
+
+
     const delEntity = async () => {
         if (selectedMap2d !== null) {
             try {
@@ -48,7 +50,7 @@ export default function Maps2dTable({ data }: Map2dTableStructure) {
         }
     }
 
-    const columns = useMemo(() => columnsMap2d({ onEdit, onDelete }), [])
+    const columns = useMemo(() => columnsMap2d({ onEdit, onDelete}), [])
     return (
         <div>
             <DataTable columns={columns} data={data} />

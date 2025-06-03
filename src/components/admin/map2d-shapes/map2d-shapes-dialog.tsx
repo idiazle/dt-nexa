@@ -1,0 +1,81 @@
+import React from 'react'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from '@/components/ui/button'
+
+interface Map2dShapesDialogStructure {
+    id: number | null
+    dialogOpen: boolean
+    setDialogOpen: (value: boolean) => void
+}
+export default function Map2dShapesDialog({ id, dialogOpen, setDialogOpen }: Map2dShapesDialogStructure) {
+
+    const formSchema = z.object({
+        shapes: z.string().min(5, {
+            message: "Como mínimo debe ser de longitud 5.",
+        }),
+        file: z.instanceof(File)
+    })
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            shapes: "",
+        },
+    })
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        // Do something with the form values.
+        // ✅ This will be type-safe and validated.
+        console.log(values)
+
+
+    }
+
+    return (
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>{id === null ? 'Crear' : 'Editar'} Shapes</DialogTitle>
+                    <DialogDescription />
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                        <FormField
+                            control={form.control}
+                            name="shapes"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Nombre</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="shadcn" {...field} />
+                                    </FormControl>
+                                                       <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                   
+                        <Button type="submit">Submit</Button>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
+    )
+}

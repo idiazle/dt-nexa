@@ -113,7 +113,6 @@ export default function Nodes360Dialog({ id, dialogOpen, setDialogOpen }: Nodes3
     const getApiNode360ById = async () => {
         try {
             const response = await getNodes360ById(Number(id))
-            console.log(response.data.data)
             setImageSrc(response.data.data.panorama)
             form.setValue('name', response.data.data.name);
             form.setValue('map_shape_data', response.data.data.map_shape_data);

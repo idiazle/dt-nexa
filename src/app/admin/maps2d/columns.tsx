@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { FilePen, MoreHorizontal } from "lucide-react";
-import { FaFilePen, FaTrashCan } from "react-icons/fa6";
+import { FaFilePen, FaMapLocationDot, FaTrashCan } from "react-icons/fa6";
 import Image from "next/image";
 import {
     ContextMenu,
@@ -26,6 +26,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import Link from "next/link";
 
 const renderMapType = (type: number) => {
     let returnType = ''
@@ -40,6 +41,9 @@ const renderMapType = (type: number) => {
     }
     return returnType
 }
+
+
+
 
 export const columnsMap2d = ({ onEdit, onDelete }: ColumnsPropsStructure): ColumnDef<Map2dStructure>[] => [
 
@@ -134,6 +138,17 @@ export const columnsMap2d = ({ onEdit, onDelete }: ColumnsPropsStructure): Colum
                     <DropdownMenuContent align="end" >
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                         <DropdownMenuSeparator />
+                        <DropdownMenuItem >
+                            <Link
+                            className='flex flex-row gap-2 justify-start items-center p-2 hover:cursor-pointer w-full'
+                            href={{
+                                pathname: '/interactives/',
+                                query: { id: row.original.id }
+                            }} as={`/interactives?map-id=${row.original.id}&map-type=${row.original.map_type}`}>
+                                <FaMapLocationDot />
+                                <p>Shapes</p>
+                            </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => { onEdit(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
                             <FilePen size={18} />
                             <p>Editar</p>

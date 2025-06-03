@@ -21,7 +21,10 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { getEquipments } from '@/api/admin/equipments-api'
 import { Button } from '@/components/ui/button'
-import { putNode360 } from '@/api/admin/nodes360-api'
+import { getNodes360ById, putNode360 } from '@/api/admin/nodes360-api'
+import { useToast } from '@/components/ui/use-toast'
+import { useRouter } from 'next/navigation'
+import { VirtualTourPlugin } from '@photo-sphere-viewer/virtual-tour-plugin'
 
 interface MarkersLinksDialogStructure {
     allNodes: any
@@ -30,10 +33,11 @@ interface MarkersLinksDialogStructure {
         data: any
     }
     setDialogData: (value: any) => void
+    setDialogFather: (value: any) => void
 }
-export default function MarkersLinksDialog({ allNodes, dialogData, setDialogData }: MarkersLinksDialogStructure) {
-    console.log("MARKERLINKS", dialogData.data);
+export default function MarkersLinksDialog({ setDialogFather, allNodes, dialogData, setDialogData }: MarkersLinksDialogStructure) {
 
+    const router = useRouter()
     const [selectedOption, setSelectedOption] = useState('')
     const baseUrl = 'https://photo-sphere-viewer-data.netlify.app/assets/'
     const [structMarker, setStructMarker] = useState<any>(null)
@@ -82,19 +86,21 @@ export default function MarkersLinksDialog({ allNodes, dialogData, setDialogData
                     <div>
                         <Label>Nombre a visualizar</Label>
                         <Input value={structMarker?.tooltip} onChange={(val) => {
-                            setStructMarker({
-                                ...structMarker,
+                            setStructMarker((prev: any) => ({
+                                ...prev,
                                 id: JSON.parse(dialogData.data.selectedNode.markers as string).length + 1,
                                 tooltip: val.target.value
-                            })
+
+                            }))
                         }} />
                         <div className='flex flex-col justify-center items-start w-full gap-3 my-2'>
                             <Label>Equipo</Label>
-                            <Select value={structMarker.equipment_id} onValueChange={(e) => {
-                                setStructMarker({
-                                    ...structMarker,
-                                    equipment_id: e
-                                })
+                            <Select value={structMarker.equipment_id} onValueChange={(value) => {
+                                setStructMarker((prev: any) => ({
+                                    ...prev,
+                                    equipment_id: value
+
+                                }))
                             }}>
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Seleccione un equipo" />
@@ -103,8 +109,9 @@ export default function MarkersLinksDialog({ allNodes, dialogData, setDialogData
                                     <SelectGroup>
                                         {
                                             myEquipments?.map((obj: any, index: number) => {
+
                                                 return (
-                                                    <SelectItem key={index} value={String(obj.level_id)}>{obj.name}</SelectItem>
+                                                    <SelectItem key={index} value={String(obj.equipment_id)}>{obj.name}</SelectItem>
                                                 )
                                             })
                                         }
@@ -126,30 +133,71 @@ export default function MarkersLinksDialog({ allNodes, dialogData, setDialogData
     const [linkData, setLinkData] = useState<{
         nodeId: string
         position: { textureX: 0, textureY: 0 }
-    } | null>({
-        nodeId: '',
-        position: { textureX: dialogData.data.textureX, textureY: dialogData.data.textureY}
+    } | null>(null)
 
-    })
+    const { toast } = useToast()
+
 
     const handleSubmit = async () => {
-        console.log(dialogData.data.selectedNode.links)
-        console.log(dialogData.data)
+        console.log("MY  LINKKS", dialogData.data.selectedNode.links);
+        
         const links = JSON.parse(dialogData.data.selectedNode.links).concat(linkData)
-        const sendObject = {
-            links: links,
-            markers: ''
+        const markers = JSON.parse(dialogData.data.selectedNode.markers).concat(structMarker)
+        let sendObject = {
+            // links: JSON.stringify(links),
+            // markers: JSON.stringify(markers)
         }
-        console.log("sendObject", sendObject)
+
+        if (linkData !== null) {
+            sendObject = {
+                ...sendObject,
+                links: JSON.stringify(links)
+            }
+        } else {
+            sendObject = {
+                ...sendObject,
+                markers: JSON.stringify(markers)
+            }
+        }
+
         try {
-            // const response = await putNode360(dialogData.data.selectedNode.id, )
+            const response = await putNode360(dialogData.data.selectedNode.id, { ...sendObject })
+            console.log("MY SEND OBJETT", sendObject);
+            
+            toast({
+                duration: 3000,
+                variant: 'default',
+                title: 'Creación',
+                description: 'Nodo editado correctamente'
+            })
+            setDialogData({
+                ...dialogData,
+                open: false
+            })
+            setDialogFather((prev: boolean) => !prev)
+            router.refresh()
         } catch (error) {
             console.log("MY ERROR", error)
         }
     }
 
-    console.log("LINK DATA", linkData);
 
+    const settingLinkData = () => {
+        if (selectedOption === '1') {
+            setLinkData({
+                nodeId: '',
+                position: { textureX: dialogData.data.textureX, textureY: dialogData.data.textureY }
+            })
+        } else {
+            setLinkData(null)
+        }
+    }
+
+    useEffect(() => {
+        settingLinkData()
+    }, [selectedOption])
+
+    
 
     return (
         <Dialog open={dialogData.open} onOpenChange={(val) => setDialogData({
@@ -176,7 +224,8 @@ export default function MarkersLinksDialog({ allNodes, dialogData, setDialogData
                     </Select>
                     {
                         selectedOption === '1' ?
-                            <ComboNodes data={allNodes} linkData={linkData} setLinkData={setLinkData} /> :
+                            linkData !== null ?
+                                <ComboNodes data={allNodes} linkData={linkData} setLinkData={setLinkData} /> : null :
                             selectedOption === '2' ?
                                 <div className='w-full'>
                                     <p className='p-1 tex-xs'>Seleccione el tipo de marcador</p>
@@ -191,7 +240,6 @@ export default function MarkersLinksDialog({ allNodes, dialogData, setDialogData
                                         </div>
                                     </RadioGroup>
                                     {typeRenderInput === null ? null : renderMarkerInputs(typeRenderInput)}
-
                                 </div> : null
                     }
                 </div>

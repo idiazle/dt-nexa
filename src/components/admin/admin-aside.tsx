@@ -71,7 +71,7 @@ export default function AdminAside() {
             icon_path: '',
             icon_tooltip: 'Gestión de Shapes',
             route: '/admin/map2d-shapes',
-            enable: true
+            enable: false
         },
         {
             id: 9,

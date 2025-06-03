@@ -1,14 +1,16 @@
-import { PlanStructure } from '@/lib/utils'
+import { Map2dShapesStructure, Map2dStructure, PlanStructure } from '@/lib/utils'
 import dynamic from 'next/dynamic'
 import React, { useMemo } from 'react'
 
 
 
-interface PlansMapStructure {
-    plan: PlanStructure | null
+interface MapRenderStructure {
+    data: Map2dStructure | null
 }
 
-export default function PlansMap({ plan }: PlansMapStructure) {
+export default function PlansMap({ data }: MapRenderStructure) {
+    console.log("MY DATEISHON", data);
+    
     const Map = useMemo(() => dynamic(
         () => import('@/components/maps/plans-map-container'),
         {
@@ -20,7 +22,7 @@ export default function PlansMap({ plan }: PlansMapStructure) {
     return (
 
         <div className='w-full h-full bg-white'>
-            <Map planSelected={plan} posix={[4.79029, -75.69003]} />
+            <Map mapSelected={data} posix={[4.79029, -75.69003]} />
         </div>
 
     )

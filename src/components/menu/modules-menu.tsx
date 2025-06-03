@@ -16,9 +16,11 @@ import {
 import { EntityStructure, MenuIconsStructure } from "@/lib/utils"
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ModulesMenu({ data, selectedPlant }: { data: MenuIconsStructure[], selectedPlant: EntityStructure | undefined }) {
     const executeMethod = (menuOptions: MenuIconsStructure) => {
+
         switch (menuOptions.id) {
             case 10:
                 return (
@@ -43,7 +45,9 @@ export default function ModulesMenu({ data, selectedPlant }: { data: MenuIconsSt
                 )
         }
     }
-    
+
+    const router = useRouter()
+
     return (
         <Menubar className="flex flex-row flex-wrap-reverse bg-transparent border-none gap-5">
             {
@@ -51,7 +55,11 @@ export default function ModulesMenu({ data, selectedPlant }: { data: MenuIconsSt
                     return (
                         <MenubarMenu key={module.id}>
                             <div className="flex flex-col items-center max-w-24 min-h-[160px] gap-2">
-                                <MenubarTrigger className="flex flex-col items-center gap-2 p-0 rounded-2xl focus:bg-white/35 data-[state=open]:bg-white/60">
+                                <MenubarTrigger onClick={() => {
+                                    if(module.id === 1){
+                                        router.push('/interactives?map-id=10002&map-type=1')
+                                    }
+                                }} className="flex flex-col items-center gap-2 p-0 rounded-2xl focus:bg-white/35 data-[state=open]:bg-white/60">
                                     {/* Imagen centrada */}
                                     <div className="border border-white/50 p-4 rounded-2xl">
                                         <div className="relative h-[67px] w-[67px] overflow-hidden">

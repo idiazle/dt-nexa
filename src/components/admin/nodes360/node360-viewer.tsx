@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Dialog,
     DialogContent,
@@ -55,10 +55,12 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                 ,
                 selectedNode.id
             )
+            console.log("MY ALL NNNNNNOOODES", allNodes);
         }
 
 
     };
+
     const handleClick = () => {
         const curr_node = getCurrentNodeFunction();
         console.log(curr_node);
@@ -118,7 +120,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                 ></ReactPhotoSphereViewer>
             </DialogContent>
             {
-                dialogMarkLink.open ? <MarkersLinksDialog allNodes={allNodes} dialogData={dialogMarkLink} setDialogData={setDialogMarkLink} /> : null
+                dialogMarkLink.open ? <MarkersLinksDialog setDialogFather={setDialogOpen} allNodes={allNodes} dialogData={dialogMarkLink} setDialogData={setDialogMarkLink} /> : null
             }
         </Dialog>
     )

@@ -15,9 +15,9 @@ import {
     SelectContent,
     SelectItem,
     SelectTrigger,
-    SelectValue
-} from '@/components/ui/select'
-import { EntityStructure, EquipmentStructure, PlanStructure, ShapeStructure } from '@/lib/utils'
+    SelectValue,
+} from "@/components/ui/select"
+import { EntityStructure, EquipmentStructure, IconStructure, Map2dShapesStructure, MenuIconsStructure, PhotogrametryStructure, PlanStructure, ShapeStructure } from '@/lib/utils'
 import { getEntities } from '@/api/admin/entities-api'
 import { getEquipments } from '@/api/admin/equipments-api'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -42,6 +42,12 @@ import {
 } from "@/components/ui/popover"
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { HexColorPicker } from "react-colorful";
+import { getNodes360 } from '@/api/admin/nodes360-api'
+import ComboNodes from '../nodes360/combo-nodes'
+import { useParams, useSearchParams } from 'next/navigation'
+import { Switch } from '@/components/ui/switch'
+import { getMapPlans2dIcons, postMapsShapes2d } from '@/api/admin/maps2d-api'
+import Image from 'next/image'
 
 interface ShapesPlanDialogStructure {
     planShape: ShapeStructure | null
@@ -53,10 +59,13 @@ interface ShapesPlanDialogStructure {
 
 
 export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanShape, dialogOpen, setDialogOpen }: ShapesPlanDialogStructure) {
+
     const [radioSelected, setRadioSelected] = useState<string>('areas')
 
     const [areas, setAreas] = useState<EntityStructure[] | null>(null)
     const [equipments, setEquipments] = useState<EquipmentStructure[] | null>(null)
+    const [nodes360, setNodes360] = useState<PhotogrametryStructure[] | null>(null)
+    const [map2dIcons, setMap2dIcons] = useState<IconStructure[] | null>(null)
 
     const getAllAreas = async () => {
         try {
@@ -79,9 +88,36 @@ export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanSha
             throw new Error('Error in getEquipments - dialog-add-shape component')
         }
     }
+    const getAll360Nodes = async () => {
+        try {
+            const response = await getNodes360()
+            if (response.status === 200) {
+                setNodes360(response.data.data)
+            }
+        } catch (error) {
+            throw new Error('Error in getEquipments - dialog-add-shape component')
+        }
+    }
+
+    const getAllIcons = async () => {
+        try {
+            const response = await getMapPlans2dIcons()
+            console.log("allicons", response.data.data);
+
+            if (response.status === 200) {
+                setMap2dIcons(response.data.data)
+            }
+        } catch (error) {
+            throw new Error('Error in getEquipments - dialog-add-shape component')
+        }
+    }
+
+
     useEffect(() => {
         getAllAreas()
         getAllEquipments()
+        getAll360Nodes()
+        getAllIcons()
     }, [])
     const [open, setOpen] = useState<boolean>(false)
     const [value, setValue] = useState<string>("")
@@ -154,50 +190,30 @@ export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanSha
     }
     const { toast } = useToast()
 
-
-
-    const postSaveShape = async () => {
-
-        if (planShape) {
-            const finalSend: ShapeStructure = {
-                shapes: JSON.stringify(planShape.shapes) as any,
-                entity_id: planShape.entity_id,
-                shape_type: planShape.shape_type,
-                plan_id: planShape.plan_id
-            }
-            console.log('finalsend', finalSend);
-
-            try {
-
-                const response = await postShapes(finalSend)
-                if (response.status === 201) {
-                    toast({
-                        duration: 3000,
-                        variant: 'default',
-                        title: 'Creación',
-                        description: 'Shape creado correctamente'
-                    })
-                    setDialogOpen(false)
-                    setFlagRefresh((prev: boolean) => !prev)
-                }
-            } catch (error) {
-                throw new Error('Error in postSaveShape - dialog-add-shape component')
-            }
-        }
+    const [markerType, setMarkerType] = useState('')
+    const initialLinkData = {
+        nodeId: '',
+        position: { textureX: 0, textureY: 0 }
     }
-    return (
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent>
-                <DialogHeader className=''>
-                    <DialogTitle>Creación de Shape</DialogTitle>
-                    <DialogDescription>
-                        Qué tipo de vinculación desea realizar?
-                    </DialogDescription>
-                </DialogHeader>
+
+    const [linkData, setLinkData] = useState<{
+        nodeId: string
+        position: { textureX: number, textureY: number }
+    } | null>(initialLinkData)
+    const [iconSelected, setIconSelected] = useState('')
+
+    const [switchObject, setSwitchObject] = useState({
+        option1: false,
+        option2: false
+    })
+
+    const renterOptionType = () => {
+
+        if (markerType === '1') {
+            return (
                 <div className='flex flex-col gap-3'>
                     {/* <h1>Qué desea vincular?</h1> */}
                     <RadioGroup value={radioSelected} onValueChange={(val) => {
-                        console.log(val);
                         setRadioSelected(val)
                         setValue('')
                     }} className='flex flex-row items-center gap-5' defaultValue="areas">
@@ -213,39 +229,222 @@ export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanSha
                     {
                         areas !== null && equipments !== null
                             ?
-                            <div className='flex flex-row w-full justify-center items-center gap-3'>
-                                {
-                                    radioSelected === 'areas' ? renderOption(areas, 'area') : renderOption(equipments, 'equipo')
-                                }
-                                <Popover>
-                                    <PopoverTrigger asChild>
-
-                                        <Button style={{
-                                            backgroundColor: planShape?.shapes.color
-                                        }} variant="outline" className={`w-[40px] h-[40px]`} />
-
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                        <HexColorPicker color={planShape?.shapes.color as any} onChange={(va) => {
-                                            setPlanShape({
-                                                ...planShape as ShapeStructure,
-                                                shapes: {
-                                                    ...planShape?.shapes as {},
-                                                    color: va
-                                                } as any
+                            <div>
+                                <div className='flex flex-row w-full justify-center items-center gap-3'>
+                                    {
+                                        radioSelected === 'areas' ? renderOption(areas, 'area') : renderOption(equipments, 'equipo')
+                                    }
+                                    <div className='flex flex-row justify-center items-center gap-2'>
+                                        <Label>Icono</Label>
+                                        <Switch checked={switchObject.option1} onCheckedChange={(val) => {
+                                            setSwitchObject({
+                                                ...switchObject,
+                                                option1: val
                                             })
                                         }} />
-                                    </PopoverContent>
-                                </Popover>
+                                    </div>
+                                </div>
+                                {
+                                    switchObject.option1 ?
+                                        <div className='flex flex-row justify-center items-center gap-3'>
+                                            <Select value={iconSelected} onValueChange={(val) => setIconSelected(val)}>
+                                                <SelectTrigger className="w-full">
+                                                    <SelectValue placeholder="Elija el ícono" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {
+                                                        map2dIcons?.map((obj) => {
+                                                            return (
+                                                                <SelectItem key={obj.id} value={String(obj.id)}>{obj.name}</SelectItem>
+                                                            )
+                                                        })
+                                                    }</SelectContent>
+                                            </Select>
+                                            {
+                                                iconSelected !== '' ?
+                                                    <Image
+                                                        alt={map2dIcons?.find((obj) => obj.id === Number(iconSelected))?.name ?? ''}
+                                                        src={map2dIcons?.find((obj) => obj.id === Number(iconSelected))?.file ?? ''}
+                                                        width={30}
+                                                        height={30}
+                                                    /> : null
+                                            }
+                                        </div> :
+                                        <div className='flex flex-col justify-center items-start gap-1 my-2'>
+                                            <Label>Color del Shape</Label>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
 
+                                                    <Button style={{
+                                                        backgroundColor: planShape?.shapes.color
+                                                    }} variant="outline" className={`w-full h-[40px]`} />
+
+                                                </PopoverTrigger>
+                                                <PopoverContent>
+                                                    <HexColorPicker color={planShape?.shapes.color as any} onChange={(va) => {
+                                                        setPlanShape({
+                                                            ...planShape as ShapeStructure,
+                                                            shapes: {
+                                                                ...planShape?.shapes as {},
+                                                                color: va
+                                                            } as any
+                                                        })
+                                                    }} />
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
+                                }
                             </div>
                             : null
                     }
 
 
                 </div>
+            )
+        } else if ((markerType === '2' || markerType === '3' || markerType === '4') && nodes360 !== null) {
+            return (
+                <div className='flex flex-col justify-center items-center gap-4 w-full'>
+                    <div className='flex flex-col w-full'>
+                        <Label>Nodo de referencia</Label>
+                        <ComboNodes data={nodes360} linkData={linkData} setLinkData={setLinkData} />
+                    </div>
+                    <div className='flex flex-col w-full'>
+                        <Label>Ícono del shape</Label>
+                        <div className='flex flex-row justify-center items-center gap-3 w-full'>
+                            <Select value={iconSelected} onValueChange={(val) => setIconSelected(val)}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Elija el ícono" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {
+                                        map2dIcons?.map((obj) => {
+                                            return (
+                                                <SelectItem key={obj.id} value={String(obj.id)}>{obj.name}</SelectItem>
+                                            )
+                                        })
+                                    }</SelectContent>
+                            </Select>
+                            {
+                                iconSelected !== '' ?
+                                    <Image
+                                        alt={map2dIcons?.find((obj) => obj.id === Number(iconSelected))?.name ?? ''}
+                                        src={map2dIcons?.find((obj) => obj.id === Number(iconSelected))?.file ?? ''}
+                                        width={30}
+                                        height={30}
+                                    /> : null
+                            }
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        else if (markerType === '5' && equipments !== null) {
+            return (
+                <div>
+                    <Label>Equipo</Label>
+
+                    <div className='flex flex-row justify-center items-center gap-2'>
+                        {
+                            renderOption(equipments, 'equipo')
+                        }
+                        <Popover>
+                            <PopoverTrigger asChild>
+
+                                <Button style={{
+                                    backgroundColor: planShape?.shapes.color
+                                }} variant="outline" className={`w-[40px] h-[40px]`} />
+
+                            </PopoverTrigger>
+                            <PopoverContent>
+                                <HexColorPicker color={planShape?.shapes.color as any} onChange={(va) => {
+                                    setPlanShape({
+                                        ...planShape as ShapeStructure,
+                                        shapes: {
+                                            ...planShape?.shapes as {},
+                                            color: va
+                                        } as any
+                                    })
+                                }} />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+
+            )
+        }
+    }
+
+
+    const postSaveShape = async () => {
+
+        if (planShape) {
+            const finalSend: Map2dShapesStructure = {
+                shapes: JSON.stringify(planShape.shapes) as any,
+                entity: planShape.entity_id,
+                mapplan2d: planShape.plan_id,
+                marker_type: Number(markerType),
+                photogrammetry_node: linkData?.nodeId !== '' ? Number(linkData?.nodeId) : null,
+                shape_icon: iconSelected !== '' ? Number(iconSelected) : null
+
+            }
+            // console.log('finalsend', finalSend);
+
+            try {
+
+                const response = await postMapsShapes2d(finalSend)
+                if (response.status === 201) {
+                    toast({
+                        duration: 3000,
+                        variant: 'default',
+                        title: 'Creación',
+                        description: 'Shape creado correctamente'
+                    })
+                    setDialogOpen(false)
+                    setFlagRefresh((prev: boolean) => !prev)
+                }
+            } catch (error) {
+                throw new Error('Error in postSaveShape - dialog-add-shape component')
+            }
+        }
+    }
+
+    return (
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent>
+                <DialogHeader className=''>
+                    <DialogTitle>Creación de Shape</DialogTitle>
+                    <DialogDescription>
+                        Qué tipo de vinculación desea realizar?
+                    </DialogDescription>
+                </DialogHeader>
+
+                <Select onValueChange={(val) => {
+                    setMarkerType(val), setIconSelected(''), setLinkData(initialLinkData)
+                    setValue('')
+                    setPlanShape({
+                        ...planShape as ShapeStructure,
+                        entity_id:null
+                    })
+                }}>
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Elija una opción" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="1">Información (2d)</SelectItem>
+                        <SelectItem value="2">Punto de Navegación (360)</SelectItem>
+                        <SelectItem value="3">Punto de Equipo (360)</SelectItem>
+                        <SelectItem value="4">Punto Auxiliar (360)</SelectItem>
+                        <SelectItem value="5">Condición de Equipo (2d)</SelectItem>
+                        <SelectItem value="6">Otro</SelectItem>
+                    </SelectContent>
+                </Select>
+
+                {
+                    markerType === '' ? null :
+                        renterOptionType()
+                }
                 <DialogFooter>
-                    <Button disabled={value === ''} type="button" onClick={() => { postSaveShape() }}>Guardar</Button>
+                    <Button type="button" onClick={() => { postSaveShape() }}>Guardar</Button>
                     <Button type="button" onClick={() => { setDialogOpen(false) }}>Cancelar</Button>
                 </DialogFooter>
             </DialogContent>
