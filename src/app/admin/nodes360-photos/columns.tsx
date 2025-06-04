@@ -32,6 +32,19 @@ interface Columns360PropsStructure extends ColumnsPropsStructure {
     onView360: (obj: any) => void
 }
 
+const renderNodeType = (nType: number) => {
+    let name = ''
+
+    if (nType === 2) {
+        name = 'Punto de Navegación'
+    } else if (nType === 3) {
+        name = 'Punto de Equipo'
+    } else if (nType === 4) {
+        name = 'Punto auxiliar'
+    }
+    return name
+}
+
 export const columnsNodes360Photos = ({ onEdit, onDelete, onView360 }: Columns360PropsStructure): ColumnDef<PhotogrametryStructure>[] => [
 
     {
@@ -41,6 +54,15 @@ export const columnsNodes360Photos = ({ onEdit, onDelete, onView360 }: Columns36
     {
         accessorKey: 'name',
         header: 'Nombre'
+    },
+    {
+        accessorKey: 'node_type',
+        header: 'Tipo de nodo',
+        cell:({row})=>{
+            return(
+                <p>{renderNodeType(row.original.node_type)}</p>
+            )
+        }
     },
     {
         accessorKey: 'caption',

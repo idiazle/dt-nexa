@@ -258,6 +258,7 @@ export interface PhotogrametryStructure {
   map_shape_data: string
   panorama: any
   thumbnail: any
+  node_type: number
   name: string
   caption: string
   links: string
@@ -287,4 +288,24 @@ export interface ShapeStructure {
   shape_type: string
   entity_id: number | null
   plan_id: number
+}
+
+
+export interface TrouInfoDocDataStructure {
+  operation_type: any
+  visible: boolean
+  equipment_id: any
+}
+
+export interface Map2dIconStructure {
+  id: number
+  group: string
+  is_blocked: boolean
+  icon_name: string
+  icon_image_b: string
+  icon_image_g: string
+  isActive: boolean
+  isHover: boolean
+  isStatic: boolean
+  entity_reference: any //
 }

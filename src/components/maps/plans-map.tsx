@@ -9,7 +9,6 @@ interface MapRenderStructure {
 }
 
 export default function PlansMap({ data }: MapRenderStructure) {
-    console.log("MY DATEISHON", data);
     
     const Map = useMemo(() => dynamic(
         () => import('@/components/maps/plans-map-container'),

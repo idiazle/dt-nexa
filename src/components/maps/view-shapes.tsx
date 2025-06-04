@@ -7,9 +7,10 @@ import { DocumentStructure, IconStructure, Map2dShapesStructure, PlanStructure, 
 import { LatLngExpression } from 'leaflet'
 import { useParams, useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-import { Circle, Marker, Polygon, Rectangle } from 'react-leaflet'
+import { Circle, Marker, Polygon, Popup, Rectangle } from 'react-leaflet'
 
 import { Icon } from 'leaflet'
+import InformationEquipmentComponent from '../interactives/information-eq'
 
 interface ViewShapesStructure {
     shapesRender: Map2dShapesStructure[] | null
@@ -115,7 +116,11 @@ export default function ViewShapes({ flagRefresh, showShapes, shapesRender, setS
                                     key={index}
                                     position={[obj.shapes.coordinates.lat, obj.shapes.coordinates.lng]}
                                     icon={iconShow} // Use the selected icon
-                                />
+                                >
+                                    <Popup>
+                                        daw
+                                    </Popup>
+                                </Marker>
                                 :
                                 <Circle
                                     key={`circle_${index}`}
@@ -205,6 +210,8 @@ export default function ViewShapes({ flagRefresh, showShapes, shapesRender, setS
             }
             {/* Aquí va el dialog de información */}
             {/* Aquí va el dialog del 360 */}
+
+            {/* <InformationEquipmentComponent /> */}
 
         </div>
 

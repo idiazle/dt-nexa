@@ -25,6 +25,13 @@ import { getNodes360ById, postNodes360, putNode360 } from '@/api/admin/nodes360-
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface Nodes360DialogStructure {
     id: number | null
@@ -35,6 +42,9 @@ interface Nodes360DialogStructure {
 export default function Nodes360Dialog({ id, dialogOpen, setDialogOpen }: Nodes360DialogStructure) {
     const FormSchema = z.object({
         map_shape_data: z.any().nullable(),
+        node_type: z.string().min(1, {
+            message: 'Elija el tipo de nodo'
+        }),
         name: z.string().min(5, {
             message: "Como mínimo debe ser de longitud 5.",
         }),
@@ -60,6 +70,7 @@ export default function Nodes360Dialog({ id, dialogOpen, setDialogOpen }: Nodes3
         const formData = new FormData()
         formData.append('name', data.name)
         formData.append('caption', data.caption)
+        formData.append('node_type', data.node_type)
         formData.append('map_shape_data', data.map_shape_data)
         if (data.panorama instanceof File) {
             formData.append('panorama', data.panorama);
@@ -113,9 +124,12 @@ export default function Nodes360Dialog({ id, dialogOpen, setDialogOpen }: Nodes3
     const getApiNode360ById = async () => {
         try {
             const response = await getNodes360ById(Number(id))
+            console.log("adad", response.data.data);
+            
             setImageSrc(response.data.data.panorama)
             form.setValue('name', response.data.data.name);
             form.setValue('map_shape_data', response.data.data.map_shape_data);
+            form.setValue('node_type', String(response.data.data.node_type));
             form.setValue('caption', response.data.data.caption);
             form.setValue('panorama', response.data.data.panorama);
 
@@ -164,6 +178,26 @@ export default function Nodes360Dialog({ id, dialogOpen, setDialogOpen }: Nodes3
                                     {/* <FormDescription>
                                         This is your public display name.
                                     </FormDescription> */}
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="node_type"
+                            render={({ field: { value, onChange, ...field } }: any) => (
+                                <FormItem>
+                                    <FormLabel>Tipo de Node</FormLabel>
+                                    <Select onValueChange={onChange} value={value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Seleccione el tipo" />
+                                        </SelectTrigger>
+                                        <SelectContent >
+                                            <SelectItem value={String(2)}>Punto de Navegación</SelectItem>
+                                            <SelectItem value={String(3)}>Punto de Equipo</SelectItem>
+                                            <SelectItem value={String(4)}>Punto Auxiliar</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
