@@ -57,7 +57,7 @@ export default function ModulesMenu({ data, selectedPlant }: { data: MenuIconsSt
                             <div className="flex flex-col items-center max-w-24 min-h-[160px] gap-2">
                                 <MenubarTrigger onClick={() => {
                                     if(module.id === 1){
-                                        router.push('/interactives?map-id=10004&map-type=1')
+                                        router.push('/interactives/dtwin')
                                     }
                                 }} className="flex flex-col items-center gap-2 p-0 rounded-2xl focus:bg-white/35 data-[state=open]:bg-white/60">
                                     {/* Imagen centrada */}

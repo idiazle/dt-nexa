@@ -25,7 +25,7 @@ function Dtwin() {
         loadingImg='none'
       />
       <div className='absolute flex flex-row-rever gap-1 bottom-3 left-1/2 -translate-x-1/2 z-50 bg-gray-200 p-2 rounded-md'>
-        <a href="/interactives?map-id=10004&map-type=1" className="font-bold text-3xl p-4 rounded-lg text-black bg-gray-400">PFD</a>
+        <a href={"/interactives?map-id=10005&map-type=1"} className="font-bold text-3xl p-4 rounded-lg text-black bg-gray-400">PFD</a>
         <a href={'/interactives?map-id=10003&map-type=3'} className='font-bold text-3xl p-4 rounded-lg text-black bg-gray-400'> PND</a>
       </div>
     </>

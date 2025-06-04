@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
 import { Button } from '../ui/button';
 import { TbTriangleSquareCircleFilled } from "react-icons/tb";
-import { FaFile, FaSquarePlus, FaTrash } from "react-icons/fa6";
+import { FaAngleDown, FaAngleUp, FaBars, FaCircleXmark, FaFile, FaSquarePlus, FaTrash } from "react-icons/fa6";
 import ShapesPlanDialog from '../admin/plans/shapes-plan-dialog';
 import { EyeClosedIcon } from '@radix-ui/react-icons';
 import { EyeIcon } from 'lucide-react';
@@ -32,6 +32,8 @@ import { toast } from '../ui/use-toast'
 import AlertDeleteDialog from '../general/alert-delete-dialog';
 import InformationEquipmentComponent from '../interactives/information-eq';
 import Link from 'next/link';
+import Image from 'next/image';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 
 interface MapProps {
@@ -371,10 +373,43 @@ export default function PlansMapContainer(Map: MapProps) {
     equipment_id: null,
   })
 
+  const [isOpen, setIsOpen] = useState<boolean>(true)
+  const [planeSelected, setPlaneSelected] = useState<string>('2')
 
   return (
     <div className='flex flex-col w-full h-full relative' ref={refDivOverflow}>
       <div className='relative w-full h-full'>
+        <div className='flex flex-row h-[52px] w-full justify-between items-center bg-[#022799] border-b border-gray-300 text-white px-3'>
+          <div className='flex flex-row gap-3 w-1/3 items-center justify-start'>
+            <Image
+              src="/img/nexa_logo.png"
+              height={100}
+              width={100}
+              objectFit='contain'
+              alt={"nexa-logo"}
+              className='bg-white rounded-md'
+            />
+            {/* <h1 className='font-semibold'>Cajamarquilla</h1> */}
+          </div>
+          <div className='flex flex-col justify-center items-center w-1/3'>
+            <h1 className='text-xl font-bold'>DIAGRAMA DE FLUJO DE PROCESOS</h1>
+          </div>
+          <div className='flex flex-row gap-5 items-center w-1/3 justify-end'>
+            <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
+              <SelectTrigger className="w-40 h-8 bg-transparent border-white bg-white text-black">
+                <SelectValue placeholder="Seleccionar Planta" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">S20-01</SelectItem>
+                <SelectItem value="2">S20-02</SelectItem>
+                <SelectItem value="3">S20-03</SelectItem>
+              </SelectContent>
+            </Select>
+            <div className='bg-white text-black p-2 rounded-md flex flex-row items-center'>
+              <FaBars />
+            </div>
+          </div>
+        </div>
         <MapContainer
           ref={mapRef}
           crs={L.CRS.Simple}
@@ -521,14 +556,15 @@ export default function PlansMapContainer(Map: MapProps) {
 
       {/* BOTTOM MENU CONTROL */}
       <div className='absolute flex flex-row-rever gap-1 bottom-3 left-1/2 -translate-x-1/2 z-50 bg-gray-200 p-2 rounded-md'>
-        <a href="/interactives?map-id=10004&map-type=1" className="font-bold text-3xl p-4 rounded-lg text-black bg-gray-400">PFD</a>
-        <a href={'/interactives?map-id=10003&map-type=3'} className='font-bold text-3xl p-4 rounded-lg text-black bg-gray-400'> PND</a>
+        <a href={"interactives?map-id=10005&map-type=1"} className="font-bold text-4xl p-4 rounded-full text-black bg-white border-blue-700 border">PFD</a>
+        <a href={'/interactives?map-id=10003&map-type=3'} className='font-bold text-4xl p-4 rounded-lg text-black'> PND</a>
       </div>
 
 
       {/* LEFT DATA INFORMATION SHOW */}
-      <div className={`absolute  text-black p-3 flex flex-col  transition-all duration-700 h-5/6 left-0 m-auto top-0 bottom-0 ${selectedShape !== null && !closeInformation ? 'w-1/4 opacity-100' : 'w-0 opacity-0'} bg-slate-200 z-50 rounded-r border`}>
-        {
+      <div className={`absolute  text-black p-3 flex flex-col transition-all duration-500 h-5/6 right-0 m-auto top-0 bottom-0 ${selectedShape !== null && !closeInformation ? 'w-1/4 opacity-100' : 'w-0 opacity-0'} bg-slate-200 z-50 rounded-r border`}>
+
+        {/* {
           renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
             <Spinner />
           </div> : <div className='h-full w-full overflow-hidden flex flex-col'>
@@ -540,12 +576,169 @@ export default function PlansMapContainer(Map: MapProps) {
               <FaTrash />
             </Button>
           </div>
-        }
-        <div className='absolute flex flex-row justify-between items-center right-0 top-0 -mt-0.5 bg-[#030F2E] w-full h-[23px]'>
-          <p className='text-white ml-2'>Información adicional de {entityType === 3 ? 'equipo' : 'área'}</p>
-          <FaWindowClose className='cursor-pointer' onClick={() => { setCloseInformation(true), setSelectedShape(null) }} size={25} color='white' />
+        } */}
+        <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#030F2E] w-full h-[40px]'>
+          <p className='text-white ml-2 font-bold'>{entityType === 3 ? 'Informacion adicional de equipo' : 'Informacion de Reportes'}</p>
+          <FaWindowClose className='cursor-pointer' onClick={() => { setCloseInformation(true), setSelectedShape(null) }} size={35} color='white' />
         </div>
 
+        <div className='flex flex-row items-center justify-between bg-gray-500 p-2'>
+          <h1 className='font-bold text-white'>Reporte de Condición</h1>
+          {/* <button onClick={() => { console.log("Cerrar reporte"), setShowPanel(false) }} >
+              <FaCircleXmark className='text-white' size={25} />
+            </button> */}
+        </div>
+        <div className='flex flex-col gap-2 px-2 text-sm bg-gray-200 h-1/3 overflow-y-auto py-2'>
+          <h1 className='font-bold text-black text-center'>
+            No existe reportes</h1>
+          {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                <h1 className='font-bold'>REP-001_25 - 0210-CV-004</h1>
+                <p>Fecha: 2023-10-01</p>
+                <p>Estado: Normal </p>
+              </div>
+              <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                <h1 className='font-bold'>REP-001_25 - 0210-CV-004</h1>
+                <p>Fecha: 2023-10-01</p>
+                <p>Estado: Normal </p>
+              </div>
+              <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                <h1 className='font-bold'>REP-001_25 - 0210-CV-004</h1>
+                <p>Fecha: 2023-10-01</p>
+                <p>Estado: Normal </p>
+              </div> */}
+        </div>
+        <div className='flex flex-col text-sm h-1/3'>
+          {/* Header */}
+          <div
+            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-md cursor-pointer'
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <h1 className='font-bold text-white'>Información de Equipo</h1>
+            {isOpen ? (
+              <FaAngleUp className='text-white' size={20} />
+            ) : (
+              <FaAngleDown className='text-white' size={20} />
+            )}
+          </div>
+
+          {/* Contenido colapsable */}
+          <div
+            className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'
+              }`}
+          >
+            <div className='flex flex-col gap-2 px-5 py-2 bg-gray-100 rounded-md text-xs'>
+              <div className='flex flex-col gap-1 text-black'>
+                <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
+                <p>B-2020</p>
+              </div>
+              <div className='flex flex-col gap-1 text-black'>
+                <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
+                <p>Enfriador Seccional</p>
+              </div>
+              <div className='flex flex-col gap-1 text-black'>
+                <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
+                <p>Planta Tostación - 02</p>
+              </div>
+              <div className='flex flex-col gap-1 text-black'>
+                <h1 className='font-bold border-b-2 border-black'>Características:</h1>
+                <div>
+                  <p>No existen características</p>
+                  {/* <p>Tipo: Válvula de Control</p>
+                      <p>Marca: Emerson</p>
+                      <p>Modelo: 1234-5678</p>
+                      <p>Serial: 987654321</p> */}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='flex flex-col text-sm bg-white  h-1/3 gap-2'>
+          <div
+            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-md cursor-pointer'
+          // onClick={() => setIsOpen(!isOpen)}
+          >
+            <h1 className='font-bold text-white'>Opciones de Equipo</h1>
+            {isOpen ? (
+              <FaAngleUp className='text-white' size={20} />
+            ) : (
+              <FaAngleDown className='text-white' size={20} />
+            )}
+          </div>
+          <div className='grid grid-cols-4 gap-1 px-2 text-black'>
+            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+              <Image
+                src="/img/icons/ico-28.svg"
+                alt="Mantenimiento"
+                width={50}
+                height={50}
+              />
+              <span className='text-xs'>Despiece</span>
+            </button>
+            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+              <Image
+                src="/img/icons/ico-29.svg"
+                alt="Mantenimiento"
+                width={50}
+                height={50}
+              />
+              <span className='text-xs'>Reportes Mantenimiento</span>
+            </button>
+            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+              <Image
+                src="/img/icons/ico-30.svg"
+                alt="Mantenimiento"
+                width={50}
+                height={50}
+              />
+              <span className='text-xs'>Videos Asociados</span>
+            </button>
+            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+              <Image
+                src="/img/icons/ico-31.svg"
+                alt="Mantenimiento"
+                width={50}
+                height={50}
+              />
+              <span className='text-xs'>Historico de Fotos</span>
+            </button>
+            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+              <Image
+                src="/img/icons/ico-32.svg"
+                alt="Mantenimiento"
+                width={50}
+                height={50}
+              />
+              <span className='text-xs'>Ordenes de Trabajo</span>
+            </button>
+            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+              <Image
+                src="/img/icons/ico-33.svg"
+                alt="Mantenimiento"
+                width={50}
+                height={50}
+              />
+              <span className='text-xs'>Historial de Fallas</span>
+            </button>
+            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+              <Image
+                src="/img/icons/ico-34.svg"
+                alt="Mantenimiento"
+                width={50}
+                height={50}
+              />
+              <span className='text-xs'>Planes Mantto</span>
+            </button>
+            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+              <Image
+                src="/img/icons/ico-35.svg"
+                alt="Mantenimiento"
+                width={50}
+                height={50}
+              />
+              <span className='text-xs'>Listado de Repuestos</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {
