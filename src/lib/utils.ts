@@ -309,3 +309,17 @@ export interface Map2dIconStructure {
   isStatic: boolean
   entity_reference: any //
 }
+
+export interface StateInformationStructure {
+  data: any
+  isVisible: boolean
+  isVisibleInteractive: boolean
+  type: string
+  isHover: boolean | null
+  isActive: boolean | null
+}
+export interface TrouInfoDocDataStructure {
+  operation_type: any
+  visible: boolean
+  equipment_id: any
+}

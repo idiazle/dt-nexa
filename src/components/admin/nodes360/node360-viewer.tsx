@@ -89,7 +89,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
 
     return (
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent className='max-h-[98vh] max-w-[95vw]'>
+            <DialogContent className='max-h-full max-w-full'>
                 <DialogHeader>
                     <DialogTitle>{selectedNode?.name}</DialogTitle>
                     <DialogDescription />

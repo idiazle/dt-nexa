@@ -21,6 +21,10 @@ interface InfoEquipCompStructure {
   setNavIcons: (value: any) => void
 }
 export default function InformationEquipmentComponent ({ equipmentIsPressed, refToDivOverflow, equipmentSelected, setEquipmentSelected, setStateInformation, setNavIcons, trouInfodocData, setTrouInfodocData }: InfoEquipCompStructure) {
+  
+  console.log("KDWOADKOWADWAO", equipmentSelected);
+  
+  
   const [equipInformation, setEquipInformation] = useState<EquipmentStructure | null>(null)
   const [troubleshooting, setTroubleshooting] = useState<any[] | null>(null)
 
@@ -33,7 +37,7 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
     setEquipInformation(null)
     setTroubleshooting(null)
     try {
-      const response = await getEquipmentById(equipmentSelected.shape.entity_id as number)
+      const response = await getEquipmentById(equipmentSelected.obj.entity_id.id as number)
       setEquipInformation(response.data.data)
     } catch (error) {
       console.log(error)
@@ -98,7 +102,7 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
   const getTroluble = async () => {
     if (equipmentSelected !== null) {
       try {
-        const responseTrouble = await getTroubleByEqId(equipmentSelected.shape.entity_id as number)
+        const responseTrouble = await getTroubleByEqId(equipmentSelected.obj.entity_id.id as number)
         setTroubleshooting(responseTrouble.data.data)
       } catch (error) {
         console.log(error)
@@ -136,9 +140,10 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
   const [dataForInfoDocumental, setDataForInfoDocumental] = useState<null | any>(null)
   const getInfoDocumental = async () => {
     // console.log('ENTRANDO', equipmentSelected)
-    if (equipmentSelected.shape.entity_id !== null) {
+    if (equipmentSelected.obj.entity_id !== null) {
+      
       try {
-        const response = await getDocumentsByArea(equipmentSelected.shape.entity_id as number, '3')
+        const response = await getDocumentsByArea(equipmentSelected.obj.entity_id.id as number, '3')
         // console.log('MY RESPONSE', response)
         if (response.status === 200) {
           setDataForInfoDocumental(response.data.data)

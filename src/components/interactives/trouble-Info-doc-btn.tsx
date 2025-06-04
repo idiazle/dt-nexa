@@ -1,5 +1,4 @@
 import { getAllAuxList, getDocumentsByArea } from '@/api/admin/documents-api'
-import TroubleMap2dTable from '@/components/admin/troubles/trouble-map2d-table'
 import { type OneAuxStructure } from '@/lib/utils'
 import React, { useEffect, useState } from 'react'
 import {
@@ -24,6 +23,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import ModalViewMedia from '../viewers/modal-viewer'
+import TroubleMap2dTable from './trouble-map2d-table'
 
 interface TshootInfDocumButtonsStructure {
   data: any

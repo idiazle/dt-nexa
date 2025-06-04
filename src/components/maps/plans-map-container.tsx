@@ -7,7 +7,7 @@ import 'leaflet-draw/dist/leaflet.draw.css'
 import "leaflet/dist/leaflet.css";
 import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
 import "leaflet-defaulticon-compatibility";
-import { DocumentStructure, EntityStructure, EquipmentStructure, Map2dShapesStructure, Map2dStructure, PlanStructure, ShapeStructure } from '@/lib/utils';
+import { DocumentStructure, EntityStructure, EquipmentStructure, Map2dShapesStructure, Map2dStructure, PlanStructure, ShapeStructure, StateInformationStructure, TrouInfoDocDataStructure } from '@/lib/utils';
 import { bounds, centerLat, centerLng, maxBounds } from './static-data';
 import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
@@ -30,6 +30,7 @@ import {
 import { deleteShapeById, putShapeById } from '@/api/shapes-api'
 import { toast } from '../ui/use-toast'
 import AlertDeleteDialog from '../general/alert-delete-dialog';
+import InformationEquipmentComponent from '../interactives/information-eq';
 
 
 interface MapProps {
@@ -54,7 +55,7 @@ interface MenuBtns {
 
 
 export default function PlansMapContainer(Map: MapProps) {
-    
+
     // const { zoom = defaults.zoom, posix } = Map
     const [flagRefresh, setFlagRefresh] = useState<boolean>(false)
     const [shapesRender, setShapesRender] = useState<ShapeStructure[] | null>([])
@@ -358,10 +359,20 @@ export default function PlansMapContainer(Map: MapProps) {
 
 
 
+    const refDivOverflow = useRef(null)
+
+    const [equipmentPressed, setEquipmentPressed] = useState(false)
+    const [equipmentSelected, setEquipmentSelected] = useState<any>(null)
+    const [stateInformation, setStateInformation] = useState<StateInformationStructure | null>(null)
+    const [trouInfodocData, setTrouInfodocData] = useState<TrouInfoDocDataStructure>({
+        operation_type: null,
+        visible: false,
+        equipment_id: null,
+    })
 
 
     return (
-        <div className='flex flex-col w-full h-full'>
+        <div className='flex flex-col w-full h-full relative' ref={refDivOverflow}>
             <div className='relative w-full h-full'>
                 <MapContainer
                     ref={mapRef}
@@ -440,13 +451,37 @@ export default function PlansMapContainer(Map: MapProps) {
                                         /> : null
                                     }
                                 </>
-                                <ViewShapes  flagRefresh={flagRefresh} showShapes={actionMenuBtns[0].active} setRenderLeftInformation={setRenderLeftInformation} setCloseInformation={setCloseInformation} setSelectedShape={setSelectedShape} shapesRender={shapesRender} setShapesRender={setShapesRender} />
+                                <ViewShapes
+                                    refDivOverflow={refDivOverflow}
+                                    flagRefresh={flagRefresh}
+                                    showShapes={actionMenuBtns[0].active}
+                                    setRenderLeftInformation={setRenderLeftInformation}
+                                    setCloseInformation={setCloseInformation} 
+                                    setSelectedShape={setSelectedShape} 
+                                    shapesRender={shapesRender} 
+                                    setShapesRender={setShapesRender}
+                                    setEquipmentPressed={setEquipmentPressed}
+                                    setEquipmentSelected={setEquipmentSelected}
+                                    />
                                 : null
 
                             </FeatureGroup> : null
                     }
                 </MapContainer>
             </div>
+            {
+                equipmentPressed ?
+                    <InformationEquipmentComponent
+                        equipmentIsPressed={equipmentPressed}
+                        setEquipmentSelected={setEquipmentSelected}
+                        equipmentSelected={equipmentSelected}
+                        refToDivOverflow={refDivOverflow}
+                        setNavIcons={() => { }}
+                        setStateInformation={setStateInformation}
+                        setTrouInfodocData={setTrouInfodocData}
+                        trouInfodocData={trouInfodocData}
+                    /> : null
+            }
 
             {/* TOP MENU CONTROL */}
             <div className={`absolute transition-all duration-500 m-auto left-2 bottom-10 flex justify-center items-center ${!controlMinimized ? 'opacity-100' : 'opacity-0'} w-7 h-7`}>
