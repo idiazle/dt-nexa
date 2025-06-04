@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Neucha } from "next/font/google"
+import { Barlow } from "next/font/google"
 import "../styles/globals.css";
 import { cn } from "@/lib/utils"
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -8,14 +8,14 @@ import NextAuthProvider from "@/components/providers/next-auth-provider";
 import { OptionAsideProvider } from "@/context/option-aside-context";
 
 
-const fontSetter = Neucha({
+const fontSetter = Barlow({
   weight: '400',
   subsets: ['latin']
 })
 
 export const metadata: Metadata = {
-  title: "Salares Norte",
-  description: "Web de Salares",
+  title: "Digital Twin Nexa",
+  description: "Gemelo Digital de Nexa",
 };
 
 
@@ -25,12 +25,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // <html lang="en" suppressHydrationWarning>
-    //   <body className={cn(
-    //     "min-h-screen bg-background font-sans antialiased",
-    //     fontSans.variable
-    //   )}>{children}</body>
-    // </html>
     <html lang="en" suppressHydrationWarning>
       <head />
       <body

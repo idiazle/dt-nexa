@@ -144,7 +144,7 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
       
       try {
         const response = await getDocumentsByArea(equipmentSelected.obj.entity_id.id as number, '3')
-        // console.log('MY RESPONSE', response)
+        console.log('MY RESPONSE', response.data.data)
         if (response.status === 200) {
           setDataForInfoDocumental(response.data.data)
         }
@@ -161,8 +161,10 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
   }, [equipmentSelected])
 
   // console.log(dataForInfoDocumental?.length)
-  // console.log(equipmentSelected?.entity_id)
+  // console.log("trouInfodocData", trouInfodocData)
 
+  console.log("EQUIPMENT SELECTEED", equipmentSelected);
+  
   return (
 
     <div style={{ left: equipmentSelected?.position?.x - overflowValues.axisX, top: equipmentSelected?.position?.y - overflowValues.axisY }} className={`absolute bg-[#eeeeee] rounded-lg transition-all duration-300  h-[450px] ${equipmentSelected?.isVisible === true ? 'opacity-100 visible' : 'opacity-0 hidden'}`} >
@@ -273,7 +275,7 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
                     setTrouInfodocData({
                       ...trouInfodocData,
                       operation_type: 1,
-                      equipment_id: equipmentSelected?.shape?.entity_id,
+                      equipment_id: equipmentSelected?.obj?.entity_id.id,
                       visible: true
                     })
                   }}>
@@ -283,7 +285,7 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
                     setTrouInfodocData({
                       ...trouInfodocData,
                       operation_type: 2,
-                      equipment_id: equipmentSelected?.shape?.entity_id,
+                      equipment_id: equipmentSelected?.obj?.entity_id.id,
                       visible: true
                     })
                     setButtonMoreINfoPressed(!buttonMoreINfoPressed)

@@ -33,7 +33,7 @@ interface TshootInfDocumButtonsStructure {
   setIsThereInfoDoc: (value: boolean) => void
 }
 export const TshootInfDocumButtons = ({ data, setData, trouble, triggerButton, setIsThereInfoDoc }: TshootInfDocumButtonsStructure) => {
-  // console.log('ABRIENDO', data.equipment_id)
+  console.log('ABRIENDO', data)
 
   let parsedProblems = []
   if (trouble != null && trouble.length > 0) {
