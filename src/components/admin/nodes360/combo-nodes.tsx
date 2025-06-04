@@ -34,7 +34,7 @@ export default function ComboNodes({ data,linkData, setLinkData }: { data: any[]
                     className="justify-between w-full"
                 >
                     {linkData.nodeId
-                        ? data.find((framework) => String(framework.id) === linkData.nodeId)?.name
+                        ? data?.find((framework) => String(framework.id) === linkData.nodeId)?.name
                         : "Seleccione el nodo..."}
                     <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -45,7 +45,7 @@ export default function ComboNodes({ data,linkData, setLinkData }: { data: any[]
                     <CommandList>
                         <CommandEmpty>Nodo no encontrado.</CommandEmpty>
                         <CommandGroup>
-                            {data.map((framework) => (
+                            {data?.map((framework) => (
                                 <CommandItem
                                     key={framework.id}
                                     value={String(framework.id)}

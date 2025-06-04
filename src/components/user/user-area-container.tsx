@@ -687,12 +687,9 @@ export default function UserAreaContainer() {
         )
     }
 
-
     console.log("Option selected", optionSelected);
     console.log("Equipment selected", equipmentSelected);
     console.log("DOCUMENTS BY EQUIPMENT OBJECT", docsByEquipment);
-
-
 
 
     return (

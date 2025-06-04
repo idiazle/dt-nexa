@@ -15,7 +15,7 @@ import Node360Viewer from '../admin/nodes360/node360-viewer'
 import { getNodes360 } from '@/api/admin/nodes360-api'
 
 interface ViewShapesStructure {
-    shapesRender: Map2dShapesStructure[] | null
+    shapesRender: ShapeStructure[] | null
     setShapesRender: (val: ShapeStructure[]) => void
     setSelectedShape: (val: ShapeStructure) => void
     setCloseInformation: (val: boolean) => void

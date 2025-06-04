@@ -239,6 +239,11 @@
   resolved "https://registry.npmjs.org/@panva/hkdf/-/hkdf-1.2.1.tgz"
   integrity sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==
 
+"@photo-sphere-viewer/autorotate-plugin@^5.13.2":
+  version "5.13.2"
+  resolved "https://registry.yarnpkg.com/@photo-sphere-viewer/autorotate-plugin/-/autorotate-plugin-5.13.2.tgz#f40c5e5af0cb0630ac15e91eee6e3c5c61709354"
+  integrity sha512-UBPneuJU+mEqqxox318r893Xbl8m5AvKuJ/Fmc6v4tYHUXQ/nA/q3R80gBRQxqllHnTM6xCiU41Op/1Bv0r7qA==
+
 "@photo-sphere-viewer/core@^5.13.2":
   version "5.13.2"
   resolved "https://registry.npmjs.org/@photo-sphere-viewer/core/-/core-5.13.2.tgz"

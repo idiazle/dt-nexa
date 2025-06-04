@@ -24,8 +24,7 @@ interface ModalViewMediaStructure {
     type: string
 }
 export default function ModalViewMedia({ open, setOpen, information, type }: ModalViewMediaStructure) {
-console.log(information.data);
-console.log(type);
+console.log("url",information.data.file_url);
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
