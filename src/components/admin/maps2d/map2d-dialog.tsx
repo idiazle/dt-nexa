@@ -142,7 +142,7 @@ export default function Map2dDialog({ id, dialogOpen, setDialogOpen }: Map2dDial
               formMap2d.getValues('file') !== null && id !== null && typeof formMap2d.getValues('file') === 'string' ?
                 <div className='flex justify-center items-center my-5'>
                   <Image
-                    src={formMap2d.getValues('file')}
+                    src={String(formMap2d.getValues('file'))}
                     alt={formMap2d.getValues('name')}
                     height={450}
                     width={450}

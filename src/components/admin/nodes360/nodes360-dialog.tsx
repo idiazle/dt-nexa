@@ -63,7 +63,7 @@ export default function Nodes360Dialog({ id, dialogOpen, setDialogOpen }: Nodes3
     })
     const { toast } = useToast()
     const router = useRouter()
-    const [imageSrc, setImageSrc] = useState(null);
+    const [imageSrc, setImageSrc] = useState<any>(null);
 
     const handleSubmit = async (data: z.infer<typeof FormSchema>) => {
 

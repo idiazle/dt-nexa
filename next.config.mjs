@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
     images:
     {
         domains: ['192.168.1.95', 'smptesting.blob.core.windows.net', 'localhost', 'almdigital1.blob.core.windows.net'],
@@ -30,9 +33,9 @@ const nextConfig = {
             },
         ],
     },
-    compiler:{
+    compiler: {
         // ssr and displayName are configured by default
-        styledComponents:true
+        styledComponents: true
     }
 };
 

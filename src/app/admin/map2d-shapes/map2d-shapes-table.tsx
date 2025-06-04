@@ -2,12 +2,11 @@
 import { Map2dShapesStructure } from '@/lib/utils'
 import React, { useCallback, useMemo, useState } from 'react'
 import { DataTable } from './data-table'
-import { columnsMap2d, columnsMapShapes2d } from './columns'
+import { columnsMapShapes2d } from './columns'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/components/ui/use-toast'
 import AlertDeleteDialog from '@/components/general/alert-delete-dialog'
-import { deleteMapPlans2d, deleteMapShape2dById } from '@/api/admin/maps2d-api'
-import Map2dDialog from '@/components/admin/maps2d/map2d-dialog'
+import { deleteMapShape2dById } from '@/api/admin/maps2d-api'
 
 interface Map2dShapesTableStructure {
     data: Map2dShapesStructure[]
@@ -32,7 +31,7 @@ export default function Maps2dShapesTable({ data }: Map2dShapesTableStructure) {
     const delEntity = async () => {
         if (selectedMapShape !== null) {
             try {
-                const response = await deleteMapShape2dById(selectedMapShape.id)
+                const response = await deleteMapShape2dById(Number(selectedMapShape.id))
                 if (response.status === 200) {
                     router.refresh()
                     toast({
@@ -56,7 +55,7 @@ export default function Maps2dShapesTable({ data }: Map2dShapesTableStructure) {
                 dialogOpen && selectedMapShape !== null ? <Map2dDialog id={selectedMapShape.id} setDialogOpen={setDialogOpen} dialogOpen={dialogOpen} /> : null
             } */}
             {
-                openAlertDelete && selectedMapShape !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delEntity} objName={selectedMapShape.name} /> : null
+                openAlertDelete && selectedMapShape !== null ? <AlertDeleteDialog open={openAlertDelete} setOpen={setOpenAlertDelete} executeMethod={delEntity} objName={String(selectedMapShape.id)} /> : null
             }
         </div>
     )
