@@ -524,7 +524,7 @@ export default function PlansMapContainer(Map: MapProps) {
       }
 
       {/* TOP MENU CONTROL */}
-      <div className={`absolute transition-all duration-500 m-auto left-2 bottom-10 flex justify-center items-center ${!controlMinimized ? 'opacity-100' : 'opacity-0'} w-7 h-7`}>
+      <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center ${!controlMinimized ? 'opacity-100' : 'opacity-0'} w-7 h-7`}>
         <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
           {/* <FaSquareMinus size={20} className='absolute right-0 top-0 hover:cursor-pointer' onClick={() => { setControlMinimized(true) }} /> */}
           {
@@ -533,16 +533,37 @@ export default function PlansMapContainer(Map: MapProps) {
                 <TooltipProvider delayDuration={300} key={obj.id}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button key={obj.id} className='rounded-sm h-full w-full bg-[#ffffff] border-[#cccccc] hover:bg-[#eeeeee]' size={'icon'} variant={'outline'} onClick={() => handleClickBtn(obj)}>
-                        {/* <div className='flex flex-col justify-center items-center'>
+                      <button
+                        onClick={() => {
+                          // setActivateEquipments(!activateEquipments)
+                          handleClickBtn(obj)
+                        }}
+                        className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
+                        {
+                          obj.active ? null:<FaCircle size={25} color='red' />
+                        }
+                        <h1 className='font-bold'>{obj.active ? 'ON' : 'OFF'}</h1>
+                        {
+                          obj.active ? <FaCircle size={25} color='green' /> : null
+                        }
+                      </button>
+                      {/* <Button
+                        key={obj.id}
+                        className='rounded-sm h-full w-full bg-[#ffffff] border-[#cccccc] hover:bg-[#eeeeee]' size={'icon'} variant={'outline'} onClick={() => handleClickBtn(obj)}
+                      > */}
+                      {/* <div className='flex flex-col justify-center items-center'>
                                                     <div className='flex flex-row justify-center items-center gap-3'> */}
-                        {/* {obj.icon} */}
-                        {obj.active ? <EyeIcon size={20} color='#464646' /> : <EyeClosedIcon fontSize={20} color='#464646' />}
-                        {/* </div> */}
-                        {/* <EyeIcon/> */}
-                        {/* <p className='text-xs'>{!obj.active ? obj.show_name : obj.hide_name}</p> */}
-                        {/* </div> */}
-                      </Button>
+                      {/* {obj.icon} */}
+                      {/* {
+                          obj.active
+                            ? <EyeIcon size={20} color='#464646' />
+                            : <EyeClosedIcon fontSize={20} color='#464646' />
+                        } */}
+                      {/* </div> */}
+                      {/* <EyeIcon/> */}
+                      {/* <p className='text-xs'>{!obj.active ? obj.show_name : obj.hide_name}</p> */}
+                      {/* </div> */}
+                      {/* </Button> */}
                     </TooltipTrigger>
                     <TooltipContent side='right'>
                       <p>{!obj.active ? obj.show_name : obj.hide_name}</p>
@@ -556,7 +577,7 @@ export default function PlansMapContainer(Map: MapProps) {
       </div>
 
       {/* LEFT BOTTOM MENU CONTROL */}
-      <div className='absolute bottom-20 left-5 flex flex-col items-center w-32 gap-2'>
+      {/* <div className='absolute bottom-20 left-5 flex flex-col items-center w-32 gap-2'>
         <button
           onClick={() => {
             setActivateEquipments(!activateEquipments)
@@ -570,7 +591,7 @@ export default function PlansMapContainer(Map: MapProps) {
             activateEquipments ? null : <FaCircle size={25} color='green' />
           }
         </button>
-      </div>
+      </div> */}
 
       {/* CENTER BOTTOM MENU CONTROL */}
       <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
@@ -593,13 +614,13 @@ export default function PlansMapContainer(Map: MapProps) {
       </div>
 
       {/* RIGTH BOTTOM MENU CONTROL */}
-      <div className='absolute flex flex-row bottom-20 right-28 w-32 gap-1'>
+      {/* <div className='absolute z-10 flex flex-row bottom-20 right-28 w-32 gap-1'>
         <button
           onClick={() => {
             setPnavActive(!pnavActive)
             // setActivateEquipments(!activateEquipments)
           }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pnavActive ? 'bg-blue-600 text-white' : ''}`}>
+          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pnavActive ? 'bg-[#022799] text-white' : ''}`}>
           <h1 className='font-bold'>Pnav</h1>
         </button>
         <button
@@ -607,7 +628,7 @@ export default function PlansMapContainer(Map: MapProps) {
             setPeqActive(!peqActive)
             // setActivateEquipments(!activateEquipments)
           }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${peqActive ? 'bg-blue-600 text-white' : ''}`}>
+          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${peqActive ? 'bg-[#022799] text-white' : ''}`}>
           <h1 className='font-bold'>Peq</h1>
         </button>
         <button
@@ -615,14 +636,14 @@ export default function PlansMapContainer(Map: MapProps) {
             setPauxActive(!pauxActive)
             // setActivateEquipments(!activateEquipments)
           }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pauxActive ? 'bg-blue-600 text-white' : ''}`}>
+          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pauxActive ? 'bg-[#022799] text-white' : ''}`}>
           <h1 className='font-bold'>Paux</h1>
         </button>
-      </div>
+      </div> */}
 
 
       {/* LEFT DATA INFORMATION SHOW */}
-      <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 ${selectedShape !== null && !closeInformation ? 'w-[20%] opacity-100' : 'w-0 opacity-0'} bg-slate-100 z-10 border`}>
+      <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 ${selectedShape !== null && !closeInformation ? 'w-[20%] opacity-100' : 'w-0 opacity-0'} bg-slate-100 z-20 border`}>
 
         {/* {
           renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
