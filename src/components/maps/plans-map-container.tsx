@@ -35,6 +35,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { UserInfoMenu } from '../auth/user-info-menu';
+import { useSearchParams } from 'next/navigation';
 
 
 interface MapProps {
@@ -384,8 +385,13 @@ export default function PlansMapContainer(Map: MapProps) {
   const [peqActive, setPeqActive] = useState<boolean>(false)
   const [pauxActive, setPauxActive] = useState<boolean>(false)
 
+  const searchParams = useSearchParams()
+  const mapType = searchParams.get('map-type')
+
+  console.log("MAP TYPE", mapType)
+
   return (
-    <div className='flex flex-col w-full h-full relative' ref={refDivOverflow}>
+    <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
       <div className='relative w-full h-full'>
         <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#022799] border-b border-gray-300 text-white px-3'>
           <div className='flex flex-row gap-3 w-1/3 items-center justify-start'>
@@ -405,7 +411,7 @@ export default function PlansMapContainer(Map: MapProps) {
             />
           </div>
           <div className='flex flex-col justify-center items-center w-1/3'>
-            <h1 className='text-xl font-bold'>DIAGRAMA DE NAVEGACIÓN DE PLANTA</h1>
+            <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : ''}</h1>
           </div>
           <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
             <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
@@ -540,7 +546,7 @@ export default function PlansMapContainer(Map: MapProps) {
                         }}
                         className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
                         {
-                          obj.active ? null:<FaCircle size={25} color='red' />
+                          obj.active ? null : <FaCircle size={25} color='red' />
                         }
                         <h1 className='font-bold'>{obj.active ? 'ON' : 'OFF'}</h1>
                         {
@@ -595,20 +601,20 @@ export default function PlansMapContainer(Map: MapProps) {
 
       {/* CENTER BOTTOM MENU CONTROL */}
       <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
-        <div className='flex flex-col items-center w-32 gap-2 mb-10'>
-          <a href={"/interactives?map-id=10005&map-type=1"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600">PFD</a>
+        <div className='flex flex-col items-center w-32 gap-2 mb-5'>
+          <a href={"/interactives?map-id=10005&map-type=1"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600 hover:bg-[#022799] hover:text-white">PFD</a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10003&map-type=3"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600">PND</a>
+          <a href={"/interactives?map-id=10003&map-type=3"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600 hover:bg-[#022799] hover:text-white">PND</a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600">PLD</a>
+          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-slate-400 border-2 border-blue-600 opacity-80 cursor-default">PLD</a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600"><TbView360Number size={55} /></a>
+          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600 hover:bg-[#022799] hover:text-white"><TbView360Number size={55} /></a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
         </div>
       </div>
