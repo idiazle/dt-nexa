@@ -20,7 +20,9 @@ function Dtwin() {
   return (
     <>
       <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#022799] border-b border-gray-300 text-white px-3'>
-        <div className='flex flex-row gap-3 w-1/3 items-center justify-start'>
+        <div
+         onClick={() => window.location.href = '/menu'}
+        className='flex flex-row gap-3 w-1/3 items-center justify-start'>
           <Image
             src="/img/icons/portal-digital.png"
             height={45}
@@ -70,7 +72,7 @@ function Dtwin() {
       />
       <div className='absolute flex flex-row-rever gap-2 bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10005&map-type=1"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600">PFD</a>
+          <a href={"/interactives?map-id=10006&map-type=1"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600">PFD</a>
           <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>

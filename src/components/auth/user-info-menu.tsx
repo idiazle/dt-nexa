@@ -4,6 +4,7 @@ import { FaCaretDown } from "react-icons/fa6"
 import { HiSwitchHorizontal } from "react-icons/hi";
 import { FaHome } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
+import { signOut } from "next-auth/react";
 
 export function UserInfoMenu() {
   return (
@@ -19,19 +20,27 @@ export function UserInfoMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-52 bg-white text-black">
         <DropdownMenuGroup className="flex flex-col">
-          <DropdownMenuItem className="flex flex-row items-center gap-2 text-base cursor-pointer">
+          <DropdownMenuItem
+            disabled = {true}
+            className="flex flex-row items-center gap-2 text-base cursor-pointer">
             <HiSwitchHorizontal size={25} />
             Cambiar tema
           </DropdownMenuItem>
-          <DropdownMenuItem className="flex flex-row items-center gap-2 text-base cursor-pointer">
+          <DropdownMenuItem
+            onClick={() => window.location.href = '/menu'}
+            className="flex flex-row items-center gap-2 text-base cursor-pointer">
             <FaHome size={25} />
             Menú Principal
           </DropdownMenuItem>
-          <DropdownMenuItem className="flex flex-row items-center gap-2 text-base cursor-pointer">
+          <DropdownMenuItem
+            onClick={() => window.location.href = '/admin'}
+            className="flex flex-row items-center gap-2 text-base cursor-pointer">
             <FaHome size={25} />
             Administración
           </DropdownMenuItem>
-          <DropdownMenuItem className="flex flex-row items-center gap-2 text-base cursor-pointer">
+          <DropdownMenuItem
+            onClick={async () => { await signOut() }}
+            className="flex flex-row items-center gap-2 text-base cursor-pointer">
             <MdLogout size={25} />
             Cerrar Sesión
           </DropdownMenuItem>

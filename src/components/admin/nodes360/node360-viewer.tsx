@@ -398,7 +398,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
           </div>
           <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
             <div className='flex flex-col items-center w-32 gap-2 mb-5'>
-              <a href={"/interactives?map-id=10005&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '1' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+              <a href={"/interactives?map-id=10006&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '1' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
                 PFD
               </a>
               {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}

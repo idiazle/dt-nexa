@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select'
 import { getEntities } from '@/api/admin/entities-api'
 import { EntityStructure } from '@/lib/utils'
-import { getMapPlans2dById, postMapsPlans2d } from '@/api/admin/maps2d-api'
+import { getMapPlans2dById, postMapsPlans2d, putMapPlans2d } from '@/api/admin/maps2d-api'
 import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -89,7 +89,7 @@ export default function Map2dDialog({ id, dialogOpen, setDialogOpen }: Map2dDial
 
 
   const handleSubmit = async (data: z.infer<typeof FormMapSchema>) => {
-    console.log("MY SUBMIT DATA", data);
+    console.log("MY SUBMIT DATA", id);
 
     if (id === null) {
       try {
@@ -114,7 +114,7 @@ export default function Map2dDialog({ id, dialogOpen, setDialogOpen }: Map2dDial
     router.refresh()
   }
 
-  console.log(formMap2d.watch())
+  // console.log(formMap2d.watch())
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

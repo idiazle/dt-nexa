@@ -12,7 +12,9 @@ export default function AdminNav() {
 
   return (
     <nav className={`p-5 flex flex-row justify-between items-center w-full h-[54px] ${colorNav} h-[48px]`}>
-      <div className='flex flex-row gap-3 justify-start items-center w-full'>
+      <div
+        onClick={() => window.location.href = '/menu'}
+      className='flex flex-row gap-3 justify-start items-center w-full'>
         <Image
           src="/img/nexa_logo.png"
           height={40}
