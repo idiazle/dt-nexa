@@ -19,9 +19,15 @@ import "@photo-sphere-viewer/virtual-tour-plugin/index.css";
 import "@photo-sphere-viewer/gallery-plugin/index.css";
 import { PhotogrametryStructure } from '@/lib/utils';
 import MarkersLinksDialog from './markers-links-dialog';
-import { FaAngleDown, FaAngleUp, FaCircleXmark } from 'react-icons/fa6';
+import { FaAngleDown, FaAngleUp, FaCircle, FaCircleXmark } from 'react-icons/fa6';
 import { FanIcon } from 'lucide-react';
 import Image from 'next/image';
+import { getEntityInfo } from '@/api/admin/entities-api';
+import Link from 'next/link';
+import { FaWindowClose } from 'react-icons/fa';
+import { useSearchParams } from 'next/navigation';
+import { TbView360Number } from 'react-icons/tb';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Nodes360ViewerStructure {
   allNodes: PhotogrametryStructure[] | null
@@ -35,13 +41,26 @@ const caption = "Cape Florida Light, Key Biscayne <b>&copy; Pixexid</b>";
 
 export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setDialogOpen }: Nodes360ViewerStructure) {
 
-  const pSRef = React.createRef();
-  const [getCurrentNodeFunction, setGetCurrentNodeFunction] = React.useState(null);
+  const pSRef = React.createRef()
+  const [getCurrentNodeFunction, setGetCurrentNodeFunction] = React.useState(null)
+  const [showPanel, setShowPanel] = useState<boolean>(false)
+  const [infoEquipment, setInfoEquipment] = useState<any>(null);
+  const [idEquipment, setIdEquipment] = useState<any>(null);
 
   const handleReady = (instance) => {
+    const markersTourPlugin = instance.getPlugin(MarkersPlugin);
     const virtualTour = instance.getPlugin(VirtualTourPlugin);
-    if (!virtualTour) return;
 
+    if (!markersTourPlugin) return;
+    markersTourPlugin.addEventListener('select-marker', async (marker) => {
+      console.log("Marker selected", marker.marker.config.equipment_id);
+      setIdEquipment(marker.marker.config.equipment_id);
+      // console.log("marked",markersTourPlugin.markers[0].config.equipment_id);
+      // console.log("Photo Sphere Viewer is ready", instance.data);
+      setShowPanel(true);
+    })
+
+    if (!virtualTour) return;
     if (allNodes !== null && selectedNode !== null) {
       virtualTour.setNodes(
         allNodes.map((obj) => {
@@ -86,13 +105,42 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
     ]
   ];
 
+  const getDatainfoEquipment = async () => {
+    const responseEntity = await getEntityInfo(idEquipment)
+    // const response = await getDocumentsByEntity(Number(selectedShape.entity_id.id), Number(selectedShape.entity_id.type))
+    console.log("RESPONSE ENTITY", responseEntity.data.data);
+    // console.log("RESPONSE DOCUMENTS", response.data.data);
+
+    setInfoEquipment((prevstate: any) => {
+      return {
+        ...prevstate,
+        entity_data: responseEntity.data.data,
+        // documents: response.data.data as DocumentStructure[]
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (idEquipment !== null) {
+      getDatainfoEquipment();
+    }
+  }, [idEquipment])
+
+  console.log("ID EQUIPMENT", idEquipment);
+  console.log("EQUIPMENT", infoEquipment);
+
   const [dialogMarkLink, setDialogMarkLink] = useState({
     open: false,
     data: null
   })
 
   const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [showPanel, setShowPanel] = useState<boolean>(true);
+  const [isOpen2, setIsOpen2] = useState<boolean>(false)
+  const [isOpen3, setIsOpen3] = useState<boolean>(false)
+  const [reportsEquipment, setReportsEquipment] = useState<any[]>([])
+
+  const searchParams = useSearchParams()
+  const mapType = searchParams.get('map-type')
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -108,7 +156,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
             touchmoveTwoFingers={true}
             mousewheelCtrlKey={true}
             navbar={["zoom", "move", "gallery", "download", "description", "caption", "fullscreen"]}
-            height={"85vh"}
+            height={"95vh"}
             width={"100%"}
             hideNavbarButton={true}
             onReady={handleReady}
@@ -132,36 +180,67 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
           }
           {
             showPanel ?
-              <div className={`absolute z-50 flex flex-col gap-2 top-14 right-0 w-96 h-[93%] bg-white rounded-l-md `}>
-                <div className='flex flex-row items-center justify-between bg-gray-500 p-2'>
-                  <h1 className='font-bold text-white'>Reporte de Condición</h1>
-                  <button onClick={() => { console.log("Cerrar reporte"), setShowPanel(false) }} >
-                    <FaCircleXmark className='text-white' size={25} />
-                  </button>
+              <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
+
+                {/* {
+                        renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
+                          <Spinner />
+                        </div> : <div className='h-full w-full overflow-hidden flex flex-col'>
+                          {renderLefInfo(Number(entityType))}
+                          <Button onClick={() => {
+                            setAlertDeleteShape(true)
+                          }} className='flex flex-row justify-between items-center'>
+                            <h1>Eliminar Shape</h1>
+                            <FaTrash />
+                          </Button>
+                        </div>
+                      } */}
+                <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md'>
+                  <p className='text-white ml-2 font-bold'>{'REPORTES DE CONDICIÓN DE EQUIPOS'}</p>
+                  <FaWindowClose className='cursor-pointer' onClick={() => { setShowPanel(false) }} size={35} color='white' />
                 </div>
-                <div className='flex flex-col gap-2 px-2 text-sm bg-gray-200 h-1/3 overflow-y-auto py-2'>
-                  <h1 className='font-bold text-black text-center'>
-                    No existe reportes</h1>
+
+                {/* <div className='flex flex-row items-center justify-between bg-[#e9851e] p-2'>
+                        <h1 className='font-bold text-white'>Reporte de Condición</h1>
+                        <button onClick={() => { console.log("Cerrar reporte"), setShowPanel(false) }} >
+                            <FaCircleXmark className='text-white' size={25} />
+                          </button>
+                      </div> */}
+                <div
+                  className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                  onClick={() => setIsOpen3(!isOpen3)}
+                >
+                  <h1 className='font-bold text-white'>Reportes de Equipo</h1>
+                </div>
+                <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
+                  {
+                    reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
+                      return (
+                        <div key={index} className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                          <Link href={`/interactives/reports/${obj.id}`}>
+                            <h1 className='font-bold text-lg'>{obj.code} - {obj.name}</h1>
+                            <p className='text-sm'>Fecha: {new Date(obj.date).toLocaleDateString()}</p>
+                            <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color={obj.status === 'active' ? 'green' : 'red'} /> </p>
+                          </Link>
+                        </div>
+                      )
+                    }) :
+                      <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                        <p className=''>No hay reportes disponibles</p>
+                      </div>
+                  }
                   {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                <h1 className='font-bold'>REP-001_25 - 0210-CV-004</h1>
-                <p>Fecha: 2023-10-01</p>
-                <p>Estado: Normal </p>
-              </div>
-              <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                <h1 className='font-bold'>REP-001_25 - 0210-CV-004</h1>
-                <p>Fecha: 2023-10-01</p>
-                <p>Estado: Normal </p>
-              </div>
-              <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                <h1 className='font-bold'>REP-001_25 - 0210-CV-004</h1>
-                <p>Fecha: 2023-10-01</p>
-                <p>Estado: Normal </p>
-              </div> */}
+                          <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
+                          <p className='text-sm'>Fecha: 20/03/2025</p>
+                          <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
+                        </div> */}
+
+
                 </div>
-                <div className='flex flex-col text-sm h-1/3'>
+                <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
                   {/* Header */}
                   <div
-                    className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-md cursor-pointer'
+                    className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
                     onClick={() => setIsOpen(!isOpen)}
                   >
                     <h1 className='font-bold text-white'>Información de Equipo</h1>
@@ -173,50 +252,56 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                   </div>
 
                   {/* Contenido colapsable */}
-                  <div
-                    className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'
-                      }`}
-                  >
-                    <div className='flex flex-col gap-2 px-5 py-2 bg-gray-100 rounded-md text-xs'>
+                  <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
+                    <div className='flex flex-col gap-3 px-7 py-2'>
+                      <div className='flex flex-col gap-1 text-black'>
+                        <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
+                        <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+                      </div>
                       <div className='flex flex-col gap-1 text-black'>
                         <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
-                        <p>B-2016</p>
+                        <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
                       </div>
                       <div className='flex flex-col gap-1 text-black'>
                         <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
-                        <p>Soplador</p>
-                      </div>
-                      <div className='flex flex-col gap-1 text-black'>
-                        <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
-                        <p>Planta Tostación - 02</p>
+                        <p>{infoEquipment?.entity_data.name}</p>
                       </div>
                       <div className='flex flex-col gap-1 text-black'>
                         <h1 className='font-bold border-b-2 border-black'>Características:</h1>
                         <div>
-                          <p>No existen características</p>
-                          {/* <p>Tipo: Válvula de Control</p>
-                      <p>Marca: Emerson</p>
-                      <p>Modelo: 1234-5678</p>
-                      <p>Serial: 987654321</p> */}
+                          {
+                            (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
+                              JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
+                                return (
+                                  <div className='flex flex-row justify-between items-center' key={index}>
+                                    <p className='w-1/3'>{obj.label}</p>
+                                    <p className='w-2/3'>{obj.value}</p>
+                                  </div>
+                                )
+                              }) : <div>
+                                <p className='text-gray-500'>No hay características disponibles</p>
+                              </div>
+                          }
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className='flex flex-col text-sm bg-white  h-1/3 gap-2'>
+                <div className='flex flex-col text-sm bg-white h-auto gap-2'>
                   <div
-                    className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-md cursor-pointer'
-                  // onClick={() => setIsOpen(!isOpen)}
+                    className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
+                    onClick={() => setIsOpen2(!isOpen2)}
                   >
                     <h1 className='font-bold text-white'>Opciones de Equipo</h1>
-                    {isOpen ? (
+                    {isOpen2 ? (
                       <FaAngleUp className='text-white' size={20} />
                     ) : (
                       <FaAngleDown className='text-white' size={20} />
                     )}
                   </div>
-                  <div className='grid grid-cols-4 gap-1 px-2 text-black'>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+                  {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
+                  <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
                       <Image
                         src="/img/icons/ico-28.svg"
                         alt="Mantenimiento"
@@ -225,16 +310,16 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                       />
                       <span className='text-xs'>Despiece</span>
                     </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
                       <Image
                         src="/img/icons/ico-29.svg"
                         alt="Mantenimiento"
                         width={50}
                         height={50}
                       />
-                      <span className='text-xs'>Reportes Mantenimiento</span>
+                      <span className='text-xs'>Reportes Mantto</span>
                     </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
                       <Image
                         src="/img/icons/ico-30.svg"
                         alt="Mantenimiento"
@@ -243,34 +328,34 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                       />
                       <span className='text-xs'>Videos Asociados</span>
                     </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
                       <Image
                         src="/img/icons/ico-31.svg"
                         alt="Mantenimiento"
                         width={50}
                         height={50}
                       />
-                      <span className='text-xs'>Historico de Fotos</span>
+                      <span className='text-xs'>Historial Fotos</span>
                     </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
                       <Image
                         src="/img/icons/ico-32.svg"
                         alt="Mantenimiento"
                         width={50}
                         height={50}
                       />
-                      <span className='text-xs'>Ordenes de Trabajo</span>
+                      <span className='text-xs'>Historial OT</span>
                     </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
                       <Image
                         src="/img/icons/ico-33.svg"
                         alt="Mantenimiento"
                         width={50}
                         height={50}
                       />
-                      <span className='text-xs'>Historial de Fallas</span>
+                      <span className='text-xs'>Historial Fallas</span>
                     </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
                       <Image
                         src="/img/icons/ico-34.svg"
                         alt="Mantenimiento"
@@ -279,20 +364,65 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                       />
                       <span className='text-xs'>Planes Mantto</span>
                     </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 bg-gray-200 gap-1'>
+                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
                       <Image
                         src="/img/icons/ico-35.svg"
                         alt="Mantenimiento"
                         width={50}
                         height={50}
                       />
-                      <span className='text-xs'>Listado de Repuestos</span>
+                      <span className='text-xs'>Listado Repuestos</span>
                     </button>
                   </div>
                 </div>
               </div>
               : null
           }
+          <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
+            <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
+              <TooltipProvider delayDuration={300} >
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => {
+                        console.log("Click on button ON");
+                      }}
+                      className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
+                      <h1 className='font-bold'>{'ON'}</h1>
+                      <FaCircle size={25} color='green' />
+                    </button>
+                  </TooltipTrigger>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
+          <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
+            <div className='flex flex-col items-center w-32 gap-2 mb-5'>
+              <a href={"/interactives?map-id=10005&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '1' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+                PFD
+              </a>
+              {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
+            </div>
+            <div className='flex flex-col items-center w-32 gap-2'>
+              <a href={"/interactives?map-id=10003&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+                PND
+              </a>
+              {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
+            </div>
+            <div className='flex flex-col items-center w-32 gap-2'>
+              <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-slate-400 opacity-80 cursor-default">
+                PLD
+              </a>
+              {/* <span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span> */}
+            </div>
+            <div className='flex flex-col items-center w-32 gap-2'>
+              <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
+                <TbView360Number size={55} />
+              </a>
+              {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
+            </div>
+          </div>
+
         </>
       </DialogContent>
     </Dialog>

@@ -284,9 +284,9 @@ export interface ShapeStructure {
     color: string
     radius?: string
   }
-  entity_type?: number | string
+  entity_type?: number | string | any
   shape_type: string
-  entity_id: number | null
+  entity_id: number | null | any
   plan_id: number
 }
 

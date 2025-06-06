@@ -1,5 +1,5 @@
 "use client"
-import React, { act, useRef, useState } from 'react'
+import React, { act, useEffect, useRef, useState } from 'react'
 import { MapContainer, ImageOverlay, FeatureGroup } from "react-leaflet";
 import { LatLngExpression, LatLngTuple } from 'leaflet';
 import L from 'leaflet'
@@ -36,6 +36,8 @@ import Image from 'next/image';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { UserInfoMenu } from '../auth/user-info-menu';
 import { useSearchParams } from 'next/navigation';
+import { getEntityInfo } from '@/api/admin/entities-api';
+import { getDocumentsByEntity } from '@/api/admin/documents-api';
 
 
 interface MapProps {
@@ -385,10 +387,43 @@ export default function PlansMapContainer(Map: MapProps) {
   const [peqActive, setPeqActive] = useState<boolean>(false)
   const [pauxActive, setPauxActive] = useState<boolean>(false)
 
+  const [infoShape, setInfoShape] = useState<{
+    entity_data: EntityStructure | EquipmentStructure
+    documents: DocumentStructure[]
+  } | null>(null)
+
   const searchParams = useSearchParams()
   const mapType = searchParams.get('map-type')
 
-  console.log("MAP TYPE", mapType)
+  const getDataInfoShape = async () => {
+    try {
+      if (!selectedShape?.entity_id) {
+        return null;
+      }
+      const responseEntity = await getEntityInfo(selectedShape.entity_id.id)
+      const response = await getDocumentsByEntity(Number(selectedShape.entity_id.id), Number(selectedShape.entity_id.type))
+      console.log("RESPONSE ENTITY", responseEntity.data.data);
+      console.log("RESPONSE DOCUMENTS", response.data.data);
+
+      setInfoShape((prevstate: any) => {
+        return {
+          ...prevstate,
+          entity_data: responseEntity.data.data,
+          documents: response.data.data as DocumentStructure[]
+        }
+      })
+    } catch (error) {
+      return null
+    }
+  }
+
+  useEffect(() => {
+    if (selectedShape !== null) {
+      getDataInfoShape()
+    }
+  }, [selectedShape, flagRefresh])
+
+  const [reportsEquipment, setReportsEquipment] = useState<any[]>([])
 
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
@@ -411,7 +446,7 @@ export default function PlansMapContainer(Map: MapProps) {
             />
           </div>
           <div className='flex flex-col justify-center items-center w-1/3'>
-            <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : ''}</h1>
+            <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : 'GEMELO DIGITAL DE CONFIABILIDAD gaaaaa'}</h1>
           </div>
           <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
             <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
@@ -602,19 +637,27 @@ export default function PlansMapContainer(Map: MapProps) {
       {/* CENTER BOTTOM MENU CONTROL */}
       <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
         <div className='flex flex-col items-center w-32 gap-2 mb-5'>
-          <a href={"/interactives?map-id=10005&map-type=1"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600 hover:bg-[#022799] hover:text-white">PFD</a>
+          <a href={"/interactives?map-id=10005&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '1' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+            PFD
+          </a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10003&map-type=3"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600 hover:bg-[#022799] hover:text-white">PND</a>
+          <a href={"/interactives?map-id=10003&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+            PND
+          </a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-slate-400 border-2 border-blue-600 opacity-80 cursor-default">PLD</a>
+          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-slate-400 opacity-80 cursor-default">
+            PLD
+          </a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600 hover:bg-[#022799] hover:text-white"><TbView360Number size={55} /></a>
+          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
+            <TbView360Number size={55} />
+          </a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
         </div>
       </div>
@@ -649,7 +692,7 @@ export default function PlansMapContainer(Map: MapProps) {
 
 
       {/* LEFT DATA INFORMATION SHOW */}
-      <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 ${selectedShape !== null && !closeInformation ? 'w-[20%] opacity-100' : 'w-0 opacity-0'} bg-slate-100 z-20 border`}>
+      <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 ${selectedShape !== null && !closeInformation ? 'w-[20%] opacity-100' : 'w-0 opacity-0'} bg-slate-100 z-20 border rounded-l-md`}>
 
         {/* {
           renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
@@ -664,8 +707,8 @@ export default function PlansMapContainer(Map: MapProps) {
             </Button>
           </div>
         } */}
-        <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px]'>
-          <p className='text-white ml-2 font-bold'>{entityType === 3 ? 'Informacion adicional de equipo' : 'REPORTES DE CONDICIOÓN DE EQUIPOS'}</p>
+        <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md'>
+          <p className='text-white ml-2 font-bold'>{entityType === 3 ? 'Informacion adicional de equipo' : 'REPORTES DE CONDICIÓN DE EQUIPOS'}</p>
           <FaWindowClose className='cursor-pointer' onClick={() => { setCloseInformation(true), setSelectedShape(null) }} size={35} color='white' />
         </div>
 
@@ -676,53 +719,40 @@ export default function PlansMapContainer(Map: MapProps) {
             </button>
         </div> */}
         <div
-          className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sm cursor-pointer'
+          className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
           onClick={() => setIsOpen3(!isOpen3)}
         >
           <h1 className='font-bold text-white'>Reportes de Equipo</h1>
         </div>
         <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
-          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+          {
+            reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
+              return (
+                <div key={index} className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                  <Link href={`/interactives/reports/${obj.id}`}>
+                    <h1 className='font-bold text-lg'>{obj.code} - {obj.name}</h1>
+                    <p className='text-sm'>Fecha: {new Date(obj.date).toLocaleDateString()}</p>
+                    <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color={obj.status === 'active' ? 'green' : 'red'} /> </p>
+                  </Link>
+                </div>
+              )
+            }) :
+              <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                <p className=''>No hay reportes disponibles</p>
+              </div>
+          }
+          {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
             <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
             <p className='text-sm'>Fecha: 20/03/2025</p>
             <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
-          </div>
-          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-            <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
-            <p className='text-sm'>Fecha: 20/03/2025</p>
-            <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
-          </div>
-          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-            <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
-            <p className='text-sm'>Fecha: 20/03/2025</p>
-            <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
-          </div>
-          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-            <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
-            <p className='text-sm'>Fecha: 20/03/2025</p>
-            <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
-          </div>
-          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-            <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
-            <p className='text-sm'>Fecha: 20/03/2025</p>
-            <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
-          </div>
-          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-            <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
-            <p className='text-sm'>Fecha: 20/03/2025</p>
-            <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
-          </div>
-          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-            <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
-            <p className='text-sm'>Fecha: 20/03/2025</p>
-            <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
-          </div>
+          </div> */}
+
 
         </div>
         <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
           {/* Header */}
           <div
-            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sm cursor-pointer'
+            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
             onClick={() => setIsOpen(!isOpen)}
           >
             <h1 className='font-bold text-white'>Información de Equipo</h1>
@@ -737,25 +767,33 @@ export default function PlansMapContainer(Map: MapProps) {
           <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
             <div className='flex flex-col gap-3 px-7 py-2'>
               <div className='flex flex-col gap-1 text-black'>
+                <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
+                <p>{'parent_data' in (infoShape?.entity_data ?? {}) && (infoShape?.entity_data as any)?.parent_data?.name ? (infoShape?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+              </div>
+              <div className='flex flex-col gap-1 text-black'>
                 <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
-                <p>B-2020</p>
+                <p>{'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as any).tag : ''}</p>
               </div>
               <div className='flex flex-col gap-1 text-black'>
                 <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
-                <p>Enfriador Seccional</p>
-              </div>
-              <div className='flex flex-col gap-1 text-black'>
-                <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
-                <p>Planta Tostación - 02</p>
+                <p>{infoShape?.entity_data.name}</p>
               </div>
               <div className='flex flex-col gap-1 text-black'>
                 <h1 className='font-bold border-b-2 border-black'>Características:</h1>
                 <div>
-                  <p>No existen características</p>
-                  {/* <p>Tipo: Válvula de Control</p>
-                      <p>Marca: Emerson</p>
-                      <p>Modelo: 1234-5678</p>
-                      <p>Serial: 987654321</p> */}
+                  {
+                    (selectedShape !== null && infoShape !== null && 'properties' in infoShape.entity_data && infoShape.entity_data.properties) ?
+                      JSON.parse((infoShape.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
+                        return (
+                          <div className='flex flex-row justify-between items-center' key={index}>
+                            <p className='w-1/3'>{obj.label}</p>
+                            <p className='w-2/3'>{obj.value}</p>
+                          </div>
+                        )
+                      }) : <div>
+                        <p className='text-gray-500'>No hay características disponibles</p>
+                      </div>
+                  }
                 </div>
               </div>
             </div>

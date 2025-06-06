@@ -14,7 +14,7 @@ const fontSetter = Barlow({
 })
 
 export const metadata: Metadata = {
-  title: "Digital Twin Nexa",
+  title: "Gemelo Digital - Nexa",
   description: "Gemelo Digital de Nexa",
 };
 
