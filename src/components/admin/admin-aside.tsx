@@ -108,6 +108,13 @@ export default function AdminAside() {
             route: '/admin/nodes360-photos',
             enable: true
         },
+         {
+            id: 14,
+            icon_path: '',
+            icon_tooltip: 'Gestión de Reportes',
+            route: '/admin/reports',
+            enable: true
+        },
     ]
 
     const theme = useTheme()

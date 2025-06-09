@@ -19,7 +19,7 @@ import "@photo-sphere-viewer/virtual-tour-plugin/index.css";
 import "@photo-sphere-viewer/gallery-plugin/index.css";
 import { PhotogrametryStructure } from '@/lib/utils';
 import MarkersLinksDialog from './markers-links-dialog';
-import { FaAngleDown, FaAngleUp, FaCircle, FaCircleXmark } from 'react-icons/fa6';
+import { FaAngleDown, FaAngleUp, FaCircle, FaCircleXmark, FaFile } from 'react-icons/fa6';
 import { FanIcon } from 'lucide-react';
 import Image from 'next/image';
 import { getEntityInfo } from '@/api/admin/entities-api';
@@ -28,6 +28,8 @@ import { FaWindowClose } from 'react-icons/fa';
 import { useSearchParams } from 'next/navigation';
 import { TbView360Number } from 'react-icons/tb';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { getReportCondById } from '@/api/admin/reports-api';
+import ModalViewMedia from '@/components/viewers/modal-viewer';
 
 interface Nodes360ViewerStructure {
   allNodes: PhotogrametryStructure[] | null
@@ -47,18 +49,21 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
   const [infoEquipment, setInfoEquipment] = useState<any>(null);
   const [idEquipment, setIdEquipment] = useState<any>(null);
 
+  const [markersVisible, setMarkersVisible] = useState(true);
+  const [markersTourPlugin, setMarkersTourPlugin] = useState<any>(null);
+
   const handleReady = (instance) => {
-    const markersTourPlugin = instance.getPlugin(MarkersPlugin);
+    const markersPlugin = instance.getPlugin(MarkersPlugin);
     const virtualTour = instance.getPlugin(VirtualTourPlugin);
 
-    if (!markersTourPlugin) return;
-    markersTourPlugin.addEventListener('select-marker', async (marker) => {
+    if (!markersPlugin) return;
+    setMarkersTourPlugin(markersPlugin); // <-- guardar instancia
+
+    markersPlugin.addEventListener('select-marker', async (marker) => {
       console.log("Marker selected", marker.marker.config.equipment_id);
       setIdEquipment(marker.marker.config.equipment_id);
-      // console.log("marked",markersTourPlugin.markers[0].config.equipment_id);
-      // console.log("Photo Sphere Viewer is ready", instance.data);
       setShowPanel(true);
-    })
+    });
 
     if (!virtualTour) return;
     if (allNodes !== null && selectedNode !== null) {
@@ -67,21 +72,15 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
           return {
             ...obj,
             links: JSON.parse(obj.links as string),
-            markers: JSON.parse(obj.markers as string).map((mark: any, index: number) => {
-              return {
-                ...mark,
-                id: mark.tooltip + index
-              }
-            })
-          }
-        })
-        ,
+            markers: JSON.parse(obj.markers as string).map((mark: any, index: number) => ({
+              ...mark,
+              id: mark.tooltip + index
+            }))
+          };
+        }),
         selectedNode.id
-      )
-      console.log("MY ALL NNNNNNOOODES", allNodes);
+      );
     }
-
-
   };
 
   const handleClick = () => {
@@ -135,12 +134,80 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
   })
 
   const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [isOpen2, setIsOpen2] = useState<boolean>(false)
-  const [isOpen3, setIsOpen3] = useState<boolean>(false)
+  const [isOpen2, setIsOpen2] = useState<boolean>(true)
+  const [isOpen3, setIsOpen3] = useState<boolean>(true)
   const [reportsEquipment, setReportsEquipment] = useState<any[]>([])
+  const [generalCondition, setGeneralCondition] = useState<number>(0)
+  const [colorCondition, setColorCondition] = useState<string>('')
+
+
+  const renderColor = (option: number) => {
+    let color = ''
+    if (option === 1) {
+      color = 'red'
+    } else if (option === 2) {
+      color = 'orange'
+    } else if (option === 3) {
+      color = 'yellow'
+    } else if (option === 4) {
+      color = 'green'
+    } else if (option === 5) {
+      color = 'gray'
+    } else {
+      color = 'white'
+    }
+    return color
+  }
 
   const searchParams = useSearchParams()
   const mapType = searchParams.get('map-type')
+
+  const getReportEquipment = () => {
+    getReportCondById(Number(idEquipment)).then((response) => {
+      console.log("RESPONSE REPORTS", response.data.data);
+      setReportsEquipment(response.data.data)
+    }).catch((error) => {
+      console.error("Error fetching reports:", error);
+    })
+  }
+
+  useEffect(() => {
+    if (idEquipment !== null) {
+      getReportEquipment();
+    }
+  }, [idEquipment])
+
+  useEffect(() => {
+    if (reportsEquipment !== null) {
+      const condition = reportsEquipment.map((obj) => {
+        return Number(obj.cond)
+      })
+      const minCondition = Math.min(...condition)
+      setGeneralCondition(minCondition)
+      if (setColorCondition !== null && setColorCondition !== undefined) {
+        setColorCondition(minCondition)
+      }
+    }
+  }, [reportsEquipment])
+
+
+  const [fileSelected, setFileSelected] = useState<any | null>(null)
+  const [openDialogDoc, setOpenDialogDoc] = useState<boolean>(false)
+  const handleViewDoc = (file: any) => {
+    setFileSelected({
+      data: {
+        title: file.filename,
+        file_url: file.file,
+        name: file.filename,
+        filename: file.filename,
+      }
+    })
+    setOpenDialogDoc(true)
+  }
+
+
+
+
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -180,7 +247,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
           }
           {
             showPanel ?
-              <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
+              <div className={`absolute max-w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
 
                 {/* {
                         renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
@@ -216,18 +283,26 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                   {
                     reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
                       return (
-                        <div key={index} className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                          <Link href={`/interactives/reports/${obj.id}`}>
-                            <h1 className='font-bold text-lg'>{obj.code} - {obj.name}</h1>
-                            <p className='text-sm'>Fecha: {new Date(obj.date).toLocaleDateString()}</p>
-                            <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color={obj.status === 'active' ? 'green' : 'red'} /> </p>
-                          </Link>
-                        </div>
+                        <button
+                          key={index}
+                          onClick={() => {
+                            console.log("Click on report", obj);
+                            handleViewDoc(obj)
+                          }}
+                          className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
+                        >
+                          <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
+                          <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
+                          <p className='text-sm flex flex-row items-center gap-4'>
+                            Estado: <FaCircle color={renderColor(generalCondition)} size={30} className='border-2 border-black rounded-full' />
+                          </p>
+                        </button>
                       )
-                    }) :
+                    }) : (
                       <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                        <p className=''>No hay reportes disponibles</p>
+                        <p>No hay reportes disponibles</p>
                       </div>
+                    )
                   }
                   {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
                           <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
@@ -281,6 +356,22 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                               }) : <div>
                                 <p className='text-gray-500'>No hay características disponibles</p>
                               </div>
+                          }
+                        </div>
+                      </div>
+                      <div className='flex flex-col gap-1 text-black'>
+                        <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
+                        <div>
+                          {
+                            infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
+                              const document = obj.document_id as DocumentStructure
+                              return (
+                                <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                                  <FaFile size={15} />
+                                  <p className='text-sm'>{document.title}</p>
+                                </button>
+                              )
+                            }) : <p className='text-black'>No hay documentos disponibles</p>
                           }
                         </div>
                       </div>
@@ -386,6 +477,13 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                     <button
                       onClick={() => {
                         console.log("Click on button ON");
+                        // if (!markersTourPlugin) return;
+                        // if (markersVisible) {
+                        //   markersTourPlugin.hideMarker("polyline");
+                        // } else {
+                        //   markersTourPlugin.showMarker("polyline");
+                        // }
+                        // setMarkersVisible(!markersVisible);
                       }}
                       className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
                       <h1 className='font-bold'>{'ON'}</h1>
@@ -425,6 +523,12 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
 
         </>
       </DialogContent>
+      {
+        openDialogDoc
+          ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
+          : null
+      }
     </Dialog>
+
   )
 }

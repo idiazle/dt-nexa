@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
 import { Button } from '../ui/button';
 import { TbTriangleSquareCircleFilled, TbView360Number } from "react-icons/tb";
-import { FaAngleDown, FaAngleUp, FaBars, FaCircleXmark, FaFile, FaSquarePlus, FaTrash } from "react-icons/fa6";
+import { FaAngleDown, FaAngleUp, FaBars, FaFile, FaSquarePlus, FaTrash } from "react-icons/fa6";
 import ShapesPlanDialog from '../admin/plans/shapes-plan-dialog';
 import { EyeClosedIcon } from '@radix-ui/react-icons';
 import { EyeIcon } from 'lucide-react';
@@ -21,12 +21,7 @@ import ViewShapes from './view-shapes';
 import Spinner from '../ui/spinner';
 import { FaCircle, FaWindowClose } from "react-icons/fa";
 import ModalViewMedia from '../viewers/modal-viewer';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { deleteShapeById, putShapeById } from '@/api/shapes-api'
 import { toast } from '../ui/use-toast'
 import AlertDeleteDialog from '../general/alert-delete-dialog';
@@ -38,16 +33,12 @@ import { UserInfoMenu } from '../auth/user-info-menu';
 import { useSearchParams } from 'next/navigation';
 import { getEntityInfo } from '@/api/admin/entities-api';
 import { getDocumentsByEntity } from '@/api/admin/documents-api';
-
+import { getReportCondById } from '@/api/admin/reports-api';
 
 interface MapProps {
   mapSelected: Map2dStructure | null
   posix: LatLngExpression | LatLngTuple,
   zoom?: number,
-}
-
-const defaults = {
-  zoom: 19,
 }
 
 interface MenuBtns {
@@ -58,11 +49,7 @@ interface MenuBtns {
   active: boolean
 }
 
-
-
-
 export default function PlansMapContainer(Map: MapProps) {
-
   // const { zoom = defaults.zoom, posix } = Map
   const [flagRefresh, setFlagRefresh] = useState<boolean>(false)
   const [shapesRender, setShapesRender] = useState<ShapeStructure[] | null>([])
@@ -79,13 +66,11 @@ export default function PlansMapContainer(Map: MapProps) {
 
   const _onCreate = (e: any) => {
     // console.log("ON CREATEEE222", e.layer._latlngs);
-
     if (e.layer._latlngs || e.layer._latlng) {
       let objShape = {
         type: String(e.layerType),
         coordinates: e.layer._latlng || e.layer._latlngs
       } as any
-
 
       if (e.layerType === 'circle') {
         objShape = {
@@ -108,7 +93,6 @@ export default function PlansMapContainer(Map: MapProps) {
     }
   }
 
-
   const _onEditPath = async (e: any) => {
     // console.log("on EDIT PATH", e);
     // console.log("on EDIT LayerType", e.layers._layers );
@@ -121,7 +105,6 @@ export default function PlansMapContainer(Map: MapProps) {
         coordinates: dataShape._latlng || dataShape._latlngs,
         color: selectedShape?.shapes.color
       } as any
-
 
       if (shapeType === 'circle') {
         objShape = {
@@ -377,8 +360,8 @@ export default function PlansMapContainer(Map: MapProps) {
     equipment_id: null,
   })
 
-  const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [isOpen2, setIsOpen2] = useState<boolean>(false)
+  const [isOpen, setIsOpen] = useState<boolean>(true)
+  const [isOpen2, setIsOpen2] = useState<boolean>(true)
   const [isOpen3, setIsOpen3] = useState<boolean>(false)
   const [planeSelected, setPlaneSelected] = useState<string>('')
   const [activateEquipments, setActivateEquipments] = useState<boolean>(false)
@@ -424,6 +407,73 @@ export default function PlansMapContainer(Map: MapProps) {
   }, [selectedShape, flagRefresh])
 
   const [reportsEquipment, setReportsEquipment] = useState<any[]>([])
+  const [fileSelected, setFileSelected] = useState<any | null>(null)
+  const [openDialogDoc, setOpenDialogDoc] = useState<boolean>(false)
+  const handleViewDoc = (file: any) => {
+    setFileSelected({
+      data: {
+        title: file.filename,
+        file_url: file.file,
+        name: file.filename,
+        filename: file.filename,
+      }
+    })
+    setOpenDialogDoc(true)
+  }
+
+  const [generalCondition, setGeneralCondition] = useState<number>(0)
+  const [colorCondition, setColorCondition] = useState<string>('')
+
+  const renderColor = (option: number) => {
+    let color = ''
+    if (option === 1) {
+      color = 'red'
+    } else if (option === 2) {
+      color = 'orange'
+    } else if (option === 3) {
+      color = 'yellow'
+    } else if (option === 4) {
+      color = 'green'
+    } else if (option === 5) {
+      color = 'gray'
+    } else {
+      color = 'white'
+    }
+    return color
+  }
+
+  const getReportEquipment = () => {
+    const entityData = infoShape?.entity_data as EquipmentStructure;
+    if ('equipment_id' in entityData && entityData.equipment_id !== undefined) {
+      getReportCondById(Number(entityData.equipment_id)).then((response) => {
+        console.log("RESPONSE REPORTS", response.data.data);
+        setReportsEquipment(response.data.data)
+      }).catch((error) => {
+        console.error("Error fetching reports:", error);
+      })
+    }
+  }
+
+  useEffect(() => {
+    if (infoShape !== null) {
+      getReportEquipment();
+    }
+  }, [infoShape])
+
+  useEffect(() => {
+    if (reportsEquipment !== null) {
+      const condition = reportsEquipment.map((obj) => {
+        return Number(obj.cond)
+      })
+      const minCondition = Math.min(...condition)
+      setGeneralCondition(minCondition)
+      if (setColorCondition !== null && setColorCondition !== undefined) {
+        setColorCondition(String(minCondition))
+      }
+    }
+  }, [reportsEquipment])
+
+  console.log("INFO SHAPE", infoShape);
 
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
@@ -431,7 +481,7 @@ export default function PlansMapContainer(Map: MapProps) {
         <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#022799] border-b border-gray-300 text-white px-3'>
           <div
             onClick={() => window.location.href = '/menu'}
-          className='flex flex-row gap-3 w-1/3 items-center justify-start'>
+            className='flex flex-row gap-3 w-1/3 items-center justify-start'>
             <Image
               src="/img/icons/portal-digital.png"
               height={45}
@@ -710,7 +760,11 @@ export default function PlansMapContainer(Map: MapProps) {
           </div>
         } */}
         <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md'>
-          <p className='text-white ml-2 font-bold'>{entityType === 3 ? 'Informacion adicional de equipo' : 'REPORTES DE CONDICIÓN DE EQUIPOS'}</p>
+          <p className='text-white ml-2 text-lg font-bold uppercase'>
+            {entityType === 3
+              ? `Informacion adicional de equipo ${infoShape?.entity_data.name}`
+              : `${'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as EquipmentStructure).tag : ''} - ${infoShape?.entity_data.name}`}
+          </p>
           <FaWindowClose className='cursor-pointer' onClick={() => { setCloseInformation(true), setSelectedShape(null) }} size={35} color='white' />
         </div>
 
@@ -730,18 +784,26 @@ export default function PlansMapContainer(Map: MapProps) {
           {
             reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
               return (
-                <div key={index} className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                  <Link href={`/interactives/reports/${obj.id}`}>
-                    <h1 className='font-bold text-lg'>{obj.code} - {obj.name}</h1>
-                    <p className='text-sm'>Fecha: {new Date(obj.date).toLocaleDateString()}</p>
-                    <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color={obj.status === 'active' ? 'green' : 'red'} /> </p>
-                  </Link>
-                </div>
+                <button
+                  key={index}
+                  onClick={() => {
+                    console.log("Click on report", obj);
+                    handleViewDoc(obj)
+                  }}
+                  className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
+                >
+                  <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
+                  <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
+                  <p className='text-sm flex flex-row items-center gap-4'>
+                    Estado: <FaCircle color={renderColor(generalCondition)} size={30} className='border-2 border-black rounded-full' />
+                  </p>
+                </button>
               )
-            }) :
+            }) : (
               <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                <p className=''>No hay reportes disponibles</p>
+                <p>No hay reportes disponibles</p>
               </div>
+            )
           }
           {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
             <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
@@ -795,6 +857,22 @@ export default function PlansMapContainer(Map: MapProps) {
                       }) : <div>
                         <p className='text-gray-500'>No hay características disponibles</p>
                       </div>
+                  }
+                </div>
+              </div>
+              <div className='flex flex-col gap-1 text-black'>
+                <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
+                <div>
+                  {
+                    infoShape?.documents && infoShape.documents.length > 0 ? infoShape.documents.map((obj: any, index: number) => {
+                      const document = obj.document_id as DocumentStructure
+                      return (
+                        <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                          <FaFile size={15} />
+                          <p className='text-sm'>{document.title}</p>
+                        </button>
+                      )
+                    }) : <p className='text-black'>No hay documentos disponibles</p>
                   }
                 </div>
               </div>
@@ -903,6 +981,11 @@ export default function PlansMapContainer(Map: MapProps) {
       }
       {
         alertDeleteShape ? <AlertDeleteDialog executeMethod={onDelete} objName='Shape' open={alertDeleteShape} setOpen={setAlertDeleteShape} /> : null
+      }
+      {
+        openDialogDoc
+          ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
+          : null
       }
     </div>
   )

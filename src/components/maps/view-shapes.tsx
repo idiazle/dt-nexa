@@ -69,6 +69,8 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     getShapesAll()
   }, [flagRefresh])
 
+  console.log("SHAPES RENDERasdasdasd", shapesRender);
+
   const getDataInfoShape = async (shapeSelected: ShapeStructure) => {
     try {
       const responseEntity = await getEntityInfo(Number(shapeSelected?.entity_id))
@@ -172,14 +174,16 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                   icon={iconShow} // Use the selected icon
                 >
                   <Tooltip direction='top' offset={[2, -20]}>
-                    {obj.entity_id?.name || obj.photogrammetry_node?.name}
+                    <p className='text-base font-semibold text-gray-800'>
+                      {obj.entity_id?.name || obj.photogrammetry_node?.name}
+                    </p>
                   </Tooltip>
                 </Marker>
                 :
                 <Circle
                   key={`circle_${index}`}
                   className={'transition-colors duration-500'}
-                  pathOptions={{ fillColor: showShapes ? obj.shapes.color : 'transparent', color: showShapes ? obj.shapes.color : 'transparent', fillOpacity: 0.6, weight: 0.5 }}
+                  pathOptions={{ fillColor: showShapes ? obj.shapes.color : 'transparent', color: showShapes ? obj.shapes.color : 'transparent', fillOpacity: 0.8, weight: 0.5 }}
                   radius={obj.shapes.radius}
                   //    zIndex={10}
                   center={obj.shapes.coordinates as any}
@@ -202,6 +206,11 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                       }
                     }
                   }}>
+                  <Tooltip direction='top' offset={[2, -20]}>
+                    <p className='text-base font-semibold text-gray-800'>
+                      {obj.entity_id?.name || obj.photogrammetry_node?.name}
+                    </p>
+                  </Tooltip>
                 </Circle>
               : type === 'polygon' ?
                 <Polygon
