@@ -76,7 +76,7 @@ function Dtwin() {
           <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10003&map-type=3"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600">PND</a>
+          <a href={"/interactives?map-id=10007&map-type=3"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600">PND</a>
           <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>

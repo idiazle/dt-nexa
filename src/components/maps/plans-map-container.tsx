@@ -617,6 +617,11 @@ export default function PlansMapContainer(Map: MapProps) {
       }
 
       {/* TOP MENU CONTROL */}
+      <div className='absolute top-16 left-2 z-50 flex flex-col gap-2'>
+        <h1 className='bg-gray-500 text-white font-bold p-2 rounded-md text-lg uppercase'>
+          Plano: {Map.mapSelected?.name}
+        </h1>
+      </div>
       <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center ${!controlMinimized ? 'opacity-100' : 'opacity-0'} w-7 h-7`}>
         <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
           {/* <FaSquareMinus size={20} className='absolute right-0 top-0 hover:cursor-pointer' onClick={() => { setControlMinimized(true) }} /> */}
@@ -695,7 +700,7 @@ export default function PlansMapContainer(Map: MapProps) {
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10003&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+          <a href={"/interactives?map-id=10007&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
             PND
           </a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
@@ -707,7 +712,7 @@ export default function PlansMapContainer(Map: MapProps) {
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
+          <a href={"/interactives/nav360?nodeId=9"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
             <TbView360Number size={55} />
           </a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}

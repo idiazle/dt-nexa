@@ -206,9 +206,6 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
   }
 
 
-
-
-
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogContent className='max-h-full max-w-full'>
@@ -502,7 +499,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
               {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
             </div>
             <div className='flex flex-col items-center w-32 gap-2'>
-              <a href={"/interactives?map-id=10003&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+              <a href={"/interactives?map-id=10007&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
                 PND
               </a>
               {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
@@ -514,7 +511,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
               {/* <span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span> */}
             </div>
             <div className='flex flex-col items-center w-32 gap-2'>
-              <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
+              <a href={"/interactives/nav360?nodeId=9"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
                 <TbView360Number size={55} />
               </a>
               {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
