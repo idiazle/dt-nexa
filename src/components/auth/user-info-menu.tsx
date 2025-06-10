@@ -5,6 +5,7 @@ import { HiSwitchHorizontal } from "react-icons/hi";
 import { FaHome } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 import { signOut } from "next-auth/react";
+import { AiFillSetting } from "react-icons/ai";
 
 export function UserInfoMenu() {
   return (
@@ -35,7 +36,7 @@ export function UserInfoMenu() {
           <DropdownMenuItem
             onClick={() => window.location.href = '/admin'}
             className="flex flex-row items-center gap-2 text-base cursor-pointer">
-            <FaHome size={25} />
+            <AiFillSetting size={25} />
             Administración
           </DropdownMenuItem>
           <DropdownMenuItem

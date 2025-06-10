@@ -56,11 +56,8 @@ export default function PlansMapContainer(Map: MapProps) {
   const [selectedShape, setSelectedShape] = useState<ShapeStructure | null>(null)
   const [alertDeleteShape, setAlertDeleteShape] = useState<boolean>(false)
   const { data: session } = useSession()
-
   const [openShapeDialog, setopenShapeDialog] = useState<boolean>(false)
-
   const [planShape, setPlanShape] = useState<ShapeStructure | null>(null)
-
   const admin = session?.user?.groups.find((obj: any) => obj === 1 || obj === 3)
   const refFeature = useRef<any>()
 
@@ -201,7 +198,6 @@ export default function PlansMapContainer(Map: MapProps) {
   ]
 
   const [actionMenuBtns, setActionMenuBtns] = useState<MenuBtns[]>(initialStateMenuBtns)
-
   const [controlMinimized, setControlMinimized] = useState<boolean>(false)
 
   const handleClickBtn = (obj: any) => {
@@ -219,7 +215,6 @@ export default function PlansMapContainer(Map: MapProps) {
 
   }
 
-
   const mapRef = useRef(null)
 
   const [renderLeftInformation, setRenderLeftInformation] = useState<{
@@ -228,10 +223,7 @@ export default function PlansMapContainer(Map: MapProps) {
   } | null>(null)
 
   const [closeInformation, setCloseInformation] = useState<boolean>(false)
-
-
   const [openViewMedia, setOpenViewMedia] = useState<boolean>(false)
-
   const [openMediaInfo, setOpenMediaInfo] = useState<{
     data: {
       file_url: string
@@ -363,7 +355,7 @@ export default function PlansMapContainer(Map: MapProps) {
   const [isOpen, setIsOpen] = useState<boolean>(true)
   const [isOpen2, setIsOpen2] = useState<boolean>(true)
   const [isOpen3, setIsOpen3] = useState<boolean>(false)
-  const [planeSelected, setPlaneSelected] = useState<string>('')
+  const [planeSelected, setPlaneSelected] = useState<string>('2')
   const [activateEquipments, setActivateEquipments] = useState<boolean>(false)
 
   const [pnavActive, setPnavActive] = useState<boolean>(false)
@@ -409,6 +401,7 @@ export default function PlansMapContainer(Map: MapProps) {
   const [reportsEquipment, setReportsEquipment] = useState<any[]>([])
   const [fileSelected, setFileSelected] = useState<any | null>(null)
   const [openDialogDoc, setOpenDialogDoc] = useState<boolean>(false)
+
   const handleViewDoc = (file: any) => {
     setFileSelected({
       data: {
@@ -483,7 +476,7 @@ export default function PlansMapContainer(Map: MapProps) {
         <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#022799] border-b border-gray-300 text-white px-3'>
           <div
             onClick={() => window.location.href = '/menu'}
-            className='flex flex-row gap-3 w-1/3 items-center justify-start'>
+            className='flex flex-row gap-3 w-1/3 items-center justify-start cursor-pointer'>
             <Image
               src="/img/icons/portal-digital.png"
               height={45}
@@ -500,7 +493,7 @@ export default function PlansMapContainer(Map: MapProps) {
             />
           </div>
           <div className='flex flex-col justify-center items-center w-1/3'>
-            <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : 'GEMELO DIGITAL DE CONFIABILIDAD gaaaaa'}</h1>
+            <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : 'GEMELO DIGITAL DE CONFIABILIDAD'}</h1>
           </div>
           <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
             <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
