@@ -16,13 +16,14 @@ function Dtwin() {
     ]
   ] as any
   const [planeSelected, setPlaneSelected] = useState<string>('')
+  const [open360list, setOpen360List] = useState<boolean>(false)
 
   return (
     <>
       <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#022799] border-b border-gray-300 text-white px-3'>
         <div
-         onClick={() => window.location.href = '/menu'}
-        className='flex flex-row gap-3 w-1/3 items-center justify-start'>
+          onClick={() => window.location.href = '/menu'}
+          className='flex flex-row gap-3 w-1/3 items-center justify-start'>
           <Image
             src="/img/icons/portal-digital.png"
             height={45}
@@ -84,8 +85,23 @@ function Dtwin() {
           <span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600"><TbView360Number size={55} /></a>
-          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span>
+          {
+            open360list ?
+              < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm'>
+                <a href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 10</a>
+                <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 20</a>
+                <a href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 25</a>
+              </div>
+              : null
+          }
+          <button
+            onClick={() => {
+              setOpen360List(!open360list);
+            }}
+            className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
+            <TbView360Number size={55} />
+          </button>
+          {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
         </div>
       </div>
     </>

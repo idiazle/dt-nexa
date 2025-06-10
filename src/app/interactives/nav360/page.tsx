@@ -2,17 +2,22 @@
 import { getNodes360, getNodes360ById } from '@/api/admin/nodes360-api'
 import Node360Viewer from '@/components/admin/nodes360/node360-viewer'
 import { PhotogrametryStructure } from '@/lib/utils'
-import { useSearchParams } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 
 const Nav360 = () => {
-  const param = useSearchParams()
-  const nodeId = param.get('nodeId')
-
   const [Open360Dialog, setOpen360Dialog] = useState<boolean>(true)
   const [nodeSelected, setNodeSelected] = useState<PhotogrametryStructure | null>(null)
   const [nodes360, setNodes360] = useState<PhotogrametryStructure[] | null>(null)
+  const [nodeId, setNodeId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const nodeId = params.get('nodeId');
+    if (nodeId) {
+      setNodeId(nodeId);
+    }
+  }, []);
 
   const getInitialNode = () => {
     getNodes360ById(Number(nodeId))
@@ -40,17 +45,21 @@ const Nav360 = () => {
   }, [])
 
   useEffect(() => {
-    if (nodeId) {
+    if (nodeId && nodes360 !== null) {
+      // const node = nodes360.find((n) => n.id === Number(nodeId))
+      // if (node) {
+      //   setNodeSelected(node)
+      // } else {
+      //   console.warn(`Node with ID ${nodeId} not found in nodes360.`);
+      // }
       getInitialNode()
     }
-  }, [nodeId])
-
-
-
+  }, [nodeId, nodes360])
 
   return (
     <div>
-      {Open360Dialog ?
+      {Open360Dialog && nodeSelected !== null && nodes360 !== null
+        ?
         <Node360Viewer selectedNode={nodeSelected} allNodes={nodes360} dialogOpen={Open360Dialog} setDialogOpen={setOpen360Dialog} />
         : null
       }
