@@ -15,7 +15,6 @@ function Dtwin() {
     }
     ]
   ] as any
-  const [planeSelected, setPlaneSelected] = useState<string>('')
   const [open360list, setOpen360List] = useState<boolean>(false)
 
   return (
@@ -32,32 +31,25 @@ function Dtwin() {
             className='rounded-md contain'
           />
           <Image
+            src="/img/menu-icons/gemelo_digital.png"
+            height={50}
+            width={50}
+            alt={"nexa-logo"}
+            className='rounded-md contain'
+          />
+          <Image
             src="/img/nexa_logo.png"
             height={100}
             width={100}
             alt={"nexa-logo"}
             className='bg-white rounded-md contain'
           />
-          {/* <h1 className='font-semibold'>Cajamarquilla</h1> */}
         </div>
         <div className='flex flex-col justify-center items-center w-1/3'>
           <h1 className='text-xl font-bold'>GEMELO DIGITAL DE CONFIABILIDAD</h1>
         </div>
         <div className='flex flex-row gap-5 items-center w-1/3 justify-end'>
-          {/* <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
-            <SelectTrigger className="w-40 h-8 bg-transparent border-white bg-white text-black">
-              <SelectValue placeholder="Seleccionar Planta" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">S20-01</SelectItem>
-              <SelectItem value="2">S20-02</SelectItem>
-              <SelectItem value="3">S20-03</SelectItem>
-            </SelectContent>
-          </Select> */}
           <UserInfoMenu />
-          {/* <div className='bg-white text-black p-2 rounded-md flex flex-row items-center'>
-            <FaBars />
-          </div> */}
         </div>
       </div>
       <ReactPhotoSphereViewer
@@ -66,18 +58,18 @@ function Dtwin() {
         height='100%'
         navbar={false}
         container={'container-360'}
-        // plugins={plugins}
+        plugins={plugins}
         mousemove={false}
         mousewheel={false}
         loadingImg='none'
       />
       <div className='absolute flex flex-row-rever gap-2 bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10006&map-type=1"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600">PFD</a>
+          <a href={"/interactives?map-id=10006&map-type=1"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white cursor-pointer">PFD</a>
           <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10007&map-type=3"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600">PND</a>
+          <a href={"/interactives?map-id=10007&map-type=3"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white cursor-pointer">PND</a>
           <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
@@ -87,7 +79,7 @@ function Dtwin() {
         <div className='flex flex-col items-center w-32 gap-2'>
           {
             open360list ?
-              < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm'>
+              < div className='absolute flex flex-col items-center w-40 bottom-32 gap-1 mb-5 bg-white rounded-sm'>
                 <a href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 10</a>
                 <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 20</a>
                 <a href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 25</a>
@@ -95,14 +87,21 @@ function Dtwin() {
               : null
           }
           <button
-            onClick={() => {
-              setOpen360List(!open360list);
-            }}
+            onClick={() => { setOpen360List(!open360list) }}
             className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
             <TbView360Number size={55} />
           </button>
-          {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
+          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span>
         </div>
+      </div>
+      <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 opacity-15'>
+        <Image
+          src="/img/nexa_logo.png"
+          height={500}
+          width={500}
+          alt={"nexa-logo"}
+          className='bg-white rounded-md contain rounded-md'
+        />
       </div>
     </>
   )

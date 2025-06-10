@@ -1,0 +1,17 @@
+.custom-tooltip-front {
+  background-color: transparent;
+  border: 0px solid transparent;
+  color: #fff;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
+}
+
+.custom-tooltip-front2 {
+  background-color: transparent;
+  border: 0px solid transparent;
+  color: #000;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
+}

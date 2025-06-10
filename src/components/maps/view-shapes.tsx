@@ -6,13 +6,14 @@ import { getAllShapes } from '@/api/shapes-api'
 import { DocumentStructure, IconStructure, Map2dShapesStructure, PhotogrametryStructure, PlanStructure, ShapeStructure, StateInformationStructure, TrouInfoDocDataStructure } from '@/lib/utils'
 import { LatLngExpression } from 'leaflet'
 import { useParams, useSearchParams } from 'next/navigation'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { use, useEffect, useRef, useState } from 'react'
 import { Circle, Marker, Polygon, Popup, Rectangle, Tooltip } from 'react-leaflet'
-
+import L from 'leaflet'
 import { Icon } from 'leaflet'
 import InformationEquipmentComponent from '../interactives/information-eq'
 import Node360Viewer from '../admin/nodes360/node360-viewer'
 import { getNodes360 } from '@/api/admin/nodes360-api'
+import './styles.css'
 
 interface ViewShapesStructure {
   shapesRender: ShapeStructure[] | null
@@ -96,7 +97,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
         const newIccon = new Icon({
           idIcon: obj.id,
           iconUrl: obj.file,
-          iconSize: [35, 35], // size of the icon
+          iconSize: [50, 50], // size of the icon
           iconAnchor: [15, 20],
           popupAnchor: [-3, -76]
         })
@@ -113,6 +114,20 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
   useEffect(() => {
     getAllIcons()
   }, [])
+
+  const [selectedMarkerIcon, setSelectedMarkerIcon] = useState<{
+    idIcon: number,
+    iconUrl: string,
+    iconSize: [number, number]
+    iconAnchor: [number, number]
+    popupAnchor: [number, number]
+  }>({
+    idIcon: 0,
+    iconUrl: '',
+    iconSize: [50, 50], // size of the icon
+    iconAnchor: [15, 20],
+    popupAnchor: [-3, -76]
+  })
 
   const [Open360Dialog, setOpen360Dialog] = useState<boolean>(false)
   const [nodes360, setNodes360] = useState<PhotogrametryStructure[] | null>(null)
@@ -135,7 +150,10 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     }
   }, [])
 
+  const markerRef = useRef(null);
 
+
+  
   return (
     <div>
       {
@@ -148,7 +166,14 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
             type === 'circle' ?
               (markerType > 0 && markerType <= 4) && mapPlan2dIcon && showShapes ?
                 <Marker
+                  // ref={markerRef}
                   eventHandlers={{
+                    // mouseover: (e) => {
+                    //   console.log("Circulo dentro: ", e)
+                    // },
+                    // mouseout: (e) => {
+                    //   console.log("Circulo fuera: ", e)
+                    // },
                     click: (e) => {
                       if (showShapes) {
                         if (markerType === 1 || markerType > 4) {
@@ -165,6 +190,15 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                         } else {
                           setNodeSelected(obj.photogrammetry_node)
                           setOpen360Dialog(true)
+                          setSelectedMarkerIcon(
+                            {
+                              idIcon: obj.shape_icon,
+                              iconUrl: iconShow?.options.iconUrl || '',
+                              iconSize: [iconShow?.options.iconSize[0] + 20 || 50, iconShow?.options.iconSize[1] + 20 || 50],
+                              iconAnchor: iconShow?.options.iconAnchor || [15, 20],
+                              popupAnchor: iconShow?.options.popupAnchor || [-3, -76]
+                            }
+                          )
                         }
                       }
                     }
@@ -173,11 +207,38 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                   position={[obj.shapes.coordinates.lat, obj.shapes.coordinates.lng]}
                   icon={iconShow} // Use the selected icon
                 >
-                  <Tooltip direction='top' offset={[2, -20]}>
-                    <p className='text-base font-semibold text-gray-800'>
-                      {obj.entity_id?.name || obj.photogrammetry_node?.name}
-                    </p>
-                  </Tooltip>
+                  {
+                    markerType === 2 ?
+                      <Tooltip
+                        direction='center'
+                        permanent={true}
+                        offset={[10, 5]}
+                        className='custom-tooltip-front'
+                      >
+                        <div className='flex flex-row items-end' >
+                          <p className='text-xl font-bold'>N</p>
+                          <p className=' text-sm text-white font-semibold'>
+                            {obj.id}
+                          </p>
+                        </div>
+                      </Tooltip> :
+                      markerType === 3 ?
+                        <Tooltip
+                          direction='center'
+                          permanent={true}
+                          offset={[10, 5]}
+                          className='custom-tooltip-front2'
+                        >
+                          <div className='flex flex-row items-end' >
+                            <p className='text-xl font-bold'>E</p>
+                            <p className=' text-sm text-black font-semibold'>
+                              {obj.id}
+                            </p>
+                          </div>
+                        </Tooltip>
+                        :
+                        null
+                  }
                 </Marker>
                 :
                 <Circle

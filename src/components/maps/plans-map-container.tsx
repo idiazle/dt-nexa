@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
 import { Button } from '../ui/button';
 import { TbTriangleSquareCircleFilled, TbView360Number } from "react-icons/tb";
-import { FaAngleDown, FaAngleUp, FaBars, FaFile, FaSquarePlus, FaTrash } from "react-icons/fa6";
+import { FaAngleDown, FaAnglesLeft, FaAnglesRight, FaAngleUp, FaBars, FaFile, FaSquarePlus, FaTrash } from "react-icons/fa6";
 import ShapesPlanDialog from '../admin/plans/shapes-plan-dialog';
 import { EyeClosedIcon } from '@radix-ui/react-icons';
 import { EyeIcon } from 'lucide-react';
@@ -466,9 +466,16 @@ export default function PlansMapContainer(Map: MapProps) {
     }
   }, [reportsEquipment])
 
-  console.log("INFO SHAPE", infoShape);
-
   const [open360list, setOpen360List] = useState<boolean>(false)
+  const [activeNavigation, setActiveNavigation] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (mapType === '1') {
+      setActiveNavigation(true)
+    } else {
+      setActiveNavigation(false)
+    }
+  }, [])
 
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
@@ -481,6 +488,13 @@ export default function PlansMapContainer(Map: MapProps) {
               src="/img/icons/portal-digital.png"
               height={45}
               width={45}
+              alt={"nexa-logo"}
+              className='rounded-md contain'
+            />
+            <Image
+              src="/img/menu-icons/gemelo_digital.png"
+              height={50}
+              width={50}
               alt={"nexa-logo"}
               className='rounded-md contain'
             />
@@ -610,12 +624,30 @@ export default function PlansMapContainer(Map: MapProps) {
             trouInfodocData={trouInfodocData}
           /> : null
       }
+      {
+        //Cambio de imagen
+        activeNavigation ?
+          <div>
+            <a
+              href={`/interactives?map-id=10009&map-type=1`}
+              // href={'#'}
+              title='Anterior plano'
+              className='absolute left-0 z-20 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md ml-5'>
+              <FaAnglesLeft size={70} />
+            </a>
+            <a
+              href={`/interactives?map-id=10006&map-type=1`}
+              title='Siguiente plano'
+              className='absolute right-0 z-20 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md mr-5'>
+              <FaAnglesRight size={70} />
+            </a>
+          </div>
+          : null
+      }
 
       {/* TOP MENU CONTROL */}
-      <div className='absolute top-16 left-2 z-50 flex flex-col gap-2'>
-        <h1 className='bg-gray-500 text-white font-bold p-2 rounded-md text-lg uppercase'>
-          Plano: {Map.mapSelected?.name}
-        </h1>
+      <div className='absolute top-14 left-1/2 -translate-x-1/2 z-50 flex flex-row gap-2'>
+        <h1 className='bg-gray-500 text-white font-bold p-2 rounded-md text-2xl uppercase'>{Map.mapSelected?.name}</h1>
       </div>
       <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center ${!controlMinimized ? 'opacity-100' : 'opacity-0'} w-7 h-7`}>
         <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
