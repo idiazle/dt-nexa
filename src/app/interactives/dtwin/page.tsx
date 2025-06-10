@@ -11,7 +11,7 @@ import { UserInfoMenu } from '@/components/auth/user-info-menu'
 function Dtwin() {
   const plugins = [
     [AutorotatePlugin, {
-      start: false
+      start: true
     }
     ]
   ] as any

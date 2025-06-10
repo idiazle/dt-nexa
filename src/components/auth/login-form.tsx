@@ -138,7 +138,7 @@ export default function LoginForm() {
                                     </Button>
                                 </FormLabel>
                                 <FormControl>
-                                    <Input type={showPass ? "password" : 'text'} className="bg-white border-none text-black" placeholder="*************" {...field} />
+                                    <Input type={showPass ? "text" : 'password'} className="bg-white border-none text-black" placeholder="*************" {...field} />
                                 </FormControl>
                                 {/* <FormDescription>
                                 This is your public display name.
@@ -154,9 +154,9 @@ export default function LoginForm() {
                 </form>
 
             </Form>
-            <Button type="button" variant={'link'} className="-ml-3 underline italic text-blue-500">
+            {/* <Button type="button" variant={'link'} className="-ml-3 underline italic text-blue-500">
                 Olvidé mi contraseña
-            </Button>
+            </Button> */}
         </div>
     )
 }
