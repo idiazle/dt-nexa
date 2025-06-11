@@ -21,7 +21,6 @@ export const putMapPlans2dIcon = async (id: number, data: any) => {
     })
 }
 
-
 export const postMapsPlans2dIcons = async (data: any) => {
     return await axiosInstance.post(`${process.env.NEXT_PUBLIC_BACK_URL}/map-plans-2d-icons`, data, {
         headers: {
@@ -52,7 +51,7 @@ export const deleteMapPlans2d = async (id: number) => {
 export const putMapPlans2d = async (id: number, data: any) => {
     return await axiosInstance.put(`${process.env.NEXT_PUBLIC_BACK_URL}/map-plan-2d/${id}`, data, {
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'multipart/form-data'
         }
     })
 }

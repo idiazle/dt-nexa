@@ -5,7 +5,7 @@ const nextConfig = {
     },
     images:
     {
-        domains: ['192.168.1.95', 'smptesting.blob.core.windows.net', 'localhost', 'almdigital1.blob.core.windows.net'],
+        domains: ['192.168.1.95', 'smptesting.blob.core.windows.net', 'localhost', 'almdigital1.blob.core.windows.net', 'services-nexa.dportal.app'],
         remotePatterns: [
             {
                 protocol: 'http',
@@ -30,6 +30,12 @@ const nextConfig = {
                 hostname: 'almdigital1.blob.core.windows.net',
                 port: '',
                 pathname: '/admin/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'services-nexa.dportal.app',
+                port: '',
+                pathname: '/menu/**',
             },
         ],
     },

@@ -40,7 +40,7 @@ export default function Map2dDialog({ id, dialogOpen, setDialogOpen }: Map2dDial
     name: z.string().min(2, {
       message: 'El nombre debe ser más largo'
     }),
-    file: z.instanceof(File),
+    file: z.instanceof(File).nullable(),
     map_type: z.string().min(1, {
       message: 'Debe de elegir un tipo de mapa'
     }),
@@ -73,7 +73,7 @@ export default function Map2dDialog({ id, dialogOpen, setDialogOpen }: Map2dDial
   const getApiMap2dById = async () => {
     try {
       const response = await getMapPlans2dById(Number(id))
-      console.log(response.data.data)
+      console.log("INFO RECIBIDA", response.data.data)
       formMap2d.setValue('name', response.data.data.name);
       formMap2d.setValue('map_type', response.data.data.map_type);
       formMap2d.setValue('entity', response.data.data.entity.id);
@@ -87,13 +87,15 @@ export default function Map2dDialog({ id, dialogOpen, setDialogOpen }: Map2dDial
     getApiMap2dById()
   }, [id, dialogOpen])
 
+  console.log("FORM MAP 2D", formMap2d.getValues())
 
   const handleSubmit = async (data: z.infer<typeof FormMapSchema>) => {
-    console.log("MY SUBMIT DATA", id);
+    console.log("MY SUBMIT DATA", id, data);
 
     if (id === null) {
       try {
         const response = await postMapsPlans2d(data)
+
         toast({
           duration: 3000,
           variant: 'default',
@@ -110,11 +112,46 @@ export default function Map2dDialog({ id, dialogOpen, setDialogOpen }: Map2dDial
         })
         console.log("ERROR", error)
       }
+    } else if (id !== null) {
+      try {
+        putMapPlans2d(id, data).then((response) => {
+          console.log("RESPONSE PUT MAP", response)
+          if (response.status === 200) {
+            toast({
+              duration: 3000,
+              variant: 'default',
+              title: 'Edición',
+              description: 'Mapa editado correctamente'
+            })
+            setDialogOpen(false)
+          } else {
+            toast({
+              duration: 3000,
+              variant: 'destructive',
+              title: 'Error',
+              description: 'Ocurrió un error al intentar editar el mapa'
+            })
+          }
+        })
+      } catch (error) {
+        toast({
+          duration: 3000,
+          variant: 'destructive',
+          title: 'Error',
+          description: `Ocurrió un error al intentar editar el mapa ${JSON.stringify(error)}`
+        })
+        console.log("ERROR", error)
+      }
+    } else {
+      toast({
+        duration: 3000,
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Ocurrió un error inesperado'
+      })
     }
     router.refresh()
   }
-
-  // console.log(formMap2d.watch())
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -147,6 +184,15 @@ export default function Map2dDialog({ id, dialogOpen, setDialogOpen }: Map2dDial
                     height={450}
                     width={450}
                   />
+                  <Button
+                    variant='destructive'
+                    className='absolute top-0 right-0 m-2'
+                    onClick={() => {
+                      formMap2d.setValue('file', null)
+                    }}
+                  >
+                    Eliminar Imagen
+                  </Button>
                 </div> : null
             }
             <FormField
