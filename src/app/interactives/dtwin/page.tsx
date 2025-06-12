@@ -61,7 +61,7 @@ function Dtwin() {
         plugins={plugins}
         mousemove={false}
         mousewheel={false}
-        loadingImg='none'
+        loadingImg='/img/menu-icons/gemelo_digital.png'
       />
       <div className='absolute flex flex-row-rever gap-2 bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
         <div className='flex flex-col items-center w-32 gap-2'>
