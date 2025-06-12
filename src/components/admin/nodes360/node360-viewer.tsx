@@ -25,7 +25,7 @@ import Image from 'next/image';
 import { getEntityInfo } from '@/api/admin/entities-api';
 import Link from 'next/link';
 import { FaWindowClose } from 'react-icons/fa';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { TbView360Number } from 'react-icons/tb';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getReportCondById } from '@/api/admin/reports-api';
@@ -42,6 +42,8 @@ const baseUrl = "https://photo-sphere-viewer-data.netlify.app/assets/";
 const caption = "Cape Florida Light, Key Biscayne <b>&copy; Pixexid</b>";
 
 export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setDialogOpen }: Nodes360ViewerStructure) {
+  const pathname = usePathname()
+  const isNav360 = pathname.includes('/interactives/nav360')
 
   const pSRef = React.createRef()
   const [getCurrentNodeFunction, setGetCurrentNodeFunction] = React.useState(null)
@@ -208,49 +210,44 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
   const [open360list, setOpen360List] = useState<boolean>(false)
 
   return (
-    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogContent
-        onEscapeKeyDown={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
-        className='max-h-full max-w-full pointer-events-auto'>
-        {/* <DialogHeader>
-          <DialogTitle>{selectedNode?.name}</DialogTitle>
-          <DialogDescription />
-        </DialogHeader> */}
-        <>
-          <ReactPhotoSphereViewer
-            ref={pSRef}
-            // loadingImg={baseUrl + "loader.gif"}
-            touchmoveTwoFingers={true}
-            mousewheelCtrlKey={true}
-            navbar={["zoom", "move", "gallery", "download", "description", "caption", "fullscreen"]}
-            height={"95vh"}
-            width={"100%"}
-            hideNavbarButton={true}
-            onReady={handleReady}
-            onDblclick={(instance: any) => {
-              setDialogMarkLink({
-                ...dialogMarkLink,
-                open: true,
-                data: {
-                  ...instance.data,
-                  selectedNode: selectedNode
-                }
-              })
-            }}
-            plugins={plugins}
-            container={"container-360"}
-            src={selectedNode?.panorama}
-          />
+    <>
+      {
+        isNav360 ?
+          <div className='w-full h-full relative bg-white' id='container-360'>
+            <>
+              <ReactPhotoSphereViewer
+                ref={pSRef}
+                // loadingImg={baseUrl + "loader.gif"}
+                touchmoveTwoFingers={true}
+                mousewheelCtrlKey={true}
+                navbar={["zoom", "move", "gallery", "download", "description", "caption", "fullscreen"]}
+                height={"100vh"}
+                width={"100%"}
+                hideNavbarButton={true}
+                onReady={handleReady}
+                onDblclick={(instance: any) => {
+                  setDialogMarkLink({
+                    ...dialogMarkLink,
+                    open: true,
+                    data: {
+                      ...instance.data,
+                      selectedNode: selectedNode
+                    }
+                  })
+                }}
+                plugins={plugins}
+                container={"container-360"}
+                src={selectedNode?.panorama}
+              />
 
-          {
-            dialogMarkLink.open ? <MarkersLinksDialog setDialogFather={setDialogOpen} allNodes={allNodes} dialogData={dialogMarkLink} setDialogData={setDialogMarkLink} /> : null
-          }
-          {
-            showPanel ?
-              <div className={`absolute max-w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
+              {
+                dialogMarkLink.open ? <MarkersLinksDialog setDialogFather={setDialogOpen} allNodes={allNodes} dialogData={dialogMarkLink} setDialogData={setDialogMarkLink} /> : null
+              }
+              {
+                showPanel ?
+                  <div className={`absolute max-w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
 
-                {/* {
+                    {/* {
                         renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
                           <Spinner />
                         </div> : <div className='h-full w-full overflow-hidden flex flex-col'>
@@ -263,287 +260,627 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                           </Button>
                         </div>
                       } */}
-                <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md'>
-                  <p className='text-white ml-2 font-bold'>{'REPORTES DE CONDICIÓN DE EQUIPOS'}</p>
-                  <FaWindowClose className='cursor-pointer' onClick={() => { setShowPanel(false) }} size={35} color='white' />
-                </div>
+                    <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md'>
+                      <p className='text-white ml-2 font-bold'>{'REPORTES DE CONDICIÓN DE EQUIPOS'}</p>
+                      <FaWindowClose className='cursor-pointer' onClick={() => { setShowPanel(false) }} size={35} color='white' />
+                    </div>
 
-                {/* <div className='flex flex-row items-center justify-between bg-[#e9851e] p-2'>
+                    {/* <div className='flex flex-row items-center justify-between bg-[#e9851e] p-2'>
                         <h1 className='font-bold text-white'>Reporte de Condición</h1>
                         <button onClick={() => { console.log("Cerrar reporte"), setShowPanel(false) }} >
                             <FaCircleXmark className='text-white' size={25} />
                           </button>
                       </div> */}
-                <div
-                  className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-                  onClick={() => setIsOpen3(!isOpen3)}
-                >
-                  <h1 className='font-bold text-white'>Reportes de Equipo</h1>
-                </div>
-                <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
-                  {
-                    reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
-                      return (
-                        <button
-                          key={index}
-                          onClick={() => {
-                            console.log("Click on report", obj);
-                            handleViewDoc(obj)
-                          }}
-                          className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
-                        >
-                          <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
-                          <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
-                          <p className='text-sm flex flex-row items-center gap-4'>
-                            Estado: <FaCircle color={renderColor(generalCondition)} size={30} className='border-2 border-black rounded-full' />
-                          </p>
-                        </button>
-                      )
-                    }) : (
-                      <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                        <p>No hay reportes disponibles</p>
-                      </div>
-                    )
-                  }
-                  {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                    <div
+                      className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                      onClick={() => setIsOpen3(!isOpen3)}
+                    >
+                      <h1 className='font-bold text-white'>Reportes de Equipo</h1>
+                    </div>
+                    <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
+                      {
+                        reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
+                          return (
+                            <button
+                              key={index}
+                              onClick={() => {
+                                console.log("Click on report", obj);
+                                handleViewDoc(obj)
+                              }}
+                              className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
+                            >
+                              <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
+                              <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
+                              <p className='text-sm flex flex-row items-center gap-4'>
+                                Estado: <FaCircle color={renderColor(generalCondition)} size={30} className='border-2 border-black rounded-full' />
+                              </p>
+                            </button>
+                          )
+                        }) : (
+                          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                            <p>No hay reportes disponibles</p>
+                          </div>
+                        )
+                      }
+                      {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
                           <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
                           <p className='text-sm'>Fecha: 20/03/2025</p>
                           <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
                         </div> */}
 
 
-                </div>
-                <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
-                  {/* Header */}
-                  <div
-                    className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-                    onClick={() => setIsOpen(!isOpen)}
-                  >
-                    <h1 className='font-bold text-white'>Información de Equipo</h1>
-                    {isOpen ? (
-                      <FaAngleUp className='text-white' size={20} />
-                    ) : (
-                      <FaAngleDown className='text-white' size={20} />
-                    )}
-                  </div>
+                    </div>
+                    <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
+                      {/* Header */}
+                      <div
+                        className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                        onClick={() => setIsOpen(!isOpen)}
+                      >
+                        <h1 className='font-bold text-white'>Información de Equipo</h1>
+                        {isOpen ? (
+                          <FaAngleUp className='text-white' size={20} />
+                        ) : (
+                          <FaAngleDown className='text-white' size={20} />
+                        )}
+                      </div>
 
-                  {/* Contenido colapsable */}
-                  <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
-                    <div className='flex flex-col gap-3 px-7 py-2'>
-                      <div className='flex flex-col gap-1 text-black'>
-                        <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
-                        <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
-                      </div>
-                      <div className='flex flex-col gap-1 text-black'>
-                        <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
-                        <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
-                      </div>
-                      <div className='flex flex-col gap-1 text-black'>
-                        <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
-                        <p>{infoEquipment?.entity_data.name}</p>
-                      </div>
-                      <div className='flex flex-col gap-1 text-black'>
-                        <h1 className='font-bold border-b-2 border-black'>Características:</h1>
-                        <div>
-                          {
-                            (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
-                              JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
-                                return (
-                                  <div className='flex flex-row justify-between items-center' key={index}>
-                                    <p className='w-1/3'>{obj.label}</p>
-                                    <p className='w-2/3'>{obj.value}</p>
+                      {/* Contenido colapsable */}
+                      <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
+                        <div className='flex flex-col gap-3 px-7 py-2'>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
+                            <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+                          </div>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
+                            <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
+                          </div>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
+                            <p>{infoEquipment?.entity_data.name}</p>
+                          </div>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black'>Características:</h1>
+                            <div>
+                              {
+                                (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
+                                  JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
+                                    return (
+                                      <div className='flex flex-row justify-between items-center' key={index}>
+                                        <p className='w-1/3'>{obj.label}</p>
+                                        <p className='w-2/3'>{obj.value}</p>
+                                      </div>
+                                    )
+                                  }) : <div>
+                                    <p className='text-gray-500'>No hay características disponibles</p>
                                   </div>
-                                )
-                              }) : <div>
-                                <p className='text-gray-500'>No hay características disponibles</p>
-                              </div>
-                          }
-                        </div>
-                      </div>
-                      <div className='flex flex-col gap-1 text-black'>
-                        <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                        <div>
-                          {
-                            infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
-                              const document = obj.document_id as DocumentStructure
-                              return (
-                                <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
-                                  <FaFile size={15} />
-                                  <p className='text-sm'>{document.title}</p>
-                                </button>
-                              )
-                            }) : <p className='text-black'>No hay documentos disponibles</p>
-                          }
+                              }
+                            </div>
+                          </div>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
+                            <div>
+                              {
+                                infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
+                                  const document = obj.document_id as DocumentStructure
+                                  return (
+                                    <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                                      <FaFile size={15} />
+                                      <p className='text-sm'>{document.title}</p>
+                                    </button>
+                                  )
+                                }) : <p className='text-black'>No hay documentos disponibles</p>
+                              }
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div className='flex flex-col text-sm bg-white h-auto gap-2'>
-                  <div
-                    className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
-                    onClick={() => setIsOpen2(!isOpen2)}
-                  >
-                    <h1 className='font-bold text-white'>Opciones de Equipo</h1>
-                    {isOpen2 ? (
-                      <FaAngleUp className='text-white' size={20} />
-                    ) : (
-                      <FaAngleDown className='text-white' size={20} />
-                    )}
-                  </div>
-                  {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
-                  <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                      <Image
-                        src="/img/icons/ico-28.svg"
-                        alt="Mantenimiento"
-                        width={50}
-                        height={50}
-                      />
-                      <span className='text-xs'>Despiece</span>
-                    </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                      <Image
-                        src="/img/icons/ico-29.svg"
-                        alt="Mantenimiento"
-                        width={50}
-                        height={50}
-                      />
-                      <span className='text-xs'>Reportes Mantto</span>
-                    </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                      <Image
-                        src="/img/icons/ico-30.svg"
-                        alt="Mantenimiento"
-                        width={50}
-                        height={50}
-                      />
-                      <span className='text-xs'>Videos Asociados</span>
-                    </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                      <Image
-                        src="/img/icons/ico-31.svg"
-                        alt="Mantenimiento"
-                        width={50}
-                        height={50}
-                      />
-                      <span className='text-xs'>Historial Fotos</span>
-                    </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                      <Image
-                        src="/img/icons/ico-32.svg"
-                        alt="Mantenimiento"
-                        width={50}
-                        height={50}
-                      />
-                      <span className='text-xs'>Historial OT</span>
-                    </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                      <Image
-                        src="/img/icons/ico-33.svg"
-                        alt="Mantenimiento"
-                        width={50}
-                        height={50}
-                      />
-                      <span className='text-xs'>Historial Fallas</span>
-                    </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                      <Image
-                        src="/img/icons/ico-34.svg"
-                        alt="Mantenimiento"
-                        width={50}
-                        height={50}
-                      />
-                      <span className='text-xs'>Planes Mantto</span>
-                    </button>
-                    <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                      <Image
-                        src="/img/icons/ico-35.svg"
-                        alt="Mantenimiento"
-                        width={50}
-                        height={50}
-                      />
-                      <span className='text-xs'>Listado Repuestos</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              : null
-          }
-          <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
-            <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
-              <TooltipProvider delayDuration={300} >
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={() => {
-                        console.log("Click on button ON");
-                        // if (!markersTourPlugin) return;
-                        // if (markersVisible) {
-                        //   markersTourPlugin.hideMarker("polyline");
-                        // } else {
-                        //   markersTourPlugin.showMarker("polyline");
-                        // }
-                        // setMarkersVisible(!markersVisible);
-                      }}
-                      className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
-                      <h1 className='font-bold'>{'ON'}</h1>
-                      <FaCircle size={25} color='green' />
-                    </button>
-                  </TooltipTrigger>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </div>
-          <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
-            <div className='flex flex-col items-center w-32 gap-2 mb-5'>
-              <a href={"/interactives?map-id=10006&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '1' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
-                PFD
-              </a>
-              {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
-            </div>
-            <div className='flex flex-col items-center w-32 gap-2'>
-              <a href={"/interactives?map-id=10007&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
-                PND
-              </a>
-              {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
-            </div>
-            <div className='flex flex-col items-center w-32 gap-2'>
-              <a href='#' className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-slate-400 opacity-80 cursor-default">
-                PLD
-              </a>
-              {/*a<span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span> */}
-            </div>
-            <div className='flex flex-col items-center w-32 gap-2'>
-              {
-                open360list ?
-                  < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm'>
-                    <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
-                    <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
-                    <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
+                    <div className='flex flex-col text-sm bg-white h-auto gap-2'>
+                      <div
+                        className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
+                        onClick={() => setIsOpen2(!isOpen2)}
+                      >
+                        <h1 className='font-bold text-white'>Opciones de Equipo</h1>
+                        {isOpen2 ? (
+                          <FaAngleUp className='text-white' size={20} />
+                        ) : (
+                          <FaAngleDown className='text-white' size={20} />
+                        )}
+                      </div>
+                      {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
+                      <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                          <Image
+                            src="/img/icons/ico-28.svg"
+                            alt="Mantenimiento"
+                            width={50}
+                            height={50}
+                          />
+                          <span className='text-xs'>Despiece</span>
+                        </button>
+                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                          <Image
+                            src="/img/icons/ico-29.svg"
+                            alt="Mantenimiento"
+                            width={50}
+                            height={50}
+                          />
+                          <span className='text-xs'>Reportes Mantto</span>
+                        </button>
+                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                          <Image
+                            src="/img/icons/ico-30.svg"
+                            alt="Mantenimiento"
+                            width={50}
+                            height={50}
+                          />
+                          <span className='text-xs'>Videos Asociados</span>
+                        </button>
+                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                          <Image
+                            src="/img/icons/ico-31.svg"
+                            alt="Mantenimiento"
+                            width={50}
+                            height={50}
+                          />
+                          <span className='text-xs'>Historial Fotos</span>
+                        </button>
+                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                          <Image
+                            src="/img/icons/ico-32.svg"
+                            alt="Mantenimiento"
+                            width={50}
+                            height={50}
+                          />
+                          <span className='text-xs'>Historial OT</span>
+                        </button>
+                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                          <Image
+                            src="/img/icons/ico-33.svg"
+                            alt="Mantenimiento"
+                            width={50}
+                            height={50}
+                          />
+                          <span className='text-xs'>Historial Fallas</span>
+                        </button>
+                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                          <Image
+                            src="/img/icons/ico-34.svg"
+                            alt="Mantenimiento"
+                            width={50}
+                            height={50}
+                          />
+                          <span className='text-xs'>Planes Mantto</span>
+                        </button>
+                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                          <Image
+                            src="/img/icons/ico-35.svg"
+                            alt="Mantenimiento"
+                            width={50}
+                            height={50}
+                          />
+                          <span className='text-xs'>Listado Repuestos</span>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                   : null
               }
-              <button
-                onClick={() => {
-                  console.log("Click on PLD");
-                  setOpen360List(!open360list);
-                }}
-                className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
-                <TbView360Number size={55} />
-              </button>
-              {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
-            </div>
-          </div>
+              <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
+                <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
+                  <TooltipProvider delayDuration={300} >
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => {
+                            console.log("Click on button ON");
+                            // if (!markersTourPlugin) return;
+                            // if (markersVisible) {
+                            //   markersTourPlugin.hideMarker("polyline");
+                            // } else {
+                            //   markersTourPlugin.showMarker("polyline");
+                            // }
+                            // setMarkersVisible(!markersVisible);
+                          }}
+                          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
+                          <h1 className='font-bold'>{'ON'}</h1>
+                          <FaCircle size={25} color='green' />
+                        </button>
+                      </TooltipTrigger>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+              <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
+                <div className='flex flex-col items-center w-32 gap-2 mb-5'>
+                  <a href={"/interactives?map-id=10006&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '1' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+                    PFD
+                  </a>
+                  {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
+                </div>
+                <div className='flex flex-col items-center w-32 gap-2'>
+                  <a href={"/interactives?map-id=10007&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+                    PND
+                  </a>
+                  {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
+                </div>
+                <div className='flex flex-col items-center w-32 gap-2'>
+                  <a href='#' className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-slate-400 opacity-80 cursor-default">
+                    PLD
+                  </a>
+                  {/*a<span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span> */}
+                </div>
+                <div className='flex flex-col items-center w-32 gap-2'>
+                  {
+                    open360list ?
+                      < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm'>
+                        <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
+                        <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
+                        <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
+                      </div>
+                      : null
+                  }
+                  <button
+                    onClick={() => {
+                      console.log("Click on PLD");
+                      setOpen360List(!open360list);
+                    }}
+                    className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
+                    <TbView360Number size={55} />
+                  </button>
+                  {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
+                </div>
+              </div>
 
-        </>
-      </DialogContent>
-      {
-        openDialogDoc
-          ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
-          : null
+            </>
+            {
+              openDialogDoc
+                ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
+                : null
+            }
+          </div >
+
+          : <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogContent
+              onEscapeKeyDown={(e) => e.preventDefault()}
+              onInteractOutside={(e) => e.preventDefault()}
+              className='h-full max-w-full pointer-events-auto'>
+              <DialogHeader>
+                <DialogTitle>{selectedNode?.name}</DialogTitle>
+                <DialogDescription />
+              </DialogHeader>
+              <>
+                <ReactPhotoSphereViewer
+                  ref={pSRef}
+                  // loadingImg={baseUrl + "loader.gif"}
+                  touchmoveTwoFingers={true}
+                  mousewheelCtrlKey={true}
+                  navbar={["zoom", "move", "gallery", "download", "description", "caption", "fullscreen"]}
+                  height={"93vh"}
+                  width={"100%"}
+                  hideNavbarButton={true}
+                  onReady={handleReady}
+                  onDblclick={(instance: any) => {
+                    setDialogMarkLink({
+                      ...dialogMarkLink,
+                      open: true,
+                      data: {
+                        ...instance.data,
+                        selectedNode: selectedNode
+                      }
+                    })
+                  }}
+                  plugins={plugins}
+                  container={"container-360"}
+                  src={selectedNode?.panorama}
+                />
+
+                {
+                  dialogMarkLink.open ? <MarkersLinksDialog setDialogFather={setDialogOpen} allNodes={allNodes} dialogData={dialogMarkLink} setDialogData={setDialogMarkLink} /> : null
+                }
+                {
+                  showPanel ?
+                    <div className={`absolute max-w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
+
+                      {/* {
+                        renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
+                          <Spinner />
+                        </div> : <div className='h-full w-full overflow-hidden flex flex-col'>
+                          {renderLefInfo(Number(entityType))}
+                          <Button onClick={() => {
+                            setAlertDeleteShape(true)
+                          }} className='flex flex-row justify-between items-center'>
+                            <h1>Eliminar Shape</h1>
+                            <FaTrash />
+                          </Button>
+                        </div>
+                      } */}
+                      <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md'>
+                        <p className='text-white ml-2 font-bold'>{'REPORTES DE CONDICIÓN DE EQUIPOS'}</p>
+                        <FaWindowClose className='cursor-pointer' onClick={() => { setShowPanel(false) }} size={35} color='white' />
+                      </div>
+
+                      {/* <div className='flex flex-row items-center justify-between bg-[#e9851e] p-2'>
+                        <h1 className='font-bold text-white'>Reporte de Condición</h1>
+                        <button onClick={() => { console.log("Cerrar reporte"), setShowPanel(false) }} >
+                            <FaCircleXmark className='text-white' size={25} />
+                          </button>
+                      </div> */}
+                      <div
+                        className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                        onClick={() => setIsOpen3(!isOpen3)}
+                      >
+                        <h1 className='font-bold text-white'>Reportes de Equipo</h1>
+                      </div>
+                      <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
+                        {
+                          reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
+                            return (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  console.log("Click on report", obj);
+                                  handleViewDoc(obj)
+                                }}
+                                className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
+                              >
+                                <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
+                                <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
+                                <p className='text-sm flex flex-row items-center gap-4'>
+                                  Estado: <FaCircle color={renderColor(generalCondition)} size={30} className='border-2 border-black rounded-full' />
+                                </p>
+                              </button>
+                            )
+                          }) : (
+                            <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                              <p>No hay reportes disponibles</p>
+                            </div>
+                          )
+                        }
+                        {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                          <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
+                          <p className='text-sm'>Fecha: 20/03/2025</p>
+                          <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
+                        </div> */}
+
+
+                      </div>
+                      <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
+                        {/* Header */}
+                        <div
+                          className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                          onClick={() => setIsOpen(!isOpen)}
+                        >
+                          <h1 className='font-bold text-white'>Información de Equipo</h1>
+                          {isOpen ? (
+                            <FaAngleUp className='text-white' size={20} />
+                          ) : (
+                            <FaAngleDown className='text-white' size={20} />
+                          )}
+                        </div>
+
+                        {/* Contenido colapsable */}
+                        <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
+                          <div className='flex flex-col gap-3 px-7 py-2'>
+                            <div className='flex flex-col gap-1 text-black'>
+                              <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
+                              <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+                            </div>
+                            <div className='flex flex-col gap-1 text-black'>
+                              <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
+                              <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
+                            </div>
+                            <div className='flex flex-col gap-1 text-black'>
+                              <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
+                              <p>{infoEquipment?.entity_data.name}</p>
+                            </div>
+                            <div className='flex flex-col gap-1 text-black'>
+                              <h1 className='font-bold border-b-2 border-black'>Características:</h1>
+                              <div>
+                                {
+                                  (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
+                                    JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
+                                      return (
+                                        <div className='flex flex-row justify-between items-center' key={index}>
+                                          <p className='w-1/3'>{obj.label}</p>
+                                          <p className='w-2/3'>{obj.value}</p>
+                                        </div>
+                                      )
+                                    }) : <div>
+                                      <p className='text-gray-500'>No hay características disponibles</p>
+                                    </div>
+                                }
+                              </div>
+                            </div>
+                            <div className='flex flex-col gap-1 text-black'>
+                              <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
+                              <div>
+                                {
+                                  infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
+                                    const document = obj.document_id as DocumentStructure
+                                    return (
+                                      <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                                        <FaFile size={15} />
+                                        <p className='text-sm'>{document.title}</p>
+                                      </button>
+                                    )
+                                  }) : <p className='text-black'>No hay documentos disponibles</p>
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className='flex flex-col text-sm bg-white h-auto gap-2'>
+                        <div
+                          className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
+                          onClick={() => setIsOpen2(!isOpen2)}
+                        >
+                          <h1 className='font-bold text-white'>Opciones de Equipo</h1>
+                          {isOpen2 ? (
+                            <FaAngleUp className='text-white' size={20} />
+                          ) : (
+                            <FaAngleDown className='text-white' size={20} />
+                          )}
+                        </div>
+                        {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
+                        <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                            <Image
+                              src="/img/icons/ico-28.svg"
+                              alt="Mantenimiento"
+                              width={50}
+                              height={50}
+                            />
+                            <span className='text-xs'>Despiece</span>
+                          </button>
+                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                            <Image
+                              src="/img/icons/ico-29.svg"
+                              alt="Mantenimiento"
+                              width={50}
+                              height={50}
+                            />
+                            <span className='text-xs'>Reportes Mantto</span>
+                          </button>
+                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                            <Image
+                              src="/img/icons/ico-30.svg"
+                              alt="Mantenimiento"
+                              width={50}
+                              height={50}
+                            />
+                            <span className='text-xs'>Videos Asociados</span>
+                          </button>
+                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                            <Image
+                              src="/img/icons/ico-31.svg"
+                              alt="Mantenimiento"
+                              width={50}
+                              height={50}
+                            />
+                            <span className='text-xs'>Historial Fotos</span>
+                          </button>
+                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                            <Image
+                              src="/img/icons/ico-32.svg"
+                              alt="Mantenimiento"
+                              width={50}
+                              height={50}
+                            />
+                            <span className='text-xs'>Historial OT</span>
+                          </button>
+                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                            <Image
+                              src="/img/icons/ico-33.svg"
+                              alt="Mantenimiento"
+                              width={50}
+                              height={50}
+                            />
+                            <span className='text-xs'>Historial Fallas</span>
+                          </button>
+                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                            <Image
+                              src="/img/icons/ico-34.svg"
+                              alt="Mantenimiento"
+                              width={50}
+                              height={50}
+                            />
+                            <span className='text-xs'>Planes Mantto</span>
+                          </button>
+                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                            <Image
+                              src="/img/icons/ico-35.svg"
+                              alt="Mantenimiento"
+                              width={50}
+                              height={50}
+                            />
+                            <span className='text-xs'>Listado Repuestos</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    : null
+                }
+                <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
+                  <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
+                    <TooltipProvider delayDuration={300} >
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => {
+                              console.log("Click on button ON");
+                              // if (!markersTourPlugin) return;
+                              // if (markersVisible) {
+                              //   markersTourPlugin.hideMarker("polyline");
+                              // } else {
+                              //   markersTourPlugin.showMarker("polyline");
+                              // }
+                              // setMarkersVisible(!markersVisible);
+                            }}
+                            className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
+                            <h1 className='font-bold'>{'ON'}</h1>
+                            <FaCircle size={25} color='green' />
+                          </button>
+                        </TooltipTrigger>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
+                <div className='absolute flex flex-row-rever bottom-6 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
+                  <div className='flex flex-col items-center w-32 gap-2 mb-5'>
+                    <a href={"/interactives?map-id=10006&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '1' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+                      PFD
+                    </a>
+                    {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
+                  </div>
+                  <div className='flex flex-col items-center w-32 gap-2'>
+                    <a href={"/interactives?map-id=10007&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+                      PND
+                    </a>
+                    {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
+                  </div>
+                  <div className='flex flex-col items-center w-32 gap-2'>
+                    <a href='#' className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-slate-400 opacity-80 cursor-default">
+                      PLD
+                    </a>
+                    {/*a<span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span> */}
+                  </div>
+                  <div className='flex flex-col items-center w-32 gap-2'>
+                    {
+                      open360list ?
+                        < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm'>
+                          <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
+                          <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
+                          <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
+                        </div>
+                        : null
+                    }
+                    <button
+                      onClick={() => {
+                        console.log("Click on PLD");
+                        setOpen360List(!open360list);
+                      }}
+                      className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
+                      <TbView360Number size={55} />
+                    </button>
+                    {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
+                  </div>
+                </div>
+
+              </>
+            </DialogContent>
+            {
+              openDialogDoc
+                ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
+                : null
+            }
+          </Dialog >
       }
-    </Dialog >
+
+    </>
+
 
   )
 }
