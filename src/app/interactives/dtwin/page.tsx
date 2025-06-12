@@ -80,9 +80,9 @@ function Dtwin() {
           {
             open360list ?
               < div className='absolute flex flex-col items-center w-40 bottom-32 gap-1 mb-5 bg-white rounded-sm'>
-                <div href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
+                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
                 <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
-                <div href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
+                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
               </div>
               : null
           }
