@@ -59,6 +59,7 @@ export default function PlansMapContainer(Map: MapProps) {
   const [openShapeDialog, setopenShapeDialog] = useState<boolean>(false)
   const [planShape, setPlanShape] = useState<ShapeStructure | null>(null)
   const admin = session?.user?.groups.find((obj: any) => obj === 1 || obj === 3)
+  const user = session?.user?.groups.find((obj: any) => obj === 2 || obj === 4)
   const refFeature = useRef<any>()
 
   const _onCreate = (e: any) => {
@@ -550,50 +551,55 @@ export default function PlansMapContainer(Map: MapProps) {
             url={String(Map.mapSelected?.file)}
           />
           {
-            admin !== undefined ?
-              <FeatureGroup ref={refFeature}>
-                <>
-                  {
-                    selectedShape !== null ?
-                      <EditControl
-                        edit={{
-                          edit: true,
-                          remove: false
-                        }}
+            user !== undefined || admin !== undefined ?
+              <>
+                {
+                  admin !== undefined ?
+                    <FeatureGroup ref={refFeature}>
+                      <>
+                        {
+                          selectedShape !== null ?
+                            <EditControl
+                              edit={{
+                                edit: true,
+                                remove: false
+                              }}
 
-                        position='bottomright'
-                        onCreated={_onCreate}
-                        onEdited={_onEditPath}
-                        draw={{
-                          polyline: false,
-                          polygon: false,
-                          circle: false,
-                          circlemarker: false,
-                          rectangle: false,
-                          marker: false
-                        }}
-                      /> : null
-                  }
-                  {
-                    closeInformation || selectedShape === null ? <EditControl
-                      edit={{
-                        edit: false,
-                        remove: false
-                      }}
-                      position='bottomright'
-                      onCreated={_onCreate}
-                      onEdited={_onEditPath}
-                      draw={{
-                        polyline: false,
-                        polygon: true,
-                        circle: true,
-                        circlemarker: false,
-                        rectangle: true,
-                        marker: false
-                      }}
-                    /> : null
-                  }
-                </>
+                              position='bottomright'
+                              onCreated={_onCreate}
+                              onEdited={_onEditPath}
+                              draw={{
+                                polyline: false,
+                                polygon: false,
+                                circle: false,
+                                circlemarker: false,
+                                rectangle: false,
+                                marker: false
+                              }}
+                            /> : null
+                        }
+                        {
+                          closeInformation || selectedShape === null ? <EditControl
+                            edit={{
+                              edit: false,
+                              remove: false
+                            }}
+                            position='bottomright'
+                            onCreated={_onCreate}
+                            onEdited={_onEditPath}
+                            draw={{
+                              polyline: false,
+                              polygon: true,
+                              circle: true,
+                              circlemarker: false,
+                              rectangle: true,
+                              marker: false
+                            }}
+                          /> : null
+                        }
+                      </>
+                    </FeatureGroup> : null
+                }
                 <ViewShapes
                   refDivOverflow={refDivOverflow}
                   flagRefresh={flagRefresh}
@@ -606,8 +612,7 @@ export default function PlansMapContainer(Map: MapProps) {
                   setEquipmentPressed={setEquipmentPressed}
                   setEquipmentSelected={setEquipmentSelected}
                 />
-                : null
-              </FeatureGroup> : null
+              </> : null
           }
         </MapContainer>
       </div>
@@ -623,6 +628,18 @@ export default function PlansMapContainer(Map: MapProps) {
             setTrouInfodocData={setTrouInfodocData}
             trouInfodocData={trouInfodocData}
           /> : null
+      }
+      {
+        mapType === '1' ?
+          <div className='absolute top-16 right-3 flex justify-center items-center z-50 bg-black bg-opacity-50'>
+            <Image
+              src="/img/leyenda/leyenda.jpg"
+              alt="leyenda planos"
+              width={300}
+              height={300}
+            />
+          </div>
+          : null
       }
       {
         //Cambio de imagen

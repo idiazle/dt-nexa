@@ -82,7 +82,7 @@ export default function RenderDataMenu({ data, dataPlants }: RenderDataMenuStruc
       <div className='flex justify-center items-center mb-16'>
 
         <ModulesMenu data={data} selectedPlant={dataPlants.find((obj) => obj.id === Number(selectedPlant))} />
-        <div className='absolute right-10'>
+        {/* <div className='absolute right-10'>
           <Menubar className="flex flex-row flex-wrap-reverse bg-transparent border-none gap-5">
             <MenubarMenu>
               <div className="flex flex-col items-center max-w-24 min-h-[160px] gap-2">
@@ -111,7 +111,7 @@ export default function RenderDataMenu({ data, dataPlants }: RenderDataMenuStruc
               </MenubarContent>
             </MenubarMenu>
           </Menubar>
-        </div>
+        </div> */}
       </div>
     </div>
   )
