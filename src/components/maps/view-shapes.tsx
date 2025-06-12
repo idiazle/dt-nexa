@@ -152,8 +152,15 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
 
   const markerRef = useRef(null);
 
+  function darkenHexColor(hex: string, percent: number): string {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const amt = Math.round(2.55 * percent);
+    const r = Math.max(0, (num >> 16) - amt);
+    const g = Math.max(0, ((num >> 8) & 0x00FF) - amt);
+    const b = Math.max(0, (num & 0x0000FF) - amt);
+    return `#${(1 << 24 | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
+  }
 
-  
   return (
     <div>
       {
@@ -244,22 +251,42 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                 <Circle
                   key={`circle_${index}`}
                   className={'transition-colors duration-500'}
-                  pathOptions={{ fillColor: showShapes ? obj.shapes.color : 'transparent', color: showShapes ? obj.shapes.color : 'transparent', fillOpacity: 0.8, weight: 0.5 }}
+                  pathOptions={{
+                    fillColor: showShapes ? obj.shapes.color : 'transparent',
+                    color: showShapes ? darkenHexColor(obj.shapes.color, 20) : 'transparent',
+                    fillOpacity: 0.8,
+                    weight: 3
+                  }}
                   radius={obj.shapes.radius}
                   //    zIndex={10}
                   center={obj.shapes.coordinates as any}
                   eventHandlers={{
                     mouseover: (e) => {
-                      // console.log("Circulo dentro: ", e)
-                      e.target.openPopup()
+                      if (showShapes) {
+                        e.target.setStyle({
+                          weight: 5,
+                          color: darkenHexColor(obj.shapes.color, 20),
+                          fillOpacity: 1,
+                        })
+                      }
                     },
                     mouseout: (e) => {
-                      // console.log("Poligono fuera: ", e)
-                      e.target.closePopup()
+                      if (showShapes) {
+                        e.target.setStyle({
+                          weight: 3,
+                          color: darkenHexColor(obj.shapes.color, 20),
+                          fillOpacity: 0.8,
+                        })
+                      }
                     },
                     click: async (e) => {
-                      // console.log("Clickeed circle: ", e)
-                      // console.log("Clickeed circle OBJECT: ", obj)
+                      if (showShapes && markerType === 1) {
+                        e.target.setStyle({
+                          weight: 5,
+                          color: obj.shapes.color,
+                          fillOpacity: 1,
+                        });
+                      }
                       if (showShapes) {
                         await getDataInfoShape(obj)
                         setSelectedShape(obj)
@@ -267,6 +294,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                       }
                     }
                   }}>
+
                   <Tooltip direction='top' offset={[2, -20]}>
                     <p className='text-base font-semibold text-gray-800'>
                       {obj.entity_id?.name || obj.photogrammetry_node?.name}
