@@ -516,9 +516,9 @@ export default function PlansMapContainer(Map: MapProps) {
                 <SelectValue placeholder="Seleccionar Planta" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">S20-01</SelectItem>
-                <SelectItem value="2">S20-02</SelectItem>
-                <SelectItem value="3">S20-03</SelectItem>
+                {/* <SelectItem value="1">S20-01</SelectItem> */}
+                <SelectItem value="2">Planta Cajamarquilla</SelectItem>
+                {/* <SelectItem value="3">S20-03</SelectItem> */}
               </SelectContent>
             </Select>
             <UserInfoMenu />
@@ -631,7 +631,7 @@ export default function PlansMapContainer(Map: MapProps) {
       }
       {
         mapType === '1' ?
-          <div className='absolute top-16 right-3 flex justify-center items-center z-50 bg-black bg-opacity-50'>
+          <div className='absolute top-16 right-3 flex justify-center items-center z-10 bg-black bg-opacity-50'>
             <Image
               src="/img/leyenda/leyenda.jpg"
               alt="leyenda planos"
@@ -649,13 +649,13 @@ export default function PlansMapContainer(Map: MapProps) {
               href={`/interactives?map-id=10009&map-type=1`}
               // href={'#'}
               title='Anterior plano'
-              className='absolute left-0 z-20 flex justify-center items-center bg-gray-400 opacity-50 top-2/3 p-2 rounded-md ml-5'>
+              className='absolute left-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-2/3 p-2 rounded-md ml-5'>
               <FaAnglesLeft size={70} />
             </a>
             <a
               href={`/interactives?map-id=10006&map-type=1`}
               title='Siguiente plano'
-              className='absolute right-0 z-20 flex justify-center items-center bg-gray-400 opacity-50 top-2/3 p-2 rounded-md mr-5'>
+              className='absolute right-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-2/3 p-2 rounded-md mr-5'>
               <FaAnglesRight size={70} />
             </a>
           </div>
