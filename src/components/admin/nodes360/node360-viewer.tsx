@@ -213,10 +213,10 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
         onEscapeKeyDown={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
         className='max-h-full max-w-full pointer-events-auto'>
-        <DialogHeader>
+        {/* <DialogHeader>
           <DialogTitle>{selectedNode?.name}</DialogTitle>
           <DialogDescription />
-        </DialogHeader>
+        </DialogHeader> */}
         <>
           <ReactPhotoSphereViewer
             ref={pSRef}
@@ -518,9 +518,9 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
               {
                 open360list ?
                   < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm'>
-                    <a href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 10</a>
-                    <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 20</a>
-                    <a href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 25</a>
+                    <div href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
+                    <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
+                    <div href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
                   </div>
                   : null
               }

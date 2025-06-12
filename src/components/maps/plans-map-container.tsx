@@ -635,7 +635,7 @@ export default function PlansMapContainer(Map: MapProps) {
             <Image
               src="/img/leyenda/leyenda.jpg"
               alt="leyenda planos"
-              width={300}
+              width={320}
               height={300}
             />
           </div>
@@ -649,13 +649,13 @@ export default function PlansMapContainer(Map: MapProps) {
               href={`/interactives?map-id=10009&map-type=1`}
               // href={'#'}
               title='Anterior plano'
-              className='absolute left-0 z-20 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md ml-5'>
+              className='absolute left-0 z-20 flex justify-center items-center bg-gray-400 opacity-50 top-2/3 p-2 rounded-md ml-5'>
               <FaAnglesLeft size={70} />
             </a>
             <a
               href={`/interactives?map-id=10006&map-type=1`}
               title='Siguiente plano'
-              className='absolute right-0 z-20 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md mr-5'>
+              className='absolute right-0 z-20 flex justify-center items-center bg-gray-400 opacity-50 top-2/3 p-2 rounded-md mr-5'>
               <FaAnglesRight size={70} />
             </a>
           </div>
@@ -759,9 +759,9 @@ export default function PlansMapContainer(Map: MapProps) {
           {
             open360list ?
               < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm'>
-                <a href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 10</a>
-                <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 20</a>
-                <a href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer'>Seccion 25</a>
+                <div href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
+                <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
+                <div href='#' className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
               </div>
               : null
           }
