@@ -153,7 +153,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
   const markerRef = useRef(null);
 
   function darkenHexColor(hex: string, percent: number): string {
-    const num = parseInt(hex.replace('#', ''), 16);
+    const num = parseInt(hex?.replace('#', ''), 16);
     const amt = Math.round(2.55 * percent);
     const r = Math.max(0, (num >> 16) - amt);
     const g = Math.max(0, ((num >> 8) & 0x00FF) - amt);

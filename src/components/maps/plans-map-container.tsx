@@ -1,7 +1,7 @@
 "use client"
 import React, { act, useEffect, useRef, useState } from 'react'
 import { MapContainer, ImageOverlay, FeatureGroup } from "react-leaflet";
-import { LatLngExpression, LatLngTuple } from 'leaflet';
+import { LatLngExpression, LatLngTuple, map } from 'leaflet';
 import L from 'leaflet'
 import 'leaflet-draw/dist/leaflet.draw.css'
 import "leaflet/dist/leaflet.css";
@@ -48,6 +48,41 @@ interface MenuBtns {
   icon: any
   active: boolean
 }
+
+const options = [
+  {
+    label: 'Despiece',
+    url: '/img/icons/ico-28.svg',
+  },
+  {
+    label: 'Reportes Mantto',
+    url: '/img/icons/ico-29.svg',
+  },
+  {
+    label: 'Videos Asociados',
+    url: '/img/icons/ico-30.svg',
+  },
+  {
+    label: 'Historial Fotos',
+    url: '/img/icons/ico-31.svg',
+  },
+  {
+    label: 'Historial OT',
+    url: '/img/icons/ico-32.svg',
+  },
+  {
+    label: 'Historial Fallas',
+    url: '/img/icons/ico-33.svg',
+  },
+  {
+    label: 'Planes Mantto',
+    url: '/img/icons/ico-34.svg',
+  },
+  {
+    label: 'Listado Repuestos',
+    url: '/img/icons/ico-35.svg',
+  },
+]
 
 export default function PlansMapContainer(Map: MapProps) {
   // const { zoom = defaults.zoom, posix } = Map
@@ -654,7 +689,49 @@ export default function PlansMapContainer(Map: MapProps) {
               )
             }
           </div>
-          : null
+          : mapType === '3' ?
+            <div className='absolute top-16 right-3 flex justify-center items-start z-20 bg-opacity-50'>
+              <div className='flex flex-col justify-center items-center gap-2 p-2 cursor-pointer bg-gray-400 rounded-md' onClick={() => { setActiveLegend(!activeLegend) }} title='Leyenda de Plano'>
+                {
+                  activeLegend ? <FaAngleRight size={20} className='text-white' /> : <FaAngleLeft size={20} className='text-white' />
+                }
+              </div>
+              {
+                activeLegend && (
+                  <div className='flex flex-col justify-center items-start gap-2 p-2 cursor-pointer bg-white rounded-md border border-gray-400'>
+                    <h1 className='font-bold bg-slate-200 p-2 rounded-sm'>Leyenda de íconos</h1>
+                    <div className='flex flex-row justify-center items-center gap-2'>
+                      <Image
+                        src="/img/icons/peq.svg"
+                        alt="leyenda planos"
+                        width={20}
+                        height={20}
+                      />
+                      <span className='text-sm'>Punto Equipo</span>
+                    </div>
+                    <div className='flex flex-row justify-center items-center gap-2'>
+                      <Image
+                        src="/img/icons/pnav.svg"
+                        alt="leyenda planos"
+                        width={20}
+                        height={20}
+                      />
+                      <span className='text-sm'>Punto Navegación</span>
+                    </div>
+                    <div className='flex flex-row justify-center items-center gap-2'>
+                      <Image
+                        src="/img/icons/paux.svg"
+                        alt="leyenda planos"
+                        width={20}
+                        height={20}
+                      />
+                      <span className='text-sm'>Punto Auxiliar</span>
+                    </div>
+                  </div>
+                )
+              }
+            </div>
+            : null
       }
       {
         //Cambio de imagen
@@ -671,7 +748,7 @@ export default function PlansMapContainer(Map: MapProps) {
               href={`/interactives?map-id=10006&map-type=1`}
               title='Siguiente plano'
               className='absolute right-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md mr-5'>
-              <FaAnglesRight size={70} className='text-gray-200'/>
+              <FaAnglesRight size={70} className='text-gray-200' />
             </a>
           </div>
           : null
@@ -871,10 +948,10 @@ export default function PlansMapContainer(Map: MapProps) {
                   className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
                 >
                   <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
-                  <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
-                  <p className='text-sm flex flex-row items-center gap-4'>
-                    Estado: <FaCircle color={renderColor(generalCondition)} size={30} className='border-2 border-black rounded-full' />
+                  <p className=' flex flex-row items-center gap-4 text-lg'>
+                    Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {generalCondition === 1 ? 'Mala' : generalCondition === 2 ? 'Regular' : generalCondition === 3 ? 'Buena' : generalCondition === 4 ? 'Excelente' : ''}
                   </p>
+                  <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
                 </button>
               )
             }) : (
@@ -970,79 +1047,25 @@ export default function PlansMapContainer(Map: MapProps) {
             )}
           </div>
           {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
-          <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
-            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-              <Image
-                src="/img/icons/ico-28.svg"
-                alt="Mantenimiento"
-                width={50}
-                height={50}
-              />
-              <span className='text-xs'>Despiece</span>
-            </button>
-            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-              <Image
-                src="/img/icons/ico-29.svg"
-                alt="Mantenimiento"
-                width={50}
-                height={50}
-              />
-              <span className='text-xs'>Reportes Mantto</span>
-            </button>
-            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-              <Image
-                src="/img/icons/ico-30.svg"
-                alt="Mantenimiento"
-                width={50}
-                height={50}
-              />
-              <span className='text-xs'>Videos Asociados</span>
-            </button>
-            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-              <Image
-                src="/img/icons/ico-31.svg"
-                alt="Mantenimiento"
-                width={50}
-                height={50}
-              />
-              <span className='text-xs'>Historial Fotos</span>
-            </button>
-            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-              <Image
-                src="/img/icons/ico-32.svg"
-                alt="Mantenimiento"
-                width={50}
-                height={50}
-              />
-              <span className='text-xs'>Historial OT</span>
-            </button>
-            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-              <Image
-                src="/img/icons/ico-33.svg"
-                alt="Mantenimiento"
-                width={50}
-                height={50}
-              />
-              <span className='text-xs'>Historial Fallas</span>
-            </button>
-            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-              <Image
-                src="/img/icons/ico-34.svg"
-                alt="Mantenimiento"
-                width={50}
-                height={50}
-              />
-              <span className='text-xs'>Planes Mantto</span>
-            </button>
-            <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-              <Image
-                src="/img/icons/ico-35.svg"
-                alt="Mantenimiento"
-                width={50}
-                height={50}
-              />
-              <span className='text-xs'>Listado Repuestos</span>
-            </button>
+          <div className={`grid grid-cols-4 gap-1 px-2 text-white items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+            {
+              options.map((option, index) => {
+                return (
+                  <>
+                    <button disabled className='flex flex-col  bg-[#8b8b8b] rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                      <Image
+                        src={option.url}
+                        alt={option.label}
+                        width={80}
+                        height={60}
+                      />
+                      <span className='font-bold'>{option.label}</span>
+                    </button>
+                  </>
+                )
+              }
+              )
+            }
           </div>
         </div>
       </div>
