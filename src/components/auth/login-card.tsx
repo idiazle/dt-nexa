@@ -12,7 +12,7 @@ import LoginForm from './login-form'
 
 export default function LoginCard() {
     return (
-        <Card className='bg-transparent border-none w-1/5 flex flex-col justify-center items-center gap-5 rounded-2xl'>
+        <Card className='bg-transparent border-none w-1/5 flex flex-col justify-center items-center gap-5 rounded-2xl text-white'>
             <CardHeader>
                 <div className='flex flex-col justify-center items-center'>
                     <Image

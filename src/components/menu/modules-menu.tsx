@@ -54,7 +54,7 @@ export default function ModulesMenu({ data, selectedPlant }: { data: MenuIconsSt
         data.map((module, index) => {
           return (
             <MenubarMenu key={module.id}>
-              <div className="flex flex-col items-center max-w-24 min-h-[160px] gap-2">
+              <div className="flex flex-col items-center max-w-32 min-h-[150px] gap-2">
                 <MenubarTrigger onClick={() => {
                   if (module.id === 1) {
                     router.push('/interactives/dtwin')
@@ -63,7 +63,7 @@ export default function ModulesMenu({ data, selectedPlant }: { data: MenuIconsSt
                   className={`flex flex-col items-center gap-2 p-0 rounded-2xl focus:bg-white/35 data-[state=open]:bg-white/60 opacity-20 ${module.id === 1 ? 'cursor-pointer opacity-100 hover:bg-gray-400 bg-gray-600' : ''}`}>
                   {/* Imagen centrada */}
                   <div className="border border-white/50 p-4 rounded-2xl">
-                    <div className="relative h-[67px] w-[67px] overflow-hidden">
+                    <div className="relative h-[90px] w-[90px] overflow-hidden">
                       <Image
                         src={module.icon_image}
                         alt={module.icon_name}
@@ -75,7 +75,7 @@ export default function ModulesMenu({ data, selectedPlant }: { data: MenuIconsSt
 
                   {/* Texto con altura fija para alineación consistente */}
                 </MenubarTrigger>
-                <p className="text-center text-xs leading-tight h-[32px] overflow-hidden text-ellipsis font-bold">
+                <p className="text-center leading-tight h-[32px]  font-bold">
                   {module.icon_name}
                 </p>
               </div>

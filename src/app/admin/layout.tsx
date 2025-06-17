@@ -12,7 +12,7 @@ export default function AuthLayout({
         <div className="flex flex-col w-full h-full overflow-hidden">
             <AdminNav/>
             <div className="flex flex-row overflow-hidden h-full w-full">
-                <aside className="h-full max-w-[47px] w-[47px] shadow-lg">
+                <aside className="h-full max-w-[47px] w-[47px] shadow-2xl">
                     <AdminAside />
                 </aside>
                 <main className="w-full h-full overflow-auto p-5">

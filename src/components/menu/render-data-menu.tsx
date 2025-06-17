@@ -36,32 +36,31 @@ export default function RenderDataMenu({ data, dataPlants }: RenderDataMenuStruc
   console.log("SELECTED PLANT", selectedPlant);
 
   return (
-    <div className='h-full w-full flex flex-col justify-between items-stretch'>
+    <div className='h-full w-full flex flex-col justify-between items-stretch text-white'>
       <div>
         <div className='flex justify-end p-2'>
           <UserInfoMenu />
         </div>
         {/* IMAGEN CENTRAL */}
-        <div className='flex flex-col justify-center items-center mt-10 gap-4'>
+        <div className='flex flex-col justify-center items-center mt-10 gap-5'>
           <Image
             src="/img/icons/portal-digital.png"
-            width={100}
-            height={100}
+            width={150}
+            height={150}
             alt="Picture of the author"
             className='contain'
           />
           <p className='text-3xl font-bold'>Digital Portal</p>
           <Image
             src="/img/nexa_logo.png"
-            width={250}
-            height={250}
+            width={400}
+            height={400}
             alt="Picture of the author"
             className='contain bg-white p-0.5 rounded-lg'
           />
-          <div className='flex flex-col justify-center items-center w-full pt-10 gap-3'>
-            <h1 className='font-bold text-2xl'>MÓDULOS</h1>
+          <div className='flex flex-col justify-center items-center w-full pt-10'>
             <Select value='5' onValueChange={(val) => { setSelectedPlant(val) }}>
-              <SelectTrigger className="w-1/3 h-8 bg-transparent border-white">
+              <SelectTrigger className="w-1/3 bg-transparent border-white">
                 <SelectValue placeholder="Seleccione planta" />
               </SelectTrigger>
               <SelectContent>
@@ -75,12 +74,12 @@ export default function RenderDataMenu({ data, dataPlants }: RenderDataMenuStruc
               </SelectContent>
             </Select>
           </div>
+          <h1 className='font-bold text-2xl mt-20'>MÓDULOS</h1>
         </div>
       </div>
 
       {/* Zona de Módulos */}
       <div className='flex justify-center items-center mb-16'>
-
         <ModulesMenu data={data} selectedPlant={dataPlants.find((obj) => obj.id === Number(selectedPlant))} />
         {/* <div className='absolute right-10'>
           <Menubar className="flex flex-row flex-wrap-reverse bg-transparent border-none gap-5">

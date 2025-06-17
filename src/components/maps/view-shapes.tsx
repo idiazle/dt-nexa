@@ -70,7 +70,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     getShapesAll()
   }, [flagRefresh])
 
-  console.log("SHAPES RENDERasdasdasd", shapesRender);
+  // console.log("SHAPES RENDERasdasdasd", shapesRender);
 
   const getDataInfoShape = async (shapeSelected: ShapeStructure) => {
     try {
@@ -133,7 +133,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
   const [nodes360, setNodes360] = useState<PhotogrametryStructure[] | null>(null)
   const [nodeSelected, setNodeSelected] = useState<PhotogrametryStructure | null>(null)
 
-  console.log("MWDHAUIDAW", nodeSelected);
+  // console.log("MWDHAUIDAW", nodeSelected);
 
   const getAllNodes = async () => {
     try {
@@ -167,6 +167,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
         shapesRender?.map((obj: ShapeStructure | any, index: number) => {
           const type = obj?.shapes?.type
           const markerType = obj.marker_type
+          console.log("OBJ SHAPE", obj)
           const iconShow = mapPlan2dIcon?.find((objIcon) => objIcon.options.idIcon === obj.shape_icon)
           return (
 
@@ -236,11 +237,16 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                           offset={[10, 5]}
                           className='custom-tooltip-front2'
                         >
-                          <div className='flex flex-row items-end' >
-                            <p className='text-xl font-bold'>E</p>
-                            <p className=' text-sm text-black font-semibold'>
-                              {obj.id}
-                            </p>
+                          <div className='flex flex-col items-center -mt-11 gap-2'>
+                            <div className='bg-gray-300 p-1 rounded-md shadow-md'>
+                              <p className='text-xl font-bold'>{obj.photogrammetry_node.links}</p>
+                            </div>
+                            <div className='flex flex-row items-end' >
+                              <p className='text-xl font-bold'>E</p>
+                              <p className=' text-sm text-black font-semibold'>
+                                {obj.id}
+                              </p>
+                            </div>
                           </div>
                         </Tooltip>
                         :
@@ -280,6 +286,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                       }
                     },
                     click: async (e) => {
+                      console.log("Click circle: ", e)
                       if (showShapes && markerType === 1) {
                         e.target.setStyle({
                           weight: 5,

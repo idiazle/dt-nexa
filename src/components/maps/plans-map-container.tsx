@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
 import { Button } from '../ui/button';
 import { TbTriangleSquareCircleFilled, TbView360Number } from "react-icons/tb";
-import { FaAngleDown, FaAnglesLeft, FaAnglesRight, FaAngleUp, FaBars, FaFile, FaSquarePlus, FaTrash } from "react-icons/fa6";
+import { FaAngleDown, FaAngleLeft, FaAngleRight, FaAnglesLeft, FaAnglesRight, FaAngleUp, FaBars, FaFile, FaLeaf, FaSquarePlus, FaTrash } from "react-icons/fa6";
 import ShapesPlanDialog from '../admin/plans/shapes-plan-dialog';
 import { EyeClosedIcon } from '@radix-ui/react-icons';
 import { EyeIcon } from 'lucide-react';
@@ -478,10 +478,12 @@ export default function PlansMapContainer(Map: MapProps) {
     }
   }, [])
 
+  const [activeLegend, setActiveLegend] = useState<boolean>(false)
+
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
       <div className='relative w-full h-full'>
-        <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#022799] border-b border-gray-300 text-white px-3'>
+        <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#002645] border-b border-gray-300 text-white px-3'>
           <div
             onClick={() => window.location.href = '/menu'}
             className='flex flex-row gap-3 w-1/3 items-center justify-start cursor-pointer'>
@@ -631,13 +633,26 @@ export default function PlansMapContainer(Map: MapProps) {
       }
       {
         mapType === '1' ?
-          <div className='absolute top-16 right-3 flex justify-center items-center z-10 bg-black bg-opacity-50'>
-            <Image
-              src="/img/leyenda/leyenda.jpg"
-              alt="leyenda planos"
-              width={320}
-              height={300}
-            />
+          <div className='absolute top-16 right-3 flex justify-center items-start z-20 bg-opacity-50'>
+            <div className='flex flex-col justify-center items-center gap-2 p-2 cursor-pointer bg-gray-400 rounded-md' onClick={() => { setActiveLegend(!activeLegend) }} title='Leyenda de Plano'>
+              {
+                activeLegend ? <FaAngleRight size={20} className='text-white' /> : <FaAngleLeft size={20} className='text-white' />
+              }
+              {/* <FaLeaf size={30} className='text-white' /> */}
+            </div>
+            {
+              activeLegend && (
+                <div>
+                  <Image
+                    src="/img/leyenda/leyenda.jpg"
+                    alt="leyenda planos"
+                    width={280}
+                    height={300}
+                  />
+                </div>
+
+              )
+            }
           </div>
           : null
       }
@@ -649,14 +664,14 @@ export default function PlansMapContainer(Map: MapProps) {
               href={`/interactives?map-id=10009&map-type=1`}
               // href={'#'}
               title='Anterior plano'
-              className='absolute left-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-2/3 p-2 rounded-md ml-5'>
-              <FaAnglesLeft size={70} />
+              className='absolute left-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md ml-5'>
+              <FaAnglesLeft size={70} className='text-gray-200' />
             </a>
             <a
               href={`/interactives?map-id=10006&map-type=1`}
               title='Siguiente plano'
-              className='absolute right-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-2/3 p-2 rounded-md mr-5'>
-              <FaAnglesRight size={70} />
+              className='absolute right-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md mr-5'>
+              <FaAnglesRight size={70} className='text-gray-200'/>
             </a>
           </div>
           : null
@@ -738,13 +753,13 @@ export default function PlansMapContainer(Map: MapProps) {
       {/* CENTER BOTTOM MENU CONTROL */}
       <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
         <div className='flex flex-col items-center w-32 gap-2 mb-5'>
-          <a href={"/interactives?map-id=10006&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '1' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+          <a href={"/interactives?map-id=10006&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#002645] hover:bg-[#002645] hover:text-white ${mapType === '1' ? 'bg-[#002645] text-white' : 'bg-white text-black'}`}>
             PFD
           </a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10007&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#022799] hover:bg-[#022799] hover:text-white ${mapType === '3' ? 'bg-[#022799] text-white' : 'bg-white text-black'}`}>
+          <a href={"/interactives?map-id=10007&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#002645] hover:bg-[#002645] hover:text-white ${mapType === '3' ? 'bg-[#002645] text-white' : 'bg-white text-black'}`}>
             PND
           </a>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
@@ -759,9 +774,9 @@ export default function PlansMapContainer(Map: MapProps) {
           {
             open360list ?
               < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm'>
-                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
-                <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
-                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
+                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
+                <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
+                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
               </div>
               : null
           }
@@ -770,7 +785,7 @@ export default function PlansMapContainer(Map: MapProps) {
               console.log("Click on PLD");
               setOpen360List(!open360list);
             }}
-            className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
+            className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#002645] hover:bg-[#002645] hover:text-white">
             <TbView360Number size={55} />
           </button>
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
@@ -784,7 +799,7 @@ export default function PlansMapContainer(Map: MapProps) {
             setPnavActive(!pnavActive)
             // setActivateEquipments(!activateEquipments)
           }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pnavActive ? 'bg-[#022799] text-white' : ''}`}>
+          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pnavActive ? 'bg-[#002645] text-white' : ''}`}>
           <h1 className='font-bold'>Pnav</h1>
         </button>
         <button
@@ -792,7 +807,7 @@ export default function PlansMapContainer(Map: MapProps) {
             setPeqActive(!peqActive)
             // setActivateEquipments(!activateEquipments)
           }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${peqActive ? 'bg-[#022799] text-white' : ''}`}>
+          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${peqActive ? 'bg-[#002645] text-white' : ''}`}>
           <h1 className='font-bold'>Peq</h1>
         </button>
         <button
@@ -800,7 +815,7 @@ export default function PlansMapContainer(Map: MapProps) {
             setPauxActive(!pauxActive)
             // setActivateEquipments(!activateEquipments)
           }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pauxActive ? 'bg-[#022799] text-white' : ''}`}>
+          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pauxActive ? 'bg-[#002645] text-white' : ''}`}>
           <h1 className='font-bold'>Paux</h1>
         </button>
       </div> */}

@@ -19,7 +19,8 @@ function Dtwin() {
 
   return (
     <>
-      <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#022799] border-b border-gray-300 text-white px-3'>
+      {/* <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#00203a] border-b border-gray-300 text-white px-3'> */}
+      <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#002645] border-b border-gray-300 text-white px-3'>
         <div
           onClick={() => window.location.href = '/menu'}
           className='flex flex-row gap-3 w-1/3 items-center justify-start'>
@@ -65,33 +66,33 @@ function Dtwin() {
       />
       <div className='absolute flex flex-row-rever gap-2 bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10006&map-type=1"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white cursor-pointer">PFD</a>
-          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span>
+          <a href={"/interactives?map-id=10006&map-type=1"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#002645] hover:bg-[#002645] hover:text-white cursor-pointer">PFD</a>
+          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1 text-white'>Diagrama de Flujo de Confiabilidad</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
-          <a href={"/interactives?map-id=10007&map-type=3"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white cursor-pointer">PND</a>
-          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span>
+          <a href={"/interactives?map-id=10007&map-type=3"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#002645] hover:bg-[#002645] hover:text-white cursor-pointer">PND</a>
+          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1 text-white'>Diagrama de Navegación de Planta</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
           <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-blue-600 opacity-40 cursor-default">PLD</a>
-          <span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span>
+          <span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1 text-white'>Diagrama Lógico Funcional</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
           {
             open360list ?
               < div className='absolute flex flex-col items-center w-40 bottom-32 gap-1 mb-5 bg-white rounded-sm'>
-                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
-                <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
-                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#022799] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
+                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
+                <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
+                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
               </div>
               : null
           }
           <button
             onClick={() => { setOpen360List(!open360list) }}
-            className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#022799] hover:bg-[#022799] hover:text-white">
+            className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#002645] hover:bg-[#002645] hover:text-white">
             <TbView360Number size={55} />
           </button>
-          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span>
+          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1 text-white'>Navegación 360°</span>
         </div>
       </div>
       <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 opacity-15'>
