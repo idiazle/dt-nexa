@@ -11,7 +11,7 @@ export function UserInfoMenu() {
   const { data: session } = useSession()
   const admin = session?.user?.groups.find((obj: any) => obj === 1 || obj === 3)
   const name = session?.user?.short_name || ""
-  console.log("Session", session)
+  // console.log("Session", session)
 
   return (
     <DropdownMenu>

@@ -1052,7 +1052,7 @@ export default function PlansMapContainer(Map: MapProps) {
               options.map((option, index) => {
                 return (
                   <>
-                    <button disabled className='flex flex-col  bg-[#8b8b8b] rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                    <button disabled className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
                       <Image
                         src={option.url}
                         alt={option.label}

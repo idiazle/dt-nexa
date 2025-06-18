@@ -14,6 +14,8 @@ import InformationEquipmentComponent from '../interactives/information-eq'
 import Node360Viewer from '../admin/nodes360/node360-viewer'
 import { getNodes360 } from '@/api/admin/nodes360-api'
 import './styles.css'
+import { getReportsCond } from '@/api/admin/reports-api'
+import { report } from 'process'
 
 interface ViewShapesStructure {
   shapesRender: ShapeStructure[] | null
@@ -29,7 +31,23 @@ interface ViewShapesStructure {
 }
 
 export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, refDivOverflow, flagRefresh, showShapes, shapesRender, setShapesRender, setSelectedShape, setCloseInformation, setRenderLeftInformation }: ViewShapesStructure) {
-
+  const renderColor = (option: number) => {
+    let color = ''
+    if (option === 1) {
+      color = 'red'
+    } else if (option === 2) {
+      color = 'orange'
+    } else if (option === 3) {
+      color = 'yellow'
+    } else if (option === 4) {
+      color = 'green'
+    } else if (option === 5) {
+      color = 'black  '
+    } else {
+      color = 'white'
+    }
+    return color
+  }
   const params = useSearchParams()
 
   const getShapesAll = async () => {
@@ -103,7 +121,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
         })
         return newIccon
       })
-      console.log("MY UCOIBSS", iconsRender);
+      // console.log("MY UCOIBSS", iconsRender);
 
       setMapPlan2dIcon(iconsRender)
     } catch (error) {
@@ -161,40 +179,106 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     return `#${(1 << 24 | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
   }
 
+  const getBaseRadius = (shape: any): number => {
+    const base = shape.shapes.radius || 10;
+    return shape.condition === 5 ? base * 0.7 : base * 1.2;
+  };
+
+  const [reportsData, setReportsData] = useState<any[]>([])
+
+  const infoReports = () => {
+    getReportsCond().then((response) => {
+      setReportsData(response.data.data)
+    }).catch((error) => {
+      console.error("Error fetching reports data:", error);
+    })
+  }
+
+  useEffect(() => {
+    infoReports()
+  }, [])
+
+  const [finalShapesRender, setFinalShapesRender] = useState<ShapeStructure[] | null>(null)
+  const [selectedShapeId, setSelectedShapeId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!reportsData || !shapesRender?.length) return;
+
+    const enrichedShapes = shapesRender.map((shape: any) => {
+      // Filtra todos los reportes relacionados con este shape
+      const matchingReports = reportsData.filter(
+        (report: any) => shape?.entity_id?.id === report?.equipment
+      );
+
+      // Extrae la condición mínima entre los reportes encontrados
+      const minCond = matchingReports.length
+        ? Math.min(...matchingReports.map((r: any) => r.cond))
+        : 5; // Valor por defecto si no hay reportes
+
+      return {
+        ...shape,
+        condition: minCond,
+        selected: false
+      };
+    });
+
+    setFinalShapesRender(enrichedShapes);
+  }, [reportsData, shapesRender]);
+
+
   const circleRefs = useRef<{ [key: string]: L.Circle | null }>({});
 
   useEffect(() => {
     if (!showShapes || !shapesRender?.length) return;
+
     const intervalIds: NodeJS.Timeout[] = [];
+
     shapesRender.forEach((obj) => {
       const ref = circleRefs.current[obj?.id];
       if (!ref) return;
-      let growing = true;
-      const originalRadius = obj.shapes.radius ? obj.shapes.radius : '10'; // Default radius if not specified
+
+      const originalRadius = obj.shapes.radius || "10";
       const delta = 5;
 
-      const intervalId = setInterval(() => {
-        if (ref) {
-          ref.setRadius(growing ? originalRadius + delta : originalRadius);
-          growing = !growing;
-        }
-      }, 600);
+      // Condición para pulsar: o bien ninguno está seleccionado (inicio) o este es el seleccionado
+      const shouldPulse = selectedShapeId === null || selectedShapeId === obj.id;
 
-      intervalIds.push(intervalId);
+      if (shouldPulse) {
+        let growing = true;
+
+        const intervalId = setInterval(() => {
+          if (ref) {
+            ref.setRadius(growing ? Number(originalRadius) + delta : originalRadius);
+            growing = !growing;
+          }
+        }, 600);
+
+        intervalIds.push(intervalId);
+      } else {
+        // Si no debe pulsar, aseguramos que el radio sea el original
+        ref.setRadius(originalRadius);
+      }
     });
 
     return () => {
       intervalIds.forEach(clearInterval);
     };
-  }, [shapesRender, showShapes]);
+  }, [shapesRender, showShapes, selectedShapeId]);
+
+  const handleShapeSelect = (id: number) => {
+    setSelectedShapeId(id);
+  };
+
+  console.log("reportsData", reportsData);
+  // console.log("FINAL SHAPES RENDER", finalShapesRender);
 
   return (
     <div>
       {
-        shapesRender?.map((obj: ShapeStructure | any, index: number) => {
+        finalShapesRender?.map((obj: ShapeStructure | any, index: number) => {
           const type = obj?.shapes?.type
           const markerType = obj.marker_type
-          console.log("OBJ SHAPE", obj)
+          // console.log("OBJ SHAPE", obj)
           const iconShow = mapPlan2dIcon?.find((objIcon) => objIcon.options.idIcon === obj.shape_icon)
           return (
 
@@ -266,7 +350,8 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                         >
                           <div className='flex flex-col items-center -mt-11 gap-2'>
                             <div className='bg-gray-300 p-1 rounded-md shadow-md'>
-                              <p className='text-xl font-bold'>{obj.photogrammetry_node.links}</p>
+                              {/* <p className='text-xl font-bold'>{obj.photogrammetry_node.links}</p> */}
+                              <p className='text-xl font-bold'>Equipo</p>
                             </div>
                             <div className='flex flex-row items-end' >
                               <p className='text-xl font-bold'>E</p>
@@ -286,7 +371,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                   ref={(ref) => { circleRefs.current[obj.id] = ref }}
                   className={'transition-colors duration-500'}
                   pathOptions={{
-                    fillColor: showShapes ? obj.shapes.color : 'transparent',
+                    fillColor: showShapes ? renderColor(obj.condition) : 'transparent',
                     color: showShapes ? darkenHexColor(obj.shapes.color, 20) : 'transparent',
                     fillOpacity: 0.5,
                     weight: 3
@@ -314,6 +399,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                       }
                     },
                     click: async (e) => {
+                      handleShapeSelect(obj.id);
                       console.log("Click circle: ", e)
                       if (showShapes && markerType === 1) {
                         e.target.setStyle({
