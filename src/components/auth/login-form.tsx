@@ -113,7 +113,7 @@ export default function LoginForm() {
                 <FormControl>
                   <div className="flex flex-row items-center justify-start">
                     <Input type={showPass ? "text" : 'password'} className="bg-white border-none text-black" placeholder="*************" {...field} />
-                    <Button type="button" onClick={() => setShowPass(!showPass)} size={'icon'} variant={'outline'} className="ml-1 bg-blue-500 hover:bg-blue-600 text-white">
+                    <Button type="button" onClick={() => setShowPass(!showPass)} size={'icon'} variant={'outline'} className="ml-1 bg-[#001f39] hover:bg-[#133958] hover:text-white text-white">
                       {!showPass ? <EyeIcon /> : <EyeClosedIcon />}
                     </Button>
                   </div>

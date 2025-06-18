@@ -161,6 +161,33 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     return `#${(1 << 24 | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`;
   }
 
+  const circleRefs = useRef<{ [key: string]: L.Circle | null }>({});
+
+  useEffect(() => {
+    if (!showShapes || !shapesRender?.length) return;
+    const intervalIds: NodeJS.Timeout[] = [];
+    shapesRender.forEach((obj) => {
+      const ref = circleRefs.current[obj?.id];
+      if (!ref) return;
+      let growing = true;
+      const originalRadius = obj.shapes.radius ? obj.shapes.radius : '10'; // Default radius if not specified
+      const delta = 5;
+
+      const intervalId = setInterval(() => {
+        if (ref) {
+          ref.setRadius(growing ? originalRadius + delta : originalRadius);
+          growing = !growing;
+        }
+      }, 600);
+
+      intervalIds.push(intervalId);
+    });
+
+    return () => {
+      intervalIds.forEach(clearInterval);
+    };
+  }, [shapesRender, showShapes]);
+
   return (
     <div>
       {
@@ -256,11 +283,12 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                 :
                 <Circle
                   key={`circle_${index}`}
+                  ref={(ref) => { circleRefs.current[obj.id] = ref }}
                   className={'transition-colors duration-500'}
                   pathOptions={{
                     fillColor: showShapes ? obj.shapes.color : 'transparent',
                     color: showShapes ? darkenHexColor(obj.shapes.color, 20) : 'transparent',
-                    fillOpacity: 0.8,
+                    fillOpacity: 0.5,
                     weight: 3
                   }}
                   radius={obj.shapes.radius}
