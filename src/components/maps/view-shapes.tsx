@@ -234,7 +234,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     const intervalIds: NodeJS.Timeout[] = [];
 
     shapesRender.forEach((obj) => {
-      const ref = circleRefs.current[obj?.id];
+      const ref = obj?.id !== undefined ? circleRefs.current[obj.id] : null;
       if (!ref) return;
 
       const originalRadius = obj.shapes.radius || "10";
@@ -248,7 +248,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
 
         const intervalId = setInterval(() => {
           if (ref) {
-            ref.setRadius(growing ? Number(originalRadius) + delta : originalRadius);
+            ref.setRadius(growing ? Number(originalRadius) + delta : Number(originalRadius));
             growing = !growing;
           }
         }, 600);
@@ -256,7 +256,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
         intervalIds.push(intervalId);
       } else {
         // Si no debe pulsar, aseguramos que el radio sea el original
-        ref.setRadius(originalRadius);
+        ref.setRadius(Number(originalRadius));
       }
     });
 

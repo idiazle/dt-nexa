@@ -1,7 +1,8 @@
 import axiosInstance from "../axios/axios-instance"
 // Reportes de condiciones
 export const getReportsCond = async () => {
-  return await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/reports-cond`)
+  const response =  axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/reports-cond`)
+  return response
 }
 
 export const postReportCond = async (data: any) => {
