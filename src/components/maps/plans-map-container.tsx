@@ -1017,12 +1017,12 @@ export default function PlansMapContainer(Map: MapProps) {
               </div>
               <div className='flex flex-col gap-1 text-black'>
                 <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                <div>
+                <div className='gap-1 flex flex-col'>
                   {
                     infoShape?.documents && infoShape.documents.length > 0 ? infoShape.documents.map((obj: any, index: number) => {
                       const document = obj.document_id as DocumentStructure
                       return (
-                        <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                        <button key={index} className=' text-black flex flex-row items-center text-start gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
                           <FaFile size={15} />
                           <p className='text-sm'>{document.title}</p>
                         </button>
