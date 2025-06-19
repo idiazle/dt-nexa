@@ -1009,12 +1009,12 @@ export default function FormDocDialog({ id, tempFile, setTempFile, setDialogOpen
                                                 <Select onValueChange={field.onChange} defaultValue={String(field.value)} value={String(field.value)}>
                                                     <FormControl className='w-2/3'>
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder={statusVendor.find((obj: ModuleStructure) => { return obj })?.name} />
+                                                            <SelectValue placeholder={statusClient.find((obj: ModuleStructure) => { return obj })?.name} />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
                                                         {
-                                                            statusVendor.map((obj: ModuleStructure) => {
+                                                            statusClient.map((obj: ModuleStructure) => {
                                                                 return (
                                                                     <SelectItem key={obj.id} value={String(obj.id)}>{obj?.name}</SelectItem>
                                                                 )
