@@ -60,7 +60,7 @@ interface ShapesPlanDialogStructure {
 
 export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanShape, dialogOpen, setDialogOpen }: ShapesPlanDialogStructure) {
 
-  const [radioSelected, setRadioSelected] = useState<string>('areas')
+  const [radioSelected, setRadioSelected] = useState<string>('equipos')
 
   const [areas, setAreas] = useState<EntityStructure[] | null>(null)
   const [equipments, setEquipments] = useState<EquipmentStructure[] | null>(null)
@@ -217,14 +217,14 @@ export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanSha
             setRadioSelected(val)
             setValue('')
           }} className='flex flex-row items-center gap-5' defaultValue="areas">
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <RadioGroupItem value="areas" id="areas" />
               <Label htmlFor="areas">Áreas</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="equipos" id="equipos" />
-              <Label htmlFor="equipos">Equipos</Label>
-            </div>
+            </div> */}
+            {/* <div className="flex items-center space-x-2">
+              <RadioGroupItem value="equipos" id="equipos" /> */}
+              <Label htmlFor="equipos" className='font-semibold'>Equipos</Label>
+            {/* </div> */}
           </RadioGroup>
           {
             areas !== null && equipments !== null
@@ -234,8 +234,8 @@ export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanSha
                   {
                     radioSelected === 'areas' ? renderOption(areas, 'area') : renderOption(equipments, 'equipo')
                   }
-                  <div className='flex flex-row justify-center items-center gap-2'>
-                    <Label>Icono</Label>
+                  <div className='flex flex-row justify-center items-center gap-2 bg-white rounded-md p-2'>
+                    <Label className='font-semibold'>Ícono</Label>
                     <Switch checked={switchObject.option1} onCheckedChange={(val) => {
                       setSwitchObject({
                         ...switchObject,
@@ -271,7 +271,7 @@ export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanSha
                       }
                     </div> :
                     <div className='flex flex-col justify-center items-start gap-1 my-2'>
-                      <Label>Color del Shape</Label>
+                      <Label className='font-semibold'>Color del Shape</Label>
                       <Popover>
                         <PopoverTrigger asChild>
 
@@ -410,8 +410,8 @@ export default function ShapesPlanDialog({ setFlagRefresh, planShape, setPlanSha
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogContent>
-        <DialogHeader className=''>
+      <DialogContent className='bg-gray-100'>
+        <DialogHeader>
           <DialogTitle>Creación de Shape</DialogTitle>
           <DialogDescription>
             Qué tipo de vinculación desea realizar?

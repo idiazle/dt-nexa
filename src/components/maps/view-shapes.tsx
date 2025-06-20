@@ -42,7 +42,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     } else if (option === 4) {
       color = 'green'
     } else if (option === 5) {
-      color = 'black  '
+      color = 'blue  '
     } else {
       color = 'white'
     }

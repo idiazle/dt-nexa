@@ -503,6 +503,7 @@ export default function PlansMapContainer(Map: MapProps) {
   }, [reportsEquipment])
 
   const [open360list, setOpen360List] = useState<boolean>(false)
+  const [openPFDlist, setOpenPFDList] = useState<boolean>(false)
   const [activeNavigation, setActiveNavigation] = useState<boolean>(false)
 
   useEffect(() => {
@@ -830,9 +831,26 @@ export default function PlansMapContainer(Map: MapProps) {
       {/* CENTER BOTTOM MENU CONTROL */}
       <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
         <div className='flex flex-col items-center w-32 gap-2 mb-5'>
-          <a href={"/interactives?map-id=10006&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#002645] hover:bg-[#002645] hover:text-white ${mapType === '1' ? 'bg-[#002645] text-white' : 'bg-white text-black'}`}>
+          {
+            openPFDlist ?
+              < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm border border-gray-300'>
+                <a href={"/interactives?map-id=10013&map-type=1"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-100'>Seccion 10</a>
+                <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white  opacity-30 cursor-default'>Seccion 20</div>
+                <a href={"/interactives?map-id=10006&map-type=1"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-100'>Seccion 25</a>
+              </div>
+              : null
+          }
+          <button
+            onClick={() => {
+              console.log("Click on PFD");
+              setOpenPFDList(!openPFDlist);
+            }}
+            className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#002645] hover:bg-[#002645] hover:text-white ${mapType === '1' ? 'bg-[#002645] text-white' : 'bg-white text-black'}`}>
             PFD
-          </a>
+          </button>
+          {/* <a href={"/interactives?map-id=10006&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#002645] hover:bg-[#002645] hover:text-white ${mapType === '1' ? 'bg-[#002645] text-white' : 'bg-white text-black'}`}>
+            PFD
+          </a> */}
           {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
@@ -983,28 +1001,29 @@ export default function PlansMapContainer(Map: MapProps) {
           </div>
 
           {/* Contenido colapsable */}
-          <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
+          <div className={`transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
             <div className='flex flex-col gap-3 px-7 py-2'>
               <div className='flex flex-col gap-1 text-black'>
                 <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
-                <p>{'parent_data' in (infoShape?.entity_data ?? {}) && (infoShape?.entity_data as any)?.parent_data?.name ? (infoShape?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+                <p className='ml-4'>{'parent_data' in (infoShape?.entity_data ?? {}) && (infoShape?.entity_data as any)?.parent_data?.name ? (infoShape?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
               </div>
               <div className='flex flex-col gap-1 text-black'>
                 <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
-                <p>{'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as any).tag : ''}</p>
+                <p className='ml-4'>{'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as any).tag : ''}</p>
               </div>
               <div className='flex flex-col gap-1 text-black'>
                 <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
-                <p>{infoShape?.entity_data.name}</p>
+                <p className='ml-4'>{infoShape?.entity_data.name}</p>
               </div>
               <div className='flex flex-col gap-1 text-black'>
                 <h1 className='font-bold border-b-2 border-black'>Características:</h1>
-                <div>
+                <div className='flex flex-col gap-1 ml-4'>
                   {
                     (selectedShape !== null && infoShape !== null && 'properties' in infoShape.entity_data && infoShape.entity_data.properties) ?
                       JSON.parse((infoShape.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
                         return (
-                          <div className='flex flex-row justify-between items-center' key={index}>
+                          <div className='flex flex-row justify-between items-center gap-2' key={index}>
+                            <FaCircle size={6} />
                             <p className='w-1/3'>{obj.label}</p>
                             <p className='w-2/3'>{obj.value}</p>
                           </div>
@@ -1017,12 +1036,12 @@ export default function PlansMapContainer(Map: MapProps) {
               </div>
               <div className='flex flex-col gap-1 text-black'>
                 <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                <div className='gap-1 flex flex-col'>
+                <div className='gap-1 flex flex-col overflow-auto h-44 ml-4'>
                   {
                     infoShape?.documents && infoShape.documents.length > 0 ? infoShape.documents.map((obj: any, index: number) => {
                       const document = obj.document_id as DocumentStructure
                       return (
-                        <button key={index} className=' text-black flex flex-row items-center text-start gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                        <button key={index} className=' text-black flex flex-row items-center text-start gap-2 p-1 hover:bg-gray-300 rounded-sm bg-gray-200' onClick={() => onSetViewDoc(document)}>
                           <FaFile size={15} />
                           <p className='text-sm'>{document.title}</p>
                         </button>
