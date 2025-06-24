@@ -32,6 +32,7 @@ import { getReportCondById } from '@/api/admin/reports-api';
 import ModalViewMedia from '@/components/viewers/modal-viewer';
 import OptionsNav from '@/components/interactives/options-nav';
 import NavBarInteractives from '@/components/interactives/navBarInteractives';
+import { getDocumentsByEntity } from '@/api/admin/documents-api';
 
 interface Nodes360ViewerStructure {
   allNodes: PhotogrametryStructure[] | null
@@ -42,6 +43,40 @@ interface Nodes360ViewerStructure {
 
 const baseUrl = "https://photo-sphere-viewer-data.netlify.app/assets/";
 const caption = "Cape Florida Light, Key Biscayne <b>&copy; Pixexid</b>";
+const options = [
+  {
+    label: 'Despiece',
+    url: '/img/icons/ico-28.svg',
+  },
+  {
+    label: 'Reportes Mantto',
+    url: '/img/icons/ico-29.svg',
+  },
+  {
+    label: 'Videos Asociados',
+    url: '/img/icons/ico-30.svg',
+  },
+  {
+    label: 'Historial Fotos',
+    url: '/img/icons/ico-31.svg',
+  },
+  {
+    label: 'Historial OT',
+    url: '/img/icons/ico-32.svg',
+  },
+  {
+    label: 'Historial Fallas',
+    url: '/img/icons/ico-33.svg',
+  },
+  {
+    label: 'Planes Mantto',
+    url: '/img/icons/ico-34.svg',
+  },
+  {
+    label: 'Listado Repuestos',
+    url: '/img/icons/ico-35.svg',
+  },
+]
 
 export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setDialogOpen }: Nodes360ViewerStructure) {
   const pathname = usePathname()
@@ -110,15 +145,15 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
 
   const getDatainfoEquipment = async () => {
     const responseEntity = await getEntityInfo(idEquipment)
-    // const response = await getDocumentsByEntity(Number(selectedShape.entity_id.id), Number(selectedShape.entity_id.type))
+    const response = await getDocumentsByEntity(Number(idEquipment), 3)
     console.log("RESPONSE ENTITY", responseEntity.data.data);
-    // console.log("RESPONSE DOCUMENTS", response.data.data);
+    console.log("RESPONSE DOCUMENTS", response.data.data);
 
     setInfoEquipment((prevstate: any) => {
       return {
         ...prevstate,
         entity_data: responseEntity.data.data,
-        // documents: response.data.data as DocumentStructure[]
+        documents: response.data.data as DocumentStructure[]
       }
     })
   }
@@ -210,6 +245,49 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
   }
 
   const [open360list, setOpen360List] = useState<boolean>(false)
+  const [openViewMedia, setOpenViewMedia] = useState<boolean>(false)
+
+  const [openMediaInfo, setOpenMediaInfo] = useState<{
+    data: {
+      file_url: string
+      title: string
+    },
+    type: string
+  }>({
+    data: {
+      file_url: '',
+      title: ''
+    },
+    type: ''
+  })
+  const onSetViewDoc = (document: DocumentStructure) => {
+    setOpenViewMedia(true)
+    if (document.file_url.includes('pdf')) {
+      setOpenMediaInfo((prev: any) => {
+        return {
+          ...prev,
+          type: 'document',
+          data: {
+            file_url: document.file_url,
+            type: '',
+            title: document.title
+          }
+        }
+      })
+    } else if (document.file_url.includes('mp4') || document.file_url.includes('mkv')) {
+      setOpenMediaInfo((prev: any) => {
+        return {
+          ...prev,
+          type: 'video',
+          data: {
+            file_url: document.file_url,
+            type: '',
+            title: document.title
+          }
+        }
+      })
+    }
+  }
 
   return (
     <>
@@ -363,14 +441,14 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                           </div>
                           <div className='flex flex-col gap-1 text-black'>
                             <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                            <div>
+                            <div className='gap-1 flex flex-col overflow-auto h-44'>
                               {
                                 infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
                                   const document = obj.document_id as DocumentStructure
                                   return (
-                                    <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
-                                      <FaFile size={15} />
-                                      <p className='text-sm'>{document.title}</p>
+                                    <button key={index} className=' text-black flex flex-row items-center gap-2 p-2 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                                      <FaFile size={20} />
+                                      <p className='text-sm text-start'>{document.title}</p>
                                     </button>
                                   )
                                 }) : <p className='text-black'>No hay documentos disponibles</p>
@@ -394,78 +472,23 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                       </div>
                       {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
                       <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
-                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                          <Image
-                            src="/img/icons/ico-28.svg"
-                            alt="Mantenimiento"
-                            width={50}
-                            height={50}
-                          />
-                          <span className='text-xs'>Despiece</span>
-                        </button>
-                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                          <Image
-                            src="/img/icons/ico-29.svg"
-                            alt="Mantenimiento"
-                            width={50}
-                            height={50}
-                          />
-                          <span className='text-xs'>Reportes Mantto</span>
-                        </button>
-                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                          <Image
-                            src="/img/icons/ico-30.svg"
-                            alt="Mantenimiento"
-                            width={50}
-                            height={50}
-                          />
-                          <span className='text-xs'>Videos Asociados</span>
-                        </button>
-                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                          <Image
-                            src="/img/icons/ico-31.svg"
-                            alt="Mantenimiento"
-                            width={50}
-                            height={50}
-                          />
-                          <span className='text-xs'>Historial Fotos</span>
-                        </button>
-                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                          <Image
-                            src="/img/icons/ico-32.svg"
-                            alt="Mantenimiento"
-                            width={50}
-                            height={50}
-                          />
-                          <span className='text-xs'>Historial OT</span>
-                        </button>
-                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                          <Image
-                            src="/img/icons/ico-33.svg"
-                            alt="Mantenimiento"
-                            width={50}
-                            height={50}
-                          />
-                          <span className='text-xs'>Historial Fallas</span>
-                        </button>
-                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                          <Image
-                            src="/img/icons/ico-34.svg"
-                            alt="Mantenimiento"
-                            width={50}
-                            height={50}
-                          />
-                          <span className='text-xs'>Planes Mantto</span>
-                        </button>
-                        <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                          <Image
-                            src="/img/icons/ico-35.svg"
-                            alt="Mantenimiento"
-                            width={50}
-                            height={50}
-                          />
-                          <span className='text-xs'>Listado Repuestos</span>
-                        </button>
+                        {
+                          options.map((option, index) => {
+                            return (
+                              <>
+                                <button disabled className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                                  <Image
+                                    src={option.url}
+                                    alt={option.label}
+                                    width={80}
+                                    height={60}
+                                  />
+                                  <span className='font-bold text-white'>{option.label}</span>
+                                </button>
+                              </>
+                            )
+                          })
+                        }
                       </div>
                     </div>
                   </div>
@@ -501,6 +524,11 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
             {
               openDialogDoc
                 ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
+                : null
+            }
+            {
+              openViewMedia
+                ? <ModalViewMedia setOpen={setOpenViewMedia} open={openViewMedia} information={openMediaInfo} type={openMediaInfo.type} />
                 : null
             }
           </div >
@@ -659,13 +687,13 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                             </div>
                             <div className='flex flex-col gap-1 text-black'>
                               <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                              <div>
+                              <div className='gap-1 flex flex-col overflow-auto h-44 ml-4'>
                                 {
                                   infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
                                     const document = obj.document_id as DocumentStructure
                                     return (
                                       <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
-                                        <FaFile size={15} />
+                                        <FaFile size={25} />
                                         <p className='text-sm'>{document.title}</p>
                                       </button>
                                     )
@@ -690,78 +718,17 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                         </div>
                         {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
                         <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
-                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                            <Image
-                              src="/img/icons/ico-28.svg"
-                              alt="Mantenimiento"
-                              width={50}
-                              height={50}
-                            />
-                            <span className='text-xs'>Despiece</span>
-                          </button>
-                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                            <Image
-                              src="/img/icons/ico-29.svg"
-                              alt="Mantenimiento"
-                              width={50}
-                              height={50}
-                            />
-                            <span className='text-xs'>Reportes Mantto</span>
-                          </button>
-                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                            <Image
-                              src="/img/icons/ico-30.svg"
-                              alt="Mantenimiento"
-                              width={50}
-                              height={50}
-                            />
-                            <span className='text-xs'>Videos Asociados</span>
-                          </button>
-                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                            <Image
-                              src="/img/icons/ico-31.svg"
-                              alt="Mantenimiento"
-                              width={50}
-                              height={50}
-                            />
-                            <span className='text-xs'>Historial Fotos</span>
-                          </button>
-                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                            <Image
-                              src="/img/icons/ico-32.svg"
-                              alt="Mantenimiento"
-                              width={50}
-                              height={50}
-                            />
-                            <span className='text-xs'>Historial OT</span>
-                          </button>
-                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                            <Image
-                              src="/img/icons/ico-33.svg"
-                              alt="Mantenimiento"
-                              width={50}
-                              height={50}
-                            />
-                            <span className='text-xs'>Historial Fallas</span>
-                          </button>
-                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                            <Image
-                              src="/img/icons/ico-34.svg"
-                              alt="Mantenimiento"
-                              width={50}
-                              height={50}
-                            />
-                            <span className='text-xs'>Planes Mantto</span>
-                          </button>
-                          <button className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                            <Image
-                              src="/img/icons/ico-35.svg"
-                              alt="Mantenimiento"
-                              width={50}
-                              height={50}
-                            />
-                            <span className='text-xs'>Listado Repuestos</span>
-                          </button>
+                          {options.map((option, index) => (
+                            <button key={index} className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
+                              <Image
+                                src={option.url}
+                                alt={option.label}
+                                width={50}
+                                height={50}
+                              />
+                              <span className='text-xs'>{option.label}</span>
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -839,6 +806,9 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
               openDialogDoc
                 ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
                 : null
+            }
+            {
+              openViewMedia ? <ModalViewMedia open={openViewMedia} setOpen={setOpenViewMedia} information={openMediaInfo} type={openMediaInfo.type} /> : null
             }
           </Dialog >
       }
