@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { Suspense, useState } from 'react'
 import { AutorotatePlugin } from '@photo-sphere-viewer/autorotate-plugin'
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer'
 import Image from 'next/image'
@@ -8,6 +8,7 @@ import { FaBars } from 'react-icons/fa6'
 import { TbView360Number } from 'react-icons/tb'
 import { UserInfoMenu } from '@/components/auth/user-info-menu'
 import OptionsNav from '@/components/interactives/options-nav'
+import { useSearchParams } from 'next/navigation'
 
 function Dtwin() {
   const plugins = [
@@ -17,6 +18,8 @@ function Dtwin() {
     ]
   ] as any
   const [open360list, setOpen360List] = useState<boolean>(false)
+  // const searchParams = useSearchParams()
+  // const mapType = searchParams.get('map-type')
 
   return (
     <>
@@ -65,7 +68,11 @@ function Dtwin() {
         mousewheel={false}
         loadingImg='/img/menu-icons/gemelo_digital.png'
       />
-      <OptionsNav />
+      <Suspense fallback={
+        <div></div>
+      }>
+        <OptionsNav />
+      </Suspense>
       <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 opacity-15'>
         <Image
           src="/img/nexa_logo.png"

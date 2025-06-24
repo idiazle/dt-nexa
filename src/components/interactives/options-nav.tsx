@@ -1,3 +1,4 @@
+'use client';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { TbView360Number } from 'react-icons/tb';

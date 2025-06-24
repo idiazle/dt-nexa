@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useSearchParams } from "next/navigation"
