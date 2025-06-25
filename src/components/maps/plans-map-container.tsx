@@ -51,10 +51,10 @@ interface MenuBtns {
 }
 
 const options = [
-  {
-    label: 'Despiece',
-    url: '/img/icons/ico-28.svg',
-  },
+  // {
+  //   label: 'Despiece',
+  //   url: '/img/icons/ico-28.svg',
+  // },
   {
     label: 'Reportes Mantto',
     url: '/img/icons/ico-29.svg',
@@ -515,6 +515,8 @@ export default function PlansMapContainer(Map: MapProps) {
 
   const [activeLegend, setActiveLegend] = useState<boolean>(false)
 
+  console.log("MAP SELECTED", selectedShape);
+
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
       <div className='relative w-full h-full'>
@@ -830,7 +832,7 @@ export default function PlansMapContainer(Map: MapProps) {
 
       {/* CENTER BOTTOM MENU CONTROL */}
       <OptionsNav />
-  
+
 
       {/* RIGTH BOTTOM MENU CONTROL */}
       {/* <div className='absolute z-10 flex flex-row bottom-20 right-28 w-32 gap-1'>
@@ -1012,6 +1014,33 @@ export default function PlansMapContainer(Map: MapProps) {
           </div>
           {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
           <div className={`grid grid-cols-4 gap-1 px-2 text-white items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+            {
+              selectedShape && selectedShape.id === 62 ?
+                <a
+                  href='https://nexa-b2025.dportal.app'
+                  className='flex flex-col  bg-[#002645] rounded-md items-center justify-start p-2 h-full gap-1 cursor-pointer hover:opacity-70'>
+                  <Image
+                    src={'/img/icons/ico-28.svg'}
+                    alt={'Despiece'}
+                    width={80}
+                    height={60}
+                  />
+                  <span className='font-bold'>Despiece</span>
+                </a>
+                :
+                <button
+                  disabled
+                  // href='https://nexa-b2025.dportal.app'
+                  className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                  <Image
+                    src={'/img/icons/ico-28.svg'}
+                    alt={'Despiece'}
+                    width={80}
+                    height={60}
+                  />
+                  <span className='font-bold'>Despiece</span>
+                </button>
+            }
             {
               options.map((option, index) => {
                 return (
