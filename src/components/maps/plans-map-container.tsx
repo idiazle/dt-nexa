@@ -35,6 +35,7 @@ import { getEntityInfo } from '@/api/admin/entities-api';
 import { getDocumentsByEntity } from '@/api/admin/documents-api';
 import { getReportCondById } from '@/api/admin/reports-api';
 import OptionsNav from '../interactives/options-nav';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 
 interface MapProps {
   mapSelected: Map2dStructure | null
@@ -514,6 +515,7 @@ export default function PlansMapContainer(Map: MapProps) {
   }, [])
 
   const [activeLegend, setActiveLegend] = useState<boolean>(false)
+  const [openDespiece, setOpenDespiece] = useState<boolean>(false)
 
   console.log("MAP SELECTED", selectedShape);
 
@@ -1016,8 +1018,10 @@ export default function PlansMapContainer(Map: MapProps) {
           <div className={`grid grid-cols-4 gap-1 px-2 text-white items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
             {
               selectedShape && selectedShape.id === 62 ?
-                <a
-                  href='https://nexa-b2025.dportal.app'
+                <button
+                  onClick={() => {
+                    setOpenDespiece(true)
+                  }}
                   className='flex flex-col  bg-[#002645] rounded-md items-center justify-start p-2 h-full gap-1 cursor-pointer hover:opacity-70'>
                   <Image
                     src={'/img/icons/ico-28.svg'}
@@ -1026,7 +1030,7 @@ export default function PlansMapContainer(Map: MapProps) {
                     height={60}
                   />
                   <span className='font-bold'>Despiece</span>
-                </a>
+                </button>
                 :
                 <button
                   disabled
@@ -1060,6 +1064,19 @@ export default function PlansMapContainer(Map: MapProps) {
               )
             }
           </div>
+          <Dialog open={openDespiece} onOpenChange={setOpenDespiece}>
+            <DialogContent className='max-w-[75%] h-[75%] bg-gray-200'>
+              {/* <DialogHeader className='bg-blue-300'>
+                <DialogTitle className=''>B025 -  MOLINO DE BOLAS</DialogTitle>
+              </DialogHeader> */}
+              <div>
+                <h1 className='font-bold text-lg pb-3'>
+                  B025 -  MOLINO DE BOLAS
+                </h1>
+                <iframe className='w-full h-[95%]' src="https://nexa-b2025.dportal.app"></iframe>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
