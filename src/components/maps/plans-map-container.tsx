@@ -407,6 +407,7 @@ export default function PlansMapContainer(Map: MapProps) {
 
   const searchParams = useSearchParams()
   const mapType = searchParams.get('map-type')
+  const mapId = searchParams.get('map-id')
 
   const getDataInfoShape = async () => {
     try {
@@ -739,7 +740,7 @@ export default function PlansMapContainer(Map: MapProps) {
       }
       {
         //Cambio de imagen
-        activeNavigation ?
+        activeNavigation && mapId === '10006' ?
           <div>
             <a
               href={`/interactives?map-id=10009&map-type=1`}
