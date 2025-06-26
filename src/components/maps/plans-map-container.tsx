@@ -86,6 +86,26 @@ const options = [
   },
 ]
 
+const navMaps = [
+  {
+    map_id: '10009',
+    map_type: '1',
+    label: 'Planta Tostación S25-1',
+  },
+  {
+    map_id: '10006',
+    map_type: '1',
+    label: 'Planta Tostación S25-2',
+  },
+  {
+    map_id: '20014',
+    map_type: '1',
+    label: 'Planta Tostación S25-3',
+  },
+
+]
+
+
 export default function PlansMapContainer(Map: MapProps) {
   // const { zoom = defaults.zoom, posix } = Map
   const [flagRefresh, setFlagRefresh] = useState<boolean>(false)
@@ -520,6 +540,10 @@ export default function PlansMapContainer(Map: MapProps) {
 
   console.log("MAP SELECTED", selectedShape);
 
+  const currentIndex = navMaps.findIndex(map => map.map_id === mapId);
+  const prevMap = currentIndex > 0 ? navMaps[currentIndex - 1] : null;
+  const nextMap = currentIndex < navMaps.length - 1 ? navMaps[currentIndex + 1] : null;
+
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
       <div className='relative w-full h-full'>
@@ -740,23 +764,29 @@ export default function PlansMapContainer(Map: MapProps) {
       }
       {
         //Cambio de imagen
-        activeNavigation && mapId === '10006' ?
-          <div>
-            <a
-              href={`/interactives?map-id=10009&map-type=1`}
-              // href={'#'}
-              title='Anterior plano'
-              className='absolute left-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md ml-5'>
-              <FaAnglesLeft size={70} className='text-gray-200' />
-            </a>
-            <a
-              href={`/interactives?map-id=10006&map-type=1`}
-              title='Siguiente plano'
-              className='absolute right-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md mr-5'>
-              <FaAnglesRight size={70} className='text-gray-200' />
-            </a>
-          </div>
-          : null
+        activeNavigation && (mapId === "10006" || mapId === "10009" || mapId === "20014") ?
+          (
+            <div>
+              {prevMap && (
+                <a
+                  href={`/interactives?map-id=${prevMap.map_id}&map-type=${prevMap.map_type}`}
+                  title="Anterior plano"
+                  className="absolute left-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md ml-5"
+                >
+                  <FaAnglesLeft size={70} className="text-gray-200" />
+                </a>
+              )}
+              {nextMap && (
+                <a
+                  href={`/interactives?map-id=${nextMap.map_id}&map-type=${nextMap.map_type}`}
+                  title="Siguiente plano"
+                  className="absolute right-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md mr-5"
+                >
+                  <FaAnglesRight size={70} className="text-gray-200" />
+                </a>
+              )}
+            </div>
+          ) : null
       }
 
       {/* TOP MENU CONTROL */}
