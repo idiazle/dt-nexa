@@ -123,30 +123,32 @@ export const columnsNodes360Photos = ({ onEdit, onDelete, onView360 }: Columns36
     cell: ({ row }) => {
       return (
         // <DropdownMenu open={isDropOpen} onOpenChange={setIsDropOpen}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-full p-0">
-              {/* <span className="sr-only">Open menu</span> */}
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" >
-            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => { onView360(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
-              <TbView360 size={18} />
-              <p>Visualizar</p>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => { onEdit(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
-              <FilePen size={18} />
-              <p>Editar</p>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => { onDelete(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3 hover:cursor-pointer'>
-              <FaTrashCan size={18} />
-              <p>Eliminar</p>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        // <DropdownMenu>
+        //   <DropdownMenuTrigger asChild>
+        //     <Button variant="ghost" className="h-8 w-full p-0">
+        //       {/* <span className="sr-only">Open menu</span> */}
+        //       <MoreHorizontal className="h-4 w-4" />
+        //     </Button>
+        //   </DropdownMenuTrigger>
+        //   <DropdownMenuContent align="end" >
+        //     <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+        //     <DropdownMenuSeparator />
+        <div className='flex flex-row gap-2 justify-end'>
+          <Button onClick={() => { onView360(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3'>
+            <TbView360 size={18} />
+            <p>Visualizar</p>
+          </Button>
+          <Button onClick={() => { onEdit(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3'>
+            <FilePen size={18} />
+            <p>Editar</p>
+          </Button>
+          <Button variant={"destructive"} onClick={() => { onDelete(row.original) }} className='flex flex-row gap-2 justify-start items-center p-3'>
+            <FaTrashCan size={18} />
+            <p>Eliminar</p>
+          </Button >
+        </div>
+        //   </DropdownMenuContent>
+        // </DropdownMenu>
       )
     }
   }
