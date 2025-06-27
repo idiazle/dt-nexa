@@ -2,13 +2,12 @@
 import { getEquipments } from '@/api/admin/equipments-api'
 import { deleteReportCondById, getReportsCond, postReportCond } from '@/api/admin/reports-api'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { report } from 'process'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { FaCircle } from 'react-icons/fa6'
 
@@ -52,8 +51,6 @@ const Reports = () => {
   useEffect(() => {
     getAllEquipments()
   }, [])
-
-  // console.log('equipments', data)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setData({
@@ -122,6 +119,14 @@ const Reports = () => {
     }).catch((err) => {
       console.log('Error al eliminar el reporte', err)
     })
+  }
+
+  const reconigzeEquipment = (equipmentId: number) => {
+    const equipment = equipments.find((eq) => eq.equipment_id === equipmentId)
+    if (equipment) {
+      return `${equipment.tag} - ${equipment.name}`
+    }
+    return 'Equipo no encontrado'
   }
 
   return (
@@ -220,8 +225,7 @@ const Reports = () => {
                   handleSubmit(data)
                   setOpenDialog(false)
                 }}
-                className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded'
-              >
+                className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded'>
                 Generar
               </Button>
               <Button
@@ -260,23 +264,19 @@ const Reports = () => {
             </TableRow>
           </TableHeader>
           <TableBody className='overflow-auto'>
-            {reports.map((report) => (
+            {reports.map((report, index) => (
               <TableRow key={report.id} className='text-black'>
-                <TableHead>{report.id}</TableHead>
+                <TableHead>{index + 1}</TableHead>
                 <TableHead>{report.filename}</TableHead>
                 <TableHead className='flex flex-row items-center gap-2'>
                   <FaCircle className={report.cond === 1 ? 'text-red-500' : report.cond === 2 ? 'text-yellow-600' : report.cond === 3 ? 'text-yellow-400' : report.cond === 4 ? 'text-green-500' : report.cond === 5 ? 'text-gray-600' : report.cond === 6 ? 'text-gray-300' : ''} />
                   {report.cond === 1 ? 'Alarma' : report.cond === 2 ? 'Precaucion' : report.cond === 3 ? 'Tolerable' : report.cond === 4 ? 'Normal' : report.cond === 5 ? 'No Monitoreado' : report.cond === 6 ? 'No Aplica' : ''}</TableHead>
-                <TableHead>{report.equipment === 10094 ? '(B2025) Molino de Bolas' : report.equipment === 10099 ? '(B2020) Enfriador Seccional' : ''}</TableHead>
+                <TableHead>{reconigzeEquipment(report.equipment)}</TableHead>
                 <TableHead className='flex flex-row items-center w-full gap-2'>
-                  <Button>
-                    Editar
-                  </Button>
-                  <Button onClick={() => {
-                    removeReport(report.id)
-                  }} className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded'>
-                    Eliminar
-                  </Button>
+                  <Button disabled>Ver reporte</Button>
+                  <Button disabled>Editar</Button>
+                  <Button disabled>Actualizar</Button>
+                  <Button onClick={() => { removeReport(report.id) }} className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded'>Eliminar</Button>
                 </TableHead>
               </TableRow>
             ))}

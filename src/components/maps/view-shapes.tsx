@@ -34,17 +34,17 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
   const renderColor = (option: number) => {
     let color = ''
     if (option === 1) {
-      color = 'red'
+      color = '#ff0000' // red
     } else if (option === 2) {
-      color = 'orange'
+      color = '#ff8000' // orange
     } else if (option === 3) {
-      color = 'yellow'
+      color = '#ffff00' // yellow
     } else if (option === 4) {
-      color = 'green'
+      color = '#00ff00' // green
     } else if (option === 5) {
-      color = 'blue  '
+      color = '#00ff' // blue
     } else {
-      color = 'white'
+      color = '#fff' // black or default color
     }
     return color
   }
@@ -372,7 +372,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                   className={'transition-colors duration-500'}
                   pathOptions={{
                     fillColor: showShapes ? renderColor(obj.condition) : 'transparent',
-                    color: showShapes ? darkenHexColor(obj.shapes.color, 20) : 'transparent',
+                    color: showShapes ? darkenHexColor(renderColor(obj.condition), 30) : 'transparent',
                     fillOpacity: 0.5,
                     weight: 3
                   }}
@@ -384,7 +384,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                       if (showShapes) {
                         e.target.setStyle({
                           weight: 5,
-                          color: darkenHexColor(obj.shapes.color, 20),
+                          color: darkenHexColor(renderColor(obj.condition), 30),
                           fillOpacity: 1,
                         })
                       }
@@ -393,7 +393,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                       if (showShapes) {
                         e.target.setStyle({
                           weight: 3,
-                          color: darkenHexColor(obj.shapes.color, 20),
+                          color: darkenHexColor(renderColor(obj.condition), 30),
                           fillOpacity: 0.8,
                         })
                       }
