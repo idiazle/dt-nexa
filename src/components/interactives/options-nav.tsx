@@ -39,7 +39,7 @@ const OptionsNav = () => {
         {
           openPNDList ?
             < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-16 bg-white rounded-sm border border-gray-400'>
-              <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
+              <a href={"/interactives?map-id=20019&map-type=3"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200'>Seccion 10</a>
               <a href={"/interactives?map-id=10007&map-type=3"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200'>Seccion 20-1</a>
               <a href={"/interactives?map-id=10010&map-type=3"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200'>Seccion 20-2</a>
               <a href={"/interactives?map-id=10011&map-type=3"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200'>Seccion 20-3</a>
