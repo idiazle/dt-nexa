@@ -34,6 +34,7 @@ export interface moduleListStructure {
   icon_tooltip: string,
   route: string
   enable: boolean
+  group?: string // Optional property to group modules
 }
 
 
