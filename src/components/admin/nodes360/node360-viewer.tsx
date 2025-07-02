@@ -33,6 +33,12 @@ import ModalViewMedia from '@/components/viewers/modal-viewer';
 import OptionsNav from '@/components/interactives/options-nav';
 import NavBarInteractives from '@/components/interactives/navBarInteractives';
 import { getDocumentsByEntity } from '@/api/admin/documents-api';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { getEquipments } from '@/api/admin/equipments-api';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { patchPhotogNodeById } from '@/api/admin/nodes360-api';
 
 interface Nodes360ViewerStructure {
   allNodes: PhotogrametryStructure[] | null
@@ -81,6 +87,8 @@ const options = [
 export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setDialogOpen }: Nodes360ViewerStructure) {
   const pathname = usePathname()
   const isNav360 = pathname.includes('/interactives/nav360')
+  const [polygonPoints, setPolygonPoints] = useState<any[]>([])
+  const refSpheere = React.createRef<any>()
 
   const pSRef = React.createRef()
   const [getCurrentNodeFunction, setGetCurrentNodeFunction] = React.useState(null)
@@ -113,7 +121,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
             links: JSON.parse(obj.links as string),
             markers: JSON.parse(obj.markers as string).map((mark: any, index: number) => ({
               ...mark,
-              id: mark.tooltip + index
+              id: mark?.tooltip + index
             }))
           };
         }),
@@ -122,10 +130,6 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
     }
   };
 
-  const handleClick = () => {
-    const curr_node = getCurrentNodeFunction();
-    console.log(curr_node);
-  }
 
   const plugins = [
     MarkersPlugin,
@@ -289,6 +293,117 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
     }
   }
 
+  const handleClick = (instance: any) => {
+    if (!instance.data || instance.data.yaw === undefined || instance.data.pitch === undefined) {
+      console.warn('⚠️ No se encontró información válida en instance.data:', instance.data)
+      return
+    }
+    console.log('📌 Click detectado en:', instance.data)
+    const { yaw, pitch } = instance.data
+    const newPoint = [yaw, pitch] // Guardar el punto en formato [yaw, pitch]
+    // Agregar el punto al estado y mantener la secuencia de puntos
+    setPolygonPoints(prevPoints => [...prevPoints, newPoint])
+  }
+  // 🎯 Escuchar cambios en polygonPoints y actualizar solo la polilínea
+  useEffect(() => {
+    if (!pSRef.current) return
+    const instance = pSRef.current
+    const markersPlugin = instance.getPlugin(MarkersPlugin)
+    if (!markersPlugin) return
+    markersPlugin.clearMarkers() // Limpiar antes de añadir nuevos
+    // 🔹 Dibujar la polilínea solo si hay al menos 2 puntos
+    if (polygonPoints.length > 1) {
+      markersPlugin.addMarker({
+        id: 'polygon-line',
+        polygon: polygonPoints, // Usar directamente los puntos en formato [[yaw, pitch], ...]
+        svgStyle: {
+          fill: 'rgba(13, 85, 158, 0.4)',
+          stroke: 'rgba(8, 56, 105, 0.8)',
+          strokeWidth: '3px'
+        }
+      })
+    }
+    // console.log('🔍 Dibujando polilínea con puntos:', polygonPoints)
+  }, [polygonPoints]) // 🔥 Se ejecuta cada vez que cambia polygonPoints
+
+  // const handleSubmitArea = () => {
+  //   if (polygonPoints.length < 3) {
+  //     console.warn('⚠️ Debes seleccionar al menos 3 puntos para crear un área.')
+  //     return
+  //   }
+  //   // Aquí puedes manejar el envío del área delimitada
+  //   console.log('📏 Área delimitada:', polygonPoints)
+  //   setPolygonPoints([]) // Limpiar los puntos después de enviar
+  // }
+
+  const [equipments, setEquipments] = useState<any[]>([])
+  const [equipmentSelected, setEquipmentSelected] = useState<any>({
+  })
+
+  const getAllDataInfoEquipment = () => {
+    getEquipments().then((response) => {
+      console.log("RESPONSE EQUIPMENTS", response.data.data);
+      setEquipments(response.data.data)
+    }).catch((error) => {
+      console.error("Error fetching equipments:", error);
+    })
+  }
+
+  useEffect(() => {
+    getAllDataInfoEquipment()
+  }, [])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setAreaInputs((prev) => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+
+  const handleSubmitArea = () => {
+    const polygon = {
+      id: 'polyline',
+      polygon: polygonPoints,
+      svgStyle: {
+        fill: 'rgba(13, 85, 158, 0.4)',
+        stroke: 'rgba(8, 56, 105, 0.8)',
+        strokeWidth: '3px'
+      },
+      tooltip: {
+        content: equipments.find((eq: any) => eq.equipment_id === Number(equipmentSelected))?.tag + '-' + equipments.find((eq: any) => eq.equipment_id === Number(equipmentSelected))?.name,
+        position: 'top center'
+      },
+      equipment_id: equipmentSelected
+    }
+    console.log('📏 Área delimitada:', polygon)
+    console.log('Node Seleccionado:', selectedNode)
+    const find = allNodes.find((nod: any) => nod.id === selectedNode?.id)
+
+    let sendObject = {}
+
+    const markers = JSON.parse(find.markers).concat(polygon)
+
+    sendObject = {
+      markers: JSON.stringify(markers)
+    }
+    console.log('info:', sendObject)
+    patchPhotogNodeById(Number(selectedNode?.id), sendObject).then((response) => {
+      if (response.status === 200) {
+        console.log('Polilínea actualizada correctamente')
+        setPolygonPoints([])
+        setDialogOpen(false)
+      } else {
+        console.error('Error al actualizar la polilínea:', response)
+      }
+    }).catch((error) => {
+      console.error('Error al actualizar la polilínea:', error)
+    })
+
+  }
+
+
   return (
     <>
       {
@@ -307,16 +422,16 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                 width={"100%"}
                 hideNavbarButton={true}
                 onReady={handleReady}
-                onDblclick={(instance: any) => {
-                  setDialogMarkLink({
-                    ...dialogMarkLink,
-                    open: true,
-                    data: {
-                      ...instance.data,
-                      selectedNode: selectedNode
-                    }
-                  })
-                }}
+                // onDblclick={(instance: any) => {
+                //   setDialogMarkLink({
+                //     ...dialogMarkLink,
+                //     open: true,
+                //     data: {
+                //       ...instance.data,
+                //       selectedNode: selectedNode
+                //     }
+                //   })
+                // }}
                 plugins={plugins}
                 container={"container-360"}
                 src={selectedNode?.panorama}
@@ -533,7 +648,8 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
             }
           </div >
 
-          : <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          :
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogContent
               onEscapeKeyDown={(e) => e.preventDefault()}
               onInteractOutside={(e) => e.preventDefault()}
@@ -543,6 +659,62 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                 <DialogDescription />
               </DialogHeader>
               <>
+                <div className='relative w-full h-full flex flex-col items-center justify-center'>
+                  {
+                    polygonPoints.length >= 1
+                      ? <div className="absolute top-0 right-0 z-50 bg-gray-200 p-3 rounded-md min-w-[300px]">
+                        <div className='flex flex-col gap-2'>
+                          <h1 className="text-lg font-bold">ZONA DELIMITADA</h1>
+                          <div className="flex flex-col gap-2">
+                            <Label>Equipo:</Label>
+                            <Select
+                              value={equipmentSelected || '0'}
+                              onValueChange={(value) => {
+                                setEquipmentSelected(value)
+                              }
+                              }
+                              name="name"
+                              className="w-full"
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Selecciona un nombre" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {
+                                  equipments.map((equipment, index) => (
+                                    <SelectItem key={index} value={equipment.equipment_id.toString()}>
+                                      {equipment.tag}-{equipment.name}
+                                    </SelectItem>
+                                  ))
+                                }
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <h1 className="text-lg font-bold">Coordenadas:</h1>
+                          <div className="flex flex-col gap-2 overflow-auto max-h-[200px]">
+                            {
+                              polygonPoints.map((point, index) => (
+                                <div key={index} className="flex flex-row items-center gap-2">
+                                  <div className='flex flex-row items-center'>
+                                    <FaCircle className="text-[#687C94]" />
+                                    <span className="text-normal font-semibold">P{index}:</span>
+                                  </div>
+                                  <span className="text-sm">{`[${point[0].toFixed(2)}, ${point[1].toFixed(2)}]`}</span>
+                                </div>
+                              ))
+                            }
+                          </div>
+                          <div className='flex flex-row gap-2 w-full'>
+                            {/* <Button className='w-1/2' onClick={() => { handleSubmitArea() }}>Guardar</Button> */}
+                            {/* <Button className='w-1/2' onClick={() => { setPolygonPoints([]) }}>Cancelar</Button> */}
+                          </div>
+                        </div>
+                        <Button className='w-full' onClick={() => { handleSubmitArea() }}>Guardar</Button>
+                      </div>
+                      : null
+                  }
+
+                </div>
                 <ReactPhotoSphereViewer
                   ref={pSRef}
                   // loadingImg={baseUrl + "loader.gif"}
@@ -553,6 +725,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                   width={"100%"}
                   hideNavbarButton={true}
                   onReady={handleReady}
+                  onClick={handleClick}
                   onDblclick={(instance: any) => {
                     setDialogMarkLink({
                       ...dialogMarkLink,
@@ -757,46 +930,6 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                         </TooltipTrigger>
                       </Tooltip>
                     </TooltipProvider>
-                  </div>
-                </div>
-                <div className='absolute flex flex-row-rever bottom-6 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md'>
-                  <div className='flex flex-col items-center w-32 gap-2 mb-5'>
-                    <a href={"/interactives?map-id=10006&map-type=1"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#002645] hover:bg-[#002645] hover:text-white ${mapType === '1' ? 'bg-[#002645] text-white' : 'bg-white text-black'}`}>
-                      PFD
-                    </a>
-                    {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Flujo de Confiabilidad</span> */}
-                  </div>
-                  <div className='flex flex-col items-center w-32 gap-2'>
-                    <a href={"/interactives?map-id=10007&map-type=3"} className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center border-2 border-[#002645] hover:bg-[#002645] hover:text-white ${mapType === '3' ? 'bg-[#002645] text-white' : 'bg-white text-black'}`}>
-                      PND
-                    </a>
-                    {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Diagrama de Navegación de Planta</span> */}
-                  </div>
-                  <div className='flex flex-col items-center w-32 gap-2'>
-                    <a href='#' className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-slate-400 opacity-80 cursor-default">
-                      PLD
-                    </a>
-                    {/*a<span className='text-xs text-center bg-slate-700 bg-opacity-20 p-1'>Diagrama Lógico Funcional</span> */}
-                  </div>
-                  <div className='flex flex-col items-center w-32 gap-2'>
-                    {
-                      open360list ?
-                        < div className='absolute flex flex-col items-center w-40 bottom-28 gap-1 mb-5 bg-white rounded-sm'>
-                          <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white opacity-30 cursor-default'>Seccion 10</div>
-                          <a href={"/interactives/nav360?nodeId=9"} className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-100'>Seccion 20</a>
-                          <div className='w-full rounded-sm text-center text-black p-1 hover:bg-[#002645] hover:text-white opacity-30 cursor-default'>Seccion 25</div>
-                        </div>
-                        : null
-                    }
-                    <button
-                      onClick={() => {
-                        console.log("Click on PLD");
-                        setOpen360List(!open360list);
-                      }}
-                      className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-white border-2 border-[#002645] hover:bg-[#002645] hover:text-white">
-                      <TbView360Number size={55} />
-                    </button>
-                    {/* <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1'>Navegación 360°</span> */}
                   </div>
                 </div>
 
