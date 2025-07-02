@@ -20,14 +20,14 @@ const OptionsNav = () => {
   return (
     <>
       <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md gap-1'>
-        {
+        {/* {
           admin ?
             <div className='absolute top-3 right-3 z-50 p-2 rounded-md bg-white border border-gray-400'>
               <a href={"/admin/nodes360"} className='text-black hover:text-[#002645]'>Administrar Nodos 360°</a>
             </div>
             : null
 
-        }
+        } */}
         <div className='flex flex-col items-center w-32 gap-2 mb-5'>
           {
             openPFDlist ?
