@@ -361,7 +361,6 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
     }))
   }
 
-
   const handleSubmitArea = () => {
     const polygon = {
       id: 'polyline',
@@ -400,9 +399,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
     }).catch((error) => {
       console.error('Error al actualizar la polilínea:', error)
     })
-
   }
-
 
   return (
     <>
@@ -664,9 +661,9 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                     polygonPoints.length >= 1
                       ? <div className="absolute top-0 right-0 z-50 bg-gray-200 p-3 rounded-md min-w-[300px]">
                         <div className='flex flex-col gap-2'>
-                          <h1 className="text-lg font-bold">ZONA DELIMITADA</h1>
+                          <h1 className="text-lg font-bold">EQUIPO DELIMITADO</h1>
                           <div className="flex flex-col gap-2">
-                            <Label>Equipo:</Label>
+                            <Label>Seleccione equipo:</Label>
                             <Select
                               value={equipmentSelected || '0'}
                               onValueChange={(value) => {
@@ -690,14 +687,14 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                               </SelectContent>
                             </Select>
                           </div>
-                          <h1 className="text-lg font-bold">Coordenadas:</h1>
+                          <h1 className="text-base font-bold">Coordenadas:</h1>
                           <div className="flex flex-col gap-2 overflow-auto max-h-[200px]">
                             {
                               polygonPoints.map((point, index) => (
                                 <div key={index} className="flex flex-row items-center gap-2">
                                   <div className='flex flex-row items-center'>
                                     <FaCircle className="text-[#687C94]" />
-                                    <span className="text-normal font-semibold">P{index}:</span>
+                                    <span className="text-sm font-semibold">P{index+1}:</span>
                                   </div>
                                   <span className="text-sm">{`[${point[0].toFixed(2)}, ${point[1].toFixed(2)}]`}</span>
                                 </div>
@@ -709,7 +706,10 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                             {/* <Button className='w-1/2' onClick={() => { setPolygonPoints([]) }}>Cancelar</Button> */}
                           </div>
                         </div>
-                        <Button className='w-full' onClick={() => { handleSubmitArea() }}>Guardar</Button>
+                        <div className='flex flex-row gap-2 w-full mt-2'>
+                          <Button className='w-full' onClick={() => { handleSubmitArea() }}>Guardar</Button>
+                          <Button className='w-full bg-red-500 hover:bg-red-400' onClick={() => { setPolygonPoints([]) }}>Cancelar</Button>
+                        </div>
                       </div>
                       : null
                   }
@@ -735,6 +735,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                         selectedNode: selectedNode
                       }
                     })
+                    setPolygonPoints([]) // Limpiar puntos al abrir el diálogo
                   }}
                   plugins={plugins}
                   container={"container-360"}
