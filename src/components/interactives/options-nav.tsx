@@ -74,9 +74,9 @@ const OptionsNav = () => {
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
           <a href={"#"} className="font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center text-black bg-slate-400 opacity-80 cursor-default">
-            PLD
+            RBD
           </a>
-          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1 text-white'>Diagrama Lógico Funcional</span>
+          <span className='text-xs text-center bg-slate-700 bg-opacity-50 p-1 text-white'>Diagrama de Bloques de Confiabilidad</span>
         </div>
         <div className='flex flex-col items-center w-32 gap-2'>
           {

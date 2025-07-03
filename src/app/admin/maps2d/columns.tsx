@@ -33,7 +33,7 @@ const renderMapType = (type: number) => {
   if (type === 1) {
     returnType = 'PFD'
   } else if (type === 2) {
-    returnType = 'PLD'
+    returnType = 'RBD'
   } else if (type === 3) {
     returnType = 'PND'
   } else {

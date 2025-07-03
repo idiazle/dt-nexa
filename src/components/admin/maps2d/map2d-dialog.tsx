@@ -224,7 +224,7 @@ export default function Map2dDialog({ id, dialogOpen, setDialogOpen }: Map2dDial
                     </SelectTrigger>
                     <SelectContent >
                       <SelectItem value={String(1)}>PFD</SelectItem>
-                      <SelectItem value={String(2)}>PLD</SelectItem>
+                      <SelectItem value={String(2)}>RBD</SelectItem>
                       <SelectItem value={String(3)}>PND</SelectItem>
                       <SelectItem value={String(4)}>General</SelectItem>
                     </SelectContent>
