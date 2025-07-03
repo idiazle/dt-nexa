@@ -36,6 +36,10 @@ import { getDocumentsByEntity } from '@/api/admin/documents-api';
 import { getReportCondById } from '@/api/admin/reports-api';
 import OptionsNav from '../interactives/options-nav';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { MdOutlineClose } from 'react-icons/md';
+import Node360Viewer from '../admin/nodes360/node360-viewer';
+import { getNodes360 } from '@/api/admin/nodes360-api';
+import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 
 interface MapProps {
   mapSelected: Map2dStructure | null
@@ -416,10 +420,6 @@ export default function PlansMapContainer(Map: MapProps) {
   const [planeSelected, setPlaneSelected] = useState<string>('2')
   const [activateEquipments, setActivateEquipments] = useState<boolean>(false)
 
-  const [pnavActive, setPnavActive] = useState<boolean>(false)
-  const [peqActive, setPeqActive] = useState<boolean>(false)
-  const [pauxActive, setPauxActive] = useState<boolean>(false)
-
   const [infoShape, setInfoShape] = useState<{
     entity_data: EntityStructure | EquipmentStructure
     documents: DocumentStructure[]
@@ -537,12 +537,50 @@ export default function PlansMapContainer(Map: MapProps) {
 
   const [activeLegend, setActiveLegend] = useState<boolean>(false)
   const [openDespiece, setOpenDespiece] = useState<boolean>(false)
+  const [reportSelected, setReportSelected] = useState<boolean>(false)
+  const [view360Selected, setView360Selected] = useState<boolean>(false)
+  const [allNodes, setAllNodes] = useState<any[]>([])
+  const [nodeSelected, setNodeSelected] = useState<any>(null)
+  const [nodesFilter, setNodesFilter] = useState<any[]>([])
 
   console.log("MAP SELECTED", selectedShape);
 
   const currentIndex = navMaps.findIndex(map => map.map_id === mapId);
   const prevMap = currentIndex > 0 ? navMaps[currentIndex - 1] : null;
   const nextMap = currentIndex < navMaps.length - 1 ? navMaps[currentIndex + 1] : null;
+
+
+  useEffect(() => {
+    getNodes360().then((response) => {
+      console.log("RESPONSE NODES 360", response.data.data);
+      setAllNodes(response.data.data)
+    }).catch((error) => {
+      console.error("Error fetching nodes 360:", error);
+    })
+  }, [])
+
+  console.log("Equipment Selected", equipmentSelected?.obj.entity_id.id);
+
+  const searchNodeByEquipmentId = () => {
+    let tempNodes: any[] = []
+    allNodes.map((obj, index) => {
+      const temp = JSON.parse(obj.markers)
+      temp?.map((v360: any) => {
+        if (Number(v360?.equipment_id) === equipmentSelected?.obj.entity_id.id) {
+          tempNodes.push(obj)
+        }
+      })
+      setNodeSelected(tempNodes[0])
+      setNodesFilter(tempNodes)
+      console.log("nuevo", tempNodes);
+    })
+  }
+
+  useEffect(() => {
+    if (view360Selected === true) {
+      searchNodeByEquipmentId()
+    }
+  }, [view360Selected])
 
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
@@ -677,6 +715,7 @@ export default function PlansMapContainer(Map: MapProps) {
                   setShapesRender={setShapesRender}
                   setEquipmentPressed={setEquipmentPressed}
                   setEquipmentSelected={setEquipmentSelected}
+                  setReportSelected={setReportSelected}
                 />
               </> : null
           }
@@ -693,6 +732,8 @@ export default function PlansMapContainer(Map: MapProps) {
             setStateInformation={setStateInformation}
             setTrouInfodocData={setTrouInfodocData}
             trouInfodocData={trouInfodocData}
+            setReportSelected={setReportSelected}
+            set360ViewSelected={setView360Selected}
           /> : null
       }
       {
@@ -866,38 +907,63 @@ export default function PlansMapContainer(Map: MapProps) {
       {/* CENTER BOTTOM MENU CONTROL */}
       <OptionsNav />
 
+      {
+        view360Selected ?
+          // <div className='absolute bottom-2 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 bg-gray-200 w-[90%] h-[90%] rounded-md p-4'>
+          //   <div className='flex flex-row items-center w-full gap-2 justify-between'>
+          //     <h1 className=' bg-white py-1 px-4 text-lg font-bold rounded-md w-full'>
+          //       Imagen 360
+          //     </h1>
+          //     <MdOutlineClose className='bg-white p-1 h-full rounded-md cursor-pointer hover:bg-gray-400' size={30} color='black' onClick={() => { setView360Selected(false), setSelectedShape(null) }} />
+          //   </div>
+          //   <div className='w-full h-full bg-red-400 rounded-md'>
+          //     <div className='flex flex-row justify-center items-center w-full bg-gray-300 rounded-md gap-2 overflow-auto p-10'>
+          //       {
+          //         nodesFilter.map((obj: any) => {
+          //           return (
 
-      {/* RIGTH BOTTOM MENU CONTROL */}
-      {/* <div className='absolute z-10 flex flex-row bottom-20 right-28 w-32 gap-1'>
-        <button
-          onClick={() => {
-            setPnavActive(!pnavActive)
-            // setActivateEquipments(!activateEquipments)
-          }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pnavActive ? 'bg-[#002645] text-white' : ''}`}>
-          <h1 className='font-bold'>Pnav</h1>
-        </button>
-        <button
-          onClick={() => {
-            setPeqActive(!peqActive)
-            // setActivateEquipments(!activateEquipments)
-          }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${peqActive ? 'bg-[#002645] text-white' : ''}`}>
-          <h1 className='font-bold'>Peq</h1>
-        </button>
-        <button
-          onClick={() => {
-            setPauxActive(!pauxActive)
-            // setActivateEquipments(!activateEquipments)
-          }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-xl w-20 hover:bg-blue-100 ${pauxActive ? 'bg-[#002645] text-white' : ''}`}>
-          <h1 className='font-bold'>Paux</h1>
-        </button>
-      </div> */}
-
+          //             < Image
+          //               key={obj.id}
+          //               src={obj?.thumbnail}
+          //               alt="Imagen 360"
+          //               width={150}
+          //               height={150}
+          //               className='object-cover rounded-md'
+          //             // onClick={() => {
+          //             //   setNodeSelected(null)
+          //             //   setView360Selected(false)
+          //             //   setSelectedShape(null)
+          //             // }
+          //             />
+          //           )
+          //         })
+          //       }
+          //     </div>
+          //     <ReactPhotoSphereViewer
+          //       src={nodesFilter[0].panorama}
+          //       width='100%'
+          //       height='100%'
+          //       navbar={false}
+          //       container={'container-360'}
+          //       // plugins={plugins}
+          //       mousemove={true}
+          //       mousewheel={true}
+          //       loadingImg='/img/menu-icons/gemelo_digital.png'
+          //     />
+          //   </div>
+          // </div>
+          <Node360Viewer
+            allNodes={allNodes}
+            selectedNode={nodeSelected}
+            dialogOpen={view360Selected}
+            setDialogOpen={setView360Selected}
+          />
+          :
+          null
+      }
 
       {/* LEFT DATA INFORMATION SHOW */}
-      <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 ${selectedShape !== null && !closeInformation ? 'w-[20%] opacity-100' : 'w-0 opacity-0'} bg-slate-100 z-20 border rounded-l-md`}>
+      <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 ${reportSelected === true && !closeInformation ? 'w-[20%] opacity-100' : 'w-0 opacity-0'} bg-slate-100 z-20 border rounded-l-md`}>
 
         {/* {
           renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>

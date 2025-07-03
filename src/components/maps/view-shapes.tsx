@@ -25,12 +25,13 @@ interface ViewShapesStructure {
   setRenderLeftInformation: (val: any) => void
   setEquipmentPressed: (val: any) => void
   setEquipmentSelected: (val: any) => void
+  setReportSelected: (val: boolean) => void
   showShapes: boolean
   flagRefresh: boolean
   refDivOverflow: any
 }
 
-export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, refDivOverflow, flagRefresh, showShapes, shapesRender, setShapesRender, setSelectedShape, setCloseInformation, setRenderLeftInformation }: ViewShapesStructure) {
+export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, refDivOverflow, flagRefresh, showShapes, shapesRender, setShapesRender, setSelectedShape, setCloseInformation, setRenderLeftInformation, setReportSelected }: ViewShapesStructure) {
   const renderColor = (option: number) => {
     let color = ''
     if (option === 1) {
@@ -322,6 +323,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                       }
                     }
                   }}
+
                   key={index}
                   position={[obj.shapes.coordinates.lat, obj.shapes.coordinates.lng]}
                   icon={iconShow} // Use the selected icon
@@ -401,6 +403,15 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                     click: async (e) => {
                       handleShapeSelect(obj.id);
                       console.log("Click circle: ", e)
+                      setEquipmentPressed(true)
+                      setEquipmentSelected({
+                        obj,
+                        isVisible: true,
+                        position: {
+                          x: e.containerPoint.x,
+                          y: e.containerPoint.y
+                        }
+                      })
                       if (showShapes && markerType === 1) {
                         e.target.setStyle({
                           weight: 5,
@@ -410,6 +421,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                       }
                       if (showShapes) {
                         await getDataInfoShape(obj)
+                        setReportSelected(false)
                         setSelectedShape(obj)
                         setCloseInformation(false)
                       }

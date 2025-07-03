@@ -19,12 +19,14 @@ interface InfoEquipCompStructure {
   setEquipmentSelected: (value: any) => void
   setStateInformation: (value: any) => void
   setNavIcons: (value: any) => void
+  setReportSelected: (value: boolean) => void
+  set360ViewSelected: (value: boolean) => void
 }
-export default function InformationEquipmentComponent ({ equipmentIsPressed, refToDivOverflow, equipmentSelected, setEquipmentSelected, setStateInformation, setNavIcons, trouInfodocData, setTrouInfodocData }: InfoEquipCompStructure) {
-  
-  console.log("KDWOADKOWADWAO", equipmentSelected);
-  
-  
+export default function InformationEquipmentComponent({ equipmentIsPressed, refToDivOverflow, equipmentSelected, setEquipmentSelected, setStateInformation, setNavIcons, trouInfodocData, setTrouInfodocData, setReportSelected, set360ViewSelected }: InfoEquipCompStructure) {
+
+  // console.log("KDWOADKOWADWAO", equipmentSelected);
+
+
   const [equipInformation, setEquipInformation] = useState<EquipmentStructure | null>(null)
   const [troubleshooting, setTroubleshooting] = useState<any[] | null>(null)
 
@@ -141,7 +143,7 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
   const getInfoDocumental = async () => {
     // console.log('ENTRANDO', equipmentSelected)
     if (equipmentSelected.obj.entity_id !== null) {
-      
+
       try {
         const response = await getDocumentsByArea(equipmentSelected.obj.entity_id.id as number, '3')
         console.log('MY RESPONSE', response.data.data)
@@ -164,7 +166,7 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
   // console.log("trouInfodocData", trouInfodocData)
 
   console.log("EQUIPMENT SELECTEED", equipmentSelected);
-  
+
   return (
 
     <div style={{ left: equipmentSelected?.position?.x - overflowValues.axisX, top: equipmentSelected?.position?.y - overflowValues.axisY }} className={`absolute bg-[#eeeeee] rounded-lg transition-all duration-300  h-[450px] ${equipmentSelected?.isVisible === true ? 'opacity-100 visible' : 'opacity-0 hidden'}`} >
@@ -176,8 +178,8 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
           touchAction: 'none'
         }} >
 
-        <div className={'absolute h-full w-[250px] sm:w-[250px] lg:w-[320px] rounded-lg bg-[#f1f1f1]'}>
-          <div className="flex flex-row justify-between items-center w-full bg-[#002a98] p-1.5 rounded-t">
+        <div className={'absolute '}>
+          {/* <div className="flex flex-row justify-between items-center w-full bg-[#002a98] p-1.5 rounded-t">
             <p className="text-white text-xs font-semibold px-2">Información del Equipo</p>
             <MdOutlineClose onClick={() => {
               setEquipmentSelected((prevstate: any) => {
@@ -227,8 +229,20 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
               //     }
               // }))
             }} color={'white'} className="mr-1 hover:cursor-pointer" />
+          </div> */}
+          <div className='flex flex-row justify-center items-center gap-1.5'>
+            <Button
+              onClick={() => { setReportSelected(true); set360ViewSelected(false) }}
+              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-t border-b border-[#c2c2c2]'>
+              Reportes
+            </Button>
+            <Button
+              onClick={() => { setReportSelected(false); set360ViewSelected(true) }}
+              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-b border-b border-[#c2c2c2]'>
+              360°
+            </Button>
           </div>
-          {
+          {/* {
             equipInformation != null
               ? <div className='bg-[#f1f1f1] flex flex-col h-full w-full border border-[#c2c2c2]  rounded-b'>
                 <div ref={miRefToScroll} className="flex w-full h-full flex-col p-2 overflow-auto bg-[#f1f1f1] border-b border-[#c2c2c2]">
@@ -297,7 +311,7 @@ export default function InformationEquipmentComponent ({ equipmentIsPressed, ref
               : <div className='flex justify-center items-center w-full h-full'>
                 <Spinner />
               </div>
-          }
+          } */}
         </div>
 
         <div ref={refDivEq} style={{ left: overflowDivTshoot.axisX, top: overflowDivTshoot.axisY }}
