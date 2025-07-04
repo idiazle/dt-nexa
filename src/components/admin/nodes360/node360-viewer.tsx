@@ -720,7 +720,8 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                   // loadingImg={baseUrl + "loader.gif"}
                   touchmoveTwoFingers={true}
                   mousewheelCtrlKey={true}
-                  navbar={["zoom", "move", "gallery", "download", "description", "caption", "fullscreen"]}
+                  // navbar={["zoom", "move", "gallery", "download", "description", "caption", "fullscreen"]}
+                  navbar={false}
                   height={"93vh"}
                   width={"100%"}
                   hideNavbarButton={true}

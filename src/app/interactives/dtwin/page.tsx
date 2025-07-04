@@ -24,10 +24,10 @@ function Dtwin() {
   return (
     <>
       {/* <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#00203a] border-b border-gray-300 text-white px-3'> */}
-      <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#002645] border-b border-gray-300 text-white px-3'>
+      <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#002645] text-white px-3'>
         <div
           onClick={() => window.location.href = '/menu'}
-          className='flex flex-row gap-3 w-1/3 items-center justify-start'>
+          className='flex flex-row gap-6 w-1/3 items-center justify-start'>
           <Image
             src="/img/icons/portal-digital.png"
             height={45}
