@@ -2,6 +2,7 @@
 import { getEquipments } from '@/api/admin/equipments-api'
 import { getNodes360, patchPhotogNodeById } from '@/api/admin/nodes360-api'
 import { deleteReportCondById, getReportsCond, postReportCond } from '@/api/admin/reports-api'
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -9,8 +10,10 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import ModalViewMedia from '@/components/viewers/modal-viewer'
 import { ChangeEvent, use, useEffect, useState } from 'react'
-import { FaCircle } from 'react-icons/fa6'
+import { FaCircle, FaTrash } from 'react-icons/fa6'
+import { toast } from '@/components/ui/use-toast'
 
 const Reports = () => {
   const [equipments, setEquipments] = useState<any[]>([])
@@ -19,6 +22,8 @@ const Reports = () => {
   const [openDialog, setOpenDialog] = useState(false)
   const [loading, setLoading] = useState(false)
   const [allNodes, setAllNodes] = useState<any[]>([])
+  const [fileSelected, setFileSelected] = useState<any | null>(null)
+  const [openDialogDoc, setOpenDialogDoc] = useState<boolean>(false)
 
   const [data, setData] = useState<any>({
     equipment: 0,
@@ -150,6 +155,19 @@ const Reports = () => {
       cond: Number(e)
     })
   }
+
+  const handleViewDoc = (file: any) => {
+    setFileSelected({
+      data: {
+        title: file.filename,
+        file_url: file.file,
+        name: file.filename,
+        filename: file.filename,
+      }
+    })
+    setOpenDialogDoc(true)
+  }
+
   const handleSubmit = () => {
     setLoading(true)
     const formData = new FormData()
@@ -202,7 +220,13 @@ const Reports = () => {
           filename: '',
           cond: 0
         })
-        alert('Reporte eliminado')
+        toast({
+          duration: 2000,
+          variant: 'destructive',
+          title: 'Eliminación',
+          description: 'Reporte eliminado correctamente'
+        }
+        )
       } else {
         console.log('Error al eliminar el reporte')
       }
@@ -228,12 +252,37 @@ const Reports = () => {
     return 'Equipo no encontrado'
   }
 
+  const [openAlertDelete, setOpenAlertDelete] = useState<boolean>(false)
+  const [reportByDelete, setReportByDelete] = useState<any | null>(null)
+
+  console.log('Report ByDelete', reportByDelete)
+
   return (
     <div className='p-2'>
       <div className='flex flex-row justify-between items-center '>
         <div className='flex flex-row justify-between items-center '>
           <h1 className='text-lg font-bold'>Reportes</h1>
         </div>
+        <AlertDialog open={openAlertDelete} onOpenChange={setOpenAlertDelete}>
+          <AlertDialogContent>
+            <AlertDialogHeader className='flex flex-col justify-center items-center gap-5'>
+              <AlertDialogTitle>Alerta de Eliminación</AlertDialogTitle>
+              <FaTrash size={50} />
+              <AlertDialogDescription>
+                Está seguro que desea eliminar <span className='font-bold uppercase'>{reportByDelete?.filename}</span>, esta acción no podrá ser desecha.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className='border-t'>
+              <div className='flex flex-row justify-between items-center w-full mt-3 gap-3'>
+                <AlertDialogAction className='w-1/2  bg-red-500 hover:bg-red-400'
+                  onClick={() => removeReport(reportByDelete?.id)}>
+                  Eliminar
+                </AlertDialogAction>
+                <AlertDialogCancel className='w-1/2'>Cancelar</AlertDialogCancel>
+              </div>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
           <DialogTrigger className=''>
             <Button> Crear reporte </Button>
@@ -370,16 +419,30 @@ const Reports = () => {
                   {report.cond === 1 ? 'Alarma' : report.cond === 2 ? 'Precaucion' : report.cond === 3 ? 'Tolerable' : report.cond === 4 ? 'Normal' : report.cond === 5 ? 'No Monitoreado' : report.cond === 6 ? 'No Aplica' : ''}</TableHead>
                 <TableHead>{reconigzeEquipment(report.equipment)}</TableHead>
                 <TableHead className='flex flex-row items-center w-full gap-2'>
-                  <Button disabled>Ver reporte</Button>
+                  <Button onClick={() => { handleViewDoc(report) }} >Ver reporte</Button>
                   <Button disabled>Editar</Button>
                   <Button disabled>Actualizar</Button>
-                  <Button onClick={() => { removeReport(report.id) }} className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded'>Eliminar</Button>
+                  <Button
+                    onClick={() => {
+                      setOpenAlertDelete(true)
+                      setReportByDelete(report)
+                    }}
+                    className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded'>Eliminar</Button>
                 </TableHead>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+      {
+        openDialogDoc &&
+        <ModalViewMedia
+          open={openDialogDoc}
+          setOpen={setOpenDialogDoc}
+          information={fileSelected}
+          type='document'
+        />
+      }
     </div>
   )
 }
