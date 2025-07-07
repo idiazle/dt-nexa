@@ -1,5 +1,6 @@
 'use client'
 import { getEquipments } from '@/api/admin/equipments-api'
+import { getNodes360, patchPhotogNodeById } from '@/api/admin/nodes360-api'
 import { deleteReportCondById, getReportsCond, postReportCond } from '@/api/admin/reports-api'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
@@ -8,7 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, use, useEffect, useState } from 'react'
 import { FaCircle } from 'react-icons/fa6'
 
 const Reports = () => {
@@ -17,6 +18,7 @@ const Reports = () => {
   const [documentFile, setDocumentFile] = useState<File | null>(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [allNodes, setAllNodes] = useState<any[]>([])
 
   const [data, setData] = useState<any>({
     equipment: 0,
@@ -27,7 +29,7 @@ const Reports = () => {
   const getAllEquipments = () => {
     getEquipments().then((resp) => {
       if (resp.status === 200) {
-        console.log('Equipos obtenidos', resp.data.data)
+        // console.log('Equipos obtenidos', resp.data.data)
         setEquipments(resp.data.data)
       } else {
         console.log('Error al obtener los equipos')
@@ -52,6 +54,84 @@ const Reports = () => {
     getAllEquipments()
   }, [])
 
+  useEffect(() => {
+    getNodes360().then((resp) => {
+      if (resp.status === 200) {
+        // console.log('Nodos obtenidos', resp.data.data)
+        setAllNodes(resp.data.data)
+      } else {
+        console.log('Error al obtener los nodos')
+      }
+    }).catch((err) => {
+      console.log('Error al obtener los nodos', err)
+    })
+  }, [])
+
+  const getNodeByEquipmentId = (equipmentId: number, condition: string) => {
+    const conditionColors: Record<string, { fill: string; stroke: string }> = {
+      '1': { fill: 'rgba(239,68,68,0.4)', stroke: 'rgba(239,68,68,0.8)' },    // rojo
+      '2': { fill: 'rgba(202,138,4,0.4)', stroke: 'rgba(202,138,4,0.8)' },    // naranja
+      '3': { fill: 'rgba(250,204,21,0.4)', stroke: 'rgba(250,204,21,0.8)' },  // amarillo
+      '4': { fill: 'rgba(34,197,94,0.4)', stroke: 'rgba(34,197,94,0.8)' },    // verde
+      '5': { fill: 'rgba(75,85,99,0.4)', stroke: 'rgba(75,85,99,0.8)' },      // gris oscuro
+      '6': { fill: 'rgba(209,213,219,0.4)', stroke: 'rgba(209,213,219,0.8)' } // gris claro
+    }
+
+    const updatedNodes: any[] = []
+
+    let tempNodes: any[] = []
+    allNodes.map((node) => {
+      const temp = JSON.parse(node.markers)
+      temp?.map((v360: any) => {
+        if (Number(v360?.equipment_id) === equipmentId) {
+          tempNodes.push(node)
+        }
+      })
+    })
+
+    tempNodes.forEach((node) => {
+      const markers = JSON.parse(node.markers)
+      let updated = false
+
+      markers.forEach((v360: any) => {
+        if (Number(v360?.equipment_id) === equipmentId) {
+          const color = conditionColors[condition]
+          if (color) {
+            v360.svgStyle = {
+              fill: color.fill,
+              stroke: color.stroke,
+              strokeWidth: '2px',
+            }
+            updated = true
+          }
+        }
+      })
+
+      if (updated) {
+        node.markers = JSON.stringify(markers)
+        updatedNodes.push(node)
+        // console.log('Markers del nodo actualizado:', markers)
+      }
+    })
+    console.log('Update:', updatedNodes)
+
+    // Si deseas guardar los cambios en el backend:
+    updatedNodes.forEach((node) => {
+      patchPhotogNodeById(node.id, { markers: node.markers })
+        .then((resp) => {
+          if (resp.status === 200) {
+            console.log('Nodo actualizado correctamente:', resp.data)
+          } else {
+            console.error('Error al actualizar el nodo')
+          }
+        })
+        .catch((err) => {
+          console.error('Error al actualizar el nodo', err)
+        })
+    })
+  }
+
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setData({
       ...data,
@@ -70,7 +150,7 @@ const Reports = () => {
       cond: Number(e)
     })
   }
-  const handleSubmit = (e: any) => {
+  const handleSubmit = () => {
     setLoading(true)
     const formData = new FormData()
     formData.append('file', documentFile as Blob)
@@ -78,6 +158,7 @@ const Reports = () => {
     formData.append('cond', data.cond.toString())
     formData.append('filename', data.filename)
     console.log('formData', formData)
+    getNodeByEquipmentId(data.equipment, data.cond.toString())
     postReportCond(formData).then((resp) => {
       if (resp.status === 201) {
         console.log('Reporte generado')
@@ -93,6 +174,15 @@ const Reports = () => {
       } else {
         console.log('Error al generar el reporte')
       }
+      getReportsCond().then((resp) => {
+        if (resp.status === 200) {
+          setReports(resp.data.data)
+        } else {
+          console.log('Error al obtener los reportes')
+        }
+      }).catch((err) => {
+        console.log('Error al obtener los reportes', err)
+      })
     }).catch((err) => {
       console.log('Error al generar el reporte', err)
     })
@@ -207,7 +297,7 @@ const Reports = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="1">Alarma</SelectItem>
+                      <SelectItem value="1">Alerta</SelectItem>
                       <SelectItem value="2">Precaución</SelectItem>
                       <SelectItem value="3">Tolerable</SelectItem>
                       <SelectItem value="4">Normal</SelectItem>
@@ -222,7 +312,7 @@ const Reports = () => {
             <DialogFooter>
               <Button
                 onClick={() => {
-                  handleSubmit(data)
+                  handleSubmit()
                   setOpenDialog(false)
                 }}
                 className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded'>
@@ -255,7 +345,7 @@ const Reports = () => {
       <div>
         <Table>
           <TableHeader>
-            <TableRow className='sticky top-0  font-bold'>
+            <TableRow className='sticky top-0 font-bold bg-gray-200 text-black'>
               <TableHead>ID</TableHead>
               <TableHead>NOMBRE ARCHIVO</TableHead>
               <TableHead>CONDICIÓN</TableHead>
