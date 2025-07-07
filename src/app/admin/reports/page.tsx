@@ -113,7 +113,7 @@ const Reports = () => {
         // console.log('Markers del nodo actualizado:', markers)
       }
     })
-    console.log('Update:', updatedNodes)
+    // console.log('Update:', updatedNodes)
 
     // Si deseas guardar los cambios en el backend:
     updatedNodes.forEach((node) => {
@@ -161,7 +161,7 @@ const Reports = () => {
     getNodeByEquipmentId(data.equipment, data.cond.toString())
     postReportCond(formData).then((resp) => {
       if (resp.status === 201) {
-        console.log('Reporte generado')
+        // console.log('Reporte generado')
         setLoading(false)
         setOpenDialog(false)
         setDocumentFile(null)
@@ -206,6 +206,15 @@ const Reports = () => {
       } else {
         console.log('Error al eliminar el reporte')
       }
+      getReportsCond().then((resp) => {
+        if (resp.status === 200) {
+          setReports(resp.data.data)
+        } else {
+          console.log('Error al obtener los reportes')
+        }
+      }).catch((err) => {
+        console.log('Error al obtener los reportes', err)
+      })
     }).catch((err) => {
       console.log('Error al eliminar el reporte', err)
     })
@@ -226,8 +235,8 @@ const Reports = () => {
           <h1 className='text-lg font-bold'>Reportes</h1>
         </div>
         <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-          <DialogTrigger className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded'>
-            Generar Reporte
+          <DialogTrigger className=''>
+            <Button> Crear reporte </Button>
           </DialogTrigger>
           <DialogContent className=''>
             <DialogHeader>
@@ -311,12 +320,10 @@ const Reports = () => {
             </div>
             <DialogFooter>
               <Button
-                onClick={() => {
-                  handleSubmit()
-                  setOpenDialog(false)
-                }}
+                onClick={() => { handleSubmit() }}
+                disabled={loading}
                 className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded'>
-                Generar
+                {loading ? 'Generando...' : 'Generar'}
               </Button>
               <Button
                 onClick={() => {
