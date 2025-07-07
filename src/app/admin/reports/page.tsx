@@ -9,11 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import ModalViewMedia from '@/components/viewers/modal-viewer'
 import { ChangeEvent, use, useEffect, useState } from 'react'
 import { FaCircle, FaTrash } from 'react-icons/fa6'
 import { toast } from '@/components/ui/use-toast'
+import { DialogDescription } from '@radix-ui/react-dialog'
 
 const Reports = () => {
   const [equipments, setEquipments] = useState<any[]>([])
@@ -254,6 +255,8 @@ const Reports = () => {
 
   const [openAlertDelete, setOpenAlertDelete] = useState<boolean>(false)
   const [reportByDelete, setReportByDelete] = useState<any | null>(null)
+  const [openDialogGHistory, setOpenDialogHistory] = useState<boolean>(false)
+  const [historyReports, setHistoryReports] = useState<any[]>([])
 
   console.log('Report ByDelete', reportByDelete)
 
@@ -263,6 +266,48 @@ const Reports = () => {
         <div className='flex flex-row justify-between items-center '>
           <h1 className='text-lg font-bold'>Reportes</h1>
         </div>
+        <Dialog open={openDialogGHistory} onOpenChange={setOpenDialogHistory}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>HISTORIAL DE REPORTES</DialogTitle>
+              <DialogDescription>
+                {fileSelected ? `${reconigzeEquipment(fileSelected?.equipment)}` : 'Equipo: No seleccionado'}
+              </DialogDescription>
+            </DialogHeader>
+            <div>
+              <Table>
+                <TableHeader>
+                  <TableRow className='sticky top-0 font-bold bg-gray-200 text-black'>
+                    <TableHead>ID</TableHead>
+                    <TableHead>NOMBRE ARCHIVO</TableHead>
+                    <TableHead>CONDICIÓN</TableHead>
+                    <TableHead>EQUIPO</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className='overflow-auto'>
+                  {
+                    historyReports.length === 0 ?
+                      <TableRow>
+                        <TableCell colSpan={4} className='text-center'>No hay reportes en el historial</TableCell>
+                      </TableRow>
+                      :
+                      historyReports?.map((report, index) => (
+                        <TableRow key={report.id} className='text-black'>
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{report.filename}</TableCell>
+                          <TableCell className='flex flex-row items-center gap-2'>
+                            <FaCircle className={report.cond === 1 ? 'text-red-500' : report.cond === 2 ? 'text-yellow-600' : report.cond === 3 ? 'text-yellow-400' : report.cond === 4 ? 'text-green-500' : report.cond === 5 ? 'text-gray-600' : report.cond === 6 ? 'text-gray-300' : ''} />
+                            {report.cond === 1 ? 'Alarma' : report.cond === 2 ? 'Precaucion' : report.cond === 3 ? 'Tolerable' : report.cond === 4 ? 'Normal' : report.cond === 5 ? 'No Monitoreado' : report.cond === 6 ? 'No Aplica' : ''}
+                          </TableCell>
+                          <TableCell>{reconigzeEquipment(report.equipment)}</TableCell>
+                        </TableRow>
+                      ))
+                  }
+                </TableBody>
+              </Table>
+            </div>
+          </DialogContent>
+        </Dialog>
         <AlertDialog open={openAlertDelete} onOpenChange={setOpenAlertDelete}>
           <AlertDialogContent>
             <AlertDialogHeader className='flex flex-col justify-center items-center gap-5'>
@@ -412,23 +457,29 @@ const Reports = () => {
           <TableBody className='overflow-auto'>
             {reports.map((report, index) => (
               <TableRow key={report.id} className='text-black'>
-                <TableHead>{index + 1}</TableHead>
-                <TableHead>{report.filename}</TableHead>
-                <TableHead className='flex flex-row items-center gap-2'>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{report.filename}</TableCell>
+                <TableCell className='flex flex-row items-center gap-2'>
                   <FaCircle className={report.cond === 1 ? 'text-red-500' : report.cond === 2 ? 'text-yellow-600' : report.cond === 3 ? 'text-yellow-400' : report.cond === 4 ? 'text-green-500' : report.cond === 5 ? 'text-gray-600' : report.cond === 6 ? 'text-gray-300' : ''} />
-                  {report.cond === 1 ? 'Alarma' : report.cond === 2 ? 'Precaucion' : report.cond === 3 ? 'Tolerable' : report.cond === 4 ? 'Normal' : report.cond === 5 ? 'No Monitoreado' : report.cond === 6 ? 'No Aplica' : ''}</TableHead>
-                <TableHead>{reconigzeEquipment(report.equipment)}</TableHead>
-                <TableHead className='flex flex-row items-center w-full gap-2'>
+                  {report.cond === 1 ? 'Alarma' : report.cond === 2 ? 'Precaucion' : report.cond === 3 ? 'Tolerable' : report.cond === 4 ? 'Normal' : report.cond === 5 ? 'No Monitoreado' : report.cond === 6 ? 'No Aplica' : ''}</TableCell>
+                <TableCell>{reconigzeEquipment(report.equipment)}</TableCell>
+                <TableCell className='flex flex-row items-center w-full gap-2'>
                   <Button onClick={() => { handleViewDoc(report) }} >Ver reporte</Button>
                   <Button disabled>Editar</Button>
                   <Button disabled>Actualizar</Button>
+                  <Button
+                    onClick={() => {
+                      setFileSelected(report)
+                      setOpenDialogHistory(true)
+                    }}
+                  >Historial</Button>
                   <Button
                     onClick={() => {
                       setOpenAlertDelete(true)
                       setReportByDelete(report)
                     }}
                     className='bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded'>Eliminar</Button>
-                </TableHead>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
