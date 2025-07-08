@@ -588,7 +588,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                           options.map((option, index) => {
                             return (
                               <>
-                                <button disabled className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                                <button key={index} disabled className='flex flex-col bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
                                   <Image
                                     src={option.url}
                                     alt={option.label}
@@ -694,7 +694,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                                 <div key={index} className="flex flex-row items-center gap-2">
                                   <div className='flex flex-row items-center'>
                                     <FaCircle className="text-[#687C94]" />
-                                    <span className="text-sm font-semibold">P{index+1}:</span>
+                                    <span className="text-sm font-semibold">P{index + 1}:</span>
                                   </div>
                                   <span className="text-sm">{`[${point[0].toFixed(2)}, ${point[1].toFixed(2)}]`}</span>
                                 </div>
@@ -893,17 +893,23 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                         </div>
                         {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
                         <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
-                          {options.map((option, index) => (
-                            <button key={index} className='flex flex-col hover:bg-gray-400 rounded-md items-center justify-center p-2 gap-1'>
-                              <Image
-                                src={option.url}
-                                alt={option.label}
-                                width={50}
-                                height={50}
-                              />
-                              <span className='text-xs'>{option.label}</span>
-                            </button>
-                          ))}
+                          {
+                            options.map((option, index) => {
+                              return (
+                                <>
+                                  <button key={index} disabled className='flex flex-col bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                                    <Image
+                                      src={option.url}
+                                      alt={option.label}
+                                      width={50}
+                                      height={50}
+                                    />
+                                    <span className='font-bold text-white'>{option.label}</span>
+                                  </button>
+                                </>
+                              )
+                            })
+                          }
                         </div>
                       </div>
                     </div>
