@@ -39,6 +39,7 @@ import { Button } from '@/components/ui/button';
 import { getEquipments } from '@/api/admin/equipments-api';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { patchPhotogNodeById } from '@/api/admin/nodes360-api';
+import { useSession } from 'next-auth/react';
 
 interface Nodes360ViewerStructure {
   allNodes: PhotogrametryStructure[] | null
@@ -85,6 +86,9 @@ const options = [
 ]
 
 export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setDialogOpen }: Nodes360ViewerStructure) {
+  const { data } = useSession()
+  const userData = data?.user
+  console.log("SESSION DATA", data);
   const pathname = usePathname()
   const isNav360 = pathname.includes('/interactives/nav360')
   const [polygonPoints, setPolygonPoints] = useState<any[]>([])
@@ -486,7 +490,15 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                               <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
                               <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
                               <p className='text-sm flex flex-row items-center gap-4'>
-                                Estado: <FaCircle color={renderColor(generalCondition)} size={30} className='border-2 border-black rounded-full' />
+                                Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
+                                  generalCondition === 1 ? 'Alerta'
+                                    : generalCondition === 2 ? 'Precaución'
+                                      : generalCondition === 3 ? 'Tolerable'
+                                        : generalCondition === 4 ? 'Normal'
+                                          : generalCondition === 5 ? 'No monitoreado'
+                                            : generalCondition === 6 ? 'No aplica'
+                                              : ''
+                                }
                               </p>
                             </button>
                           )
@@ -658,7 +670,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
               <>
                 <div className='relative w-full h-full flex flex-col items-center justify-center'>
                   {
-                    polygonPoints.length >= 1
+                    polygonPoints.length >= 1 && userData?.groups?.includes(1)
                       ? <div className="absolute top-0 right-0 z-50 bg-gray-200 p-3 rounded-md min-w-[300px]">
                         <div className='flex flex-col gap-2'>
                           <h1 className="text-lg font-bold">EQUIPO DELIMITADO</h1>
@@ -726,7 +738,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                   width={"100%"}
                   hideNavbarButton={true}
                   onReady={handleReady}
-                  onClick={handleClick}
+                  onClick={userData.groups?.includes(1) ? handleClick : undefined}
                   onDblclick={(instance: any) => {
                     setDialogMarkLink({
                       ...dialogMarkLink,
@@ -795,7 +807,15 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                                 <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
                                 <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
                                 <p className='text-sm flex flex-row items-center gap-4'>
-                                  Estado: <FaCircle color={renderColor(generalCondition)} size={30} className='border-2 border-black rounded-full' />
+                                  Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
+                                    generalCondition === 1 ? 'Alerta'
+                                      : generalCondition === 2 ? 'Precaución'
+                                        : generalCondition === 3 ? 'Tolerable'
+                                          : generalCondition === 4 ? 'Normal'
+                                            : generalCondition === 5 ? 'No monitoreado'
+                                              : generalCondition === 6 ? 'No aplica'
+                                                : ''
+                                  }
                                 </p>
                               </button>
                             )

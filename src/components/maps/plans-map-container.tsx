@@ -1013,7 +1013,15 @@ export default function PlansMapContainer(Map: MapProps) {
                 >
                   <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
                   <p className=' flex flex-row items-center gap-4 text-lg'>
-                    Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {generalCondition === 1 ? 'Mala' : generalCondition === 2 ? 'Regular' : generalCondition === 3 ? 'Buena' : generalCondition === 4 ? 'Excelente' : ''}
+                    Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
+                      generalCondition === 1 ? 'Alerta'
+                        : generalCondition === 2 ? 'Precaución'
+                          : generalCondition === 3 ? 'Tolerable'
+                            : generalCondition === 4 ? 'Normal'
+                              : generalCondition === 5 ? 'No monitoreado'
+                                : generalCondition === 6 ? 'No aplica'
+                                  : ''
+                    }
                   </p>
                   <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
                 </button>
