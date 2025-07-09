@@ -16,7 +16,7 @@ import { TbTriangleSquareCircleFilled, TbView360Number } from "react-icons/tb";
 import { FaAngleDown, FaAngleLeft, FaAngleRight, FaAnglesLeft, FaAnglesRight, FaAngleUp, FaBars, FaFile, FaLeaf, FaSquarePlus, FaTrash } from "react-icons/fa6";
 import ShapesPlanDialog from '../admin/plans/shapes-plan-dialog';
 import { EyeClosedIcon } from '@radix-ui/react-icons';
-import { EyeIcon } from 'lucide-react';
+import { EyeIcon, X } from 'lucide-react';
 import ViewShapes from './view-shapes';
 import Spinner from '../ui/spinner';
 import { FaCircle, FaWindowClose } from "react-icons/fa";
@@ -40,6 +40,9 @@ import { MdOutlineClose } from 'react-icons/md';
 import Node360Viewer from '../admin/nodes360/node360-viewer';
 import { getNodes360 } from '@/api/admin/nodes360-api';
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
+import { IoNotifications } from 'react-icons/io5'
+import AlertsList from '../alerts/alerts-list';
+
 
 interface MapProps {
   mapSelected: Map2dStructure | null
@@ -550,6 +553,10 @@ export default function PlansMapContainer(Map: MapProps) {
   const nextMap = currentIndex < navMaps.length - 1 ? navMaps[currentIndex + 1] : null;
 
 
+  //ALERTS VARIABLES
+  const [openListAlerts, setOpenListsAlerts] = useState<boolean>(false)
+
+
   useEffect(() => {
     getNodes360().then((response) => {
       console.log("RESPONSE NODES 360", response.data.data);
@@ -582,47 +589,78 @@ export default function PlansMapContainer(Map: MapProps) {
     }
   }, [view360Selected])
 
+  const logos = [
+    {
+      src: "/img/icons/portal-digital.png",
+      alt: "nexa-logo",
+      width: 45,
+      height: 45,
+      styles: "rounded-md contain"
+    },
+    {
+      src: "/img/menu-icons/gemelo_digital.png",
+      alt: "nexa-logo",
+      width: 50,
+      height: 50,
+      styles: "rounded-md contain"
+    },
+    {
+      src: "/img/nexa_logo.png",
+      alt: "nexa-logo",
+      width: 100,
+      height: 100,
+      styles: "bg-white rounded-md contain"
+    }
+  ]
+
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
+      <AlertsList
+        openAlerts={openListAlerts}
+        setOpenAlerts={setOpenListsAlerts}
+      />
       <div className='relative w-full h-full'>
         <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#002645] border-b border-gray-300 text-white px-3'>
           <div
             onClick={() => window.location.href = '/menu'}
             className='flex flex-row gap-3 w-1/3 items-center justify-start cursor-pointer'>
-            <Image
-              src="/img/icons/portal-digital.png"
-              height={45}
-              width={45}
-              alt={"nexa-logo"}
-              className='rounded-md contain'
-            />
-            <Image
-              src="/img/menu-icons/gemelo_digital.png"
-              height={50}
-              width={50}
-              alt={"nexa-logo"}
-              className='rounded-md contain'
-            />
-            <Image
-              src="/img/nexa_logo.png"
-              height={100}
-              width={100}
-              alt={"nexa-logo"}
-              className='bg-white rounded-md contain'
-            />
+            {
+              logos.map((logo, index) => (
+                <Image
+                  key={index}
+                  src={logo.src}
+                  height={logo.height}
+                  width={logo.width}
+                  alt={logo.alt}
+                  className={logo.styles}
+                />
+              ))
+            }
           </div>
           <div className='flex flex-col justify-center items-center w-1/3'>
             <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : 'GEMELO DIGITAL DE CONFIABILIDAD'}</h1>
           </div>
           <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
+            <Button
+              title='Notificaciones'
+              size={'icon'}
+              className={`rounded-full bg-white hover:bg-[#7196A9] text-[#002645] hover:text-white ${openListAlerts ? 'bg-[#7196A9] text-white' : ''}`}
+              onClick={() => { setOpenListsAlerts(!openListAlerts) }}>
+              {
+                openListAlerts ?
+                  <X size={20} className='' /> :
+                  <>
+                    <IoNotifications size={20} className='' />
+                    <h1 className='font-bold'>{1}</h1>
+                  </>
+              }
+            </Button>
             <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
               <SelectTrigger className="w-52 bg-transparent border-white bg-white text-black">
                 <SelectValue placeholder="Seleccionar Planta" />
               </SelectTrigger>
               <SelectContent>
-                {/* <SelectItem value="1">S20-01</SelectItem> */}
                 <SelectItem value="2">Planta Cajamarquilla</SelectItem>
-                {/* <SelectItem value="3">S20-03</SelectItem> */}
               </SelectContent>
             </Select>
             <UserInfoMenu />
