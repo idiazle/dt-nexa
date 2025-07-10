@@ -640,7 +640,7 @@ export default function PlansMapContainer(Map: MapProps) {
           <div className='flex flex-col justify-center items-center w-1/3'>
             <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : 'GEMELO DIGITAL DE CONFIABILIDAD'}</h1>
           </div>
-          <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
+          {/* <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
             <Button
               title='Notificaciones'
               size={'icon'}
@@ -664,7 +664,7 @@ export default function PlansMapContainer(Map: MapProps) {
               </SelectContent>
             </Select>
             <UserInfoMenu />
-          </div>
+          </div> */}
         </div>
         <MapContainer
           ref={mapRef}
