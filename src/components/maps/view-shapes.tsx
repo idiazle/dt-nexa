@@ -339,7 +339,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                         <div className='flex flex-row items-end' >
                           <p className='text-xl font-bold'>N</p>
                           <p className=' text-sm text-white font-semibold'>
-                            {obj.id}
+                            {index + 1}
                           </p>
                         </div>
                       </Tooltip> :
@@ -358,7 +358,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                             <div className='flex flex-row items-end' >
                               <p className='text-xl font-bold'>E</p>
                               <p className=' text-sm text-black font-semibold'>
-                                {obj.id}
+                                {index + 1}
                               </p>
                             </div>
                           </div>

@@ -742,17 +742,21 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                     hideNavbarButton={true}
                     onReady={handleReady}
                     onClick={userData.groups?.includes(1) ? handleClick : undefined}
-                    onDblclick={(instance: any) => {
-                      setDialogMarkLink({
-                        ...dialogMarkLink,
-                        open: true,
-                        data: {
-                          ...instance.data,
-                          selectedNode: selectedNode
+                    onDblclick={
+                      userData.groups?.includes(1) ?
+                        (instance: any) => {
+                          setDialogMarkLink({
+                            ...dialogMarkLink,
+                            open: true,
+                            data: {
+                              ...instance.data,
+                              selectedNode: selectedNode
+                            }
+                          })
+                          setPolygonPoints([]) // Limpiar puntos al abrir el diálogo
                         }
-                      })
-                      setPolygonPoints([]) // Limpiar puntos al abrir el diálogo
-                    }}
+                        : undefined
+                    }
                     plugins={plugins}
                     container={"container-360"}
                     src={selectedNode?.panorama}
