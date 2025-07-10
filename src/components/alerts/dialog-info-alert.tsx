@@ -131,22 +131,22 @@ export default function DialogInfoNotify({ open, setOpen, dataSelected }: Dialog
 
   // console.log("dataSelected", dataSelected)
 
-  const submitFData = async () => {
-    setLoading(true)
-    delete data.send_to_extra
-    const newData = { ...data }
-    const temp = {
-      ...newData,
-      message: `${newData.message}\n${session?.user.short_name}: ${solutionMessage}`,
-    }
+  // const submitFData = async () => {
+  //   setLoading(true)
+  //   delete data.send_to_extra
+  //   const newData = { ...data }
+  //   const temp = {
+  //     ...newData,
+  //     message: `${newData.message}\n${session?.user.short_name}: ${solutionMessage}`,
+  //   }
 
-    const resp = await putNotificationById(Number(data.id), temp)
-    if (resp.status === 200) {
-      setLoading(false)
-      setOpen(false)
-      console.log('Notificación actualizada', resp)
-    }
-  }
+  //   const resp = await putNotificationById(Number(data.id), temp)
+  //   if (resp.status === 200) {
+  //     setLoading(false)
+  //     setOpen(false)
+  //     console.log('Notificación actualizada', resp)
+  //   }
+  // }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -279,7 +279,8 @@ export default function DialogInfoNotify({ open, setOpen, dataSelected }: Dialog
         <DialogFooter>
           <Button
             disabled={!editNotify}
-            onClick={() => { submitFData() }}>
+            // onClick={() => { submitFData() }}
+            >
             Guardar
           </Button>
           <Button

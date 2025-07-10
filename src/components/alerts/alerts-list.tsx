@@ -12,10 +12,20 @@ interface AlertsListProps {
 }
 
 const AlertsList = ({ openAlerts, setOpenAlerts }: AlertsListProps) => {
+  type Notify = {
+    id: number
+    priority: number
+    status: number
+    title: string
+    message: string
+    created_at: string
+    send_to_id: number
+    extra_field: string
+  }
+  const [selectedNotif, setSelectedNotif] = React.useState<Notify | null>(null)
   const [filterNotifies, setFilterNotifies] = React.useState('0')
   const [dialogCreateNotif, setDialogCreateNotif] = React.useState(false)
   const [openAllNotifies, setOpenAllNotifies] = React.useState(false)
-  const [selectedNotif, setSelectedNotif] = React.useState(null)
   const [actualNode, setActualNode] = React.useState(null)
   const [dialogOpen, setDialogOpen] = React.useState(false)
   const refSpheere = React.useRef(null)

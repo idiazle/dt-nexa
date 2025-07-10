@@ -136,47 +136,47 @@ export default function DialogCreateNotifyArea({ actualNode, idArea, open, setOp
 
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async () => {
-    setLoading(true)
-    const extraField = {
-      node_id: actualNode
-    }
-    try {
-      const response1 = await postInspection(inspectionData)
+  // const handleSubmit = async () => {
+  //   setLoading(true)
+  //   const extraField = {
+  //     node_id: actualNode
+  //   }
+  //   try {
+  //     const response1 = await postInspection(inspectionData)
 
-      if (response1.status === 201) {
-        const sendNotifcation: any = {
-          ...notificationData,
-          inspection_id: response1.data.data.id,
-          extra_field: JSON.stringify(extraField)
-        }
-        const formDataaa = new FormData()
-        formDataaa.append('title', sendNotifcation.title)
-        formDataaa.append('inspection_id', sendNotifcation.inspection_id)
-        formDataaa.append('status', sendNotifcation.status)
-        formDataaa.append('priority', sendNotifcation.priority)
-        formDataaa.append('message', sendNotifcation.message)
-        formDataaa.append('creator_id', sendNotifcation.creator_id)
-        formDataaa.append('extra_field', sendNotifcation.extra_field)
-        if (userSelected === '0') {
-          formDataaa.append('send_to_id', '')
-        } else {
-          formDataaa.append('send_to_id', userSelected)
-        }
-        Array.from(sendNotifcation.files).forEach((file: any) => {
-          formDataaa.append('files', file)
-        })
-        console.log('FORMDATA', sendNotifcation)
-        const response2 = await postNotification(formDataaa)
-        if (response2.status === 201) {
-          setOpen(false)
-          setLoading(false)
-        }
-      }
-    } catch (error) {
-      console.log('ERROR', error)
-    }
-  }
+  //     if (response1.status === 201) {
+  //       const sendNotifcation: any = {
+  //         ...notificationData,
+  //         inspection_id: response1.data.data.id,
+  //         extra_field: JSON.stringify(extraField)
+  //       }
+  //       const formDataaa = new FormData()
+  //       formDataaa.append('title', sendNotifcation.title)
+  //       formDataaa.append('inspection_id', sendNotifcation.inspection_id)
+  //       formDataaa.append('status', sendNotifcation.status)
+  //       formDataaa.append('priority', sendNotifcation.priority)
+  //       formDataaa.append('message', sendNotifcation.message)
+  //       formDataaa.append('creator_id', sendNotifcation.creator_id)
+  //       formDataaa.append('extra_field', sendNotifcation.extra_field)
+  //       if (userSelected === '0') {
+  //         formDataaa.append('send_to_id', '')
+  //       } else {
+  //         formDataaa.append('send_to_id', userSelected)
+  //       }
+  //       Array.from(sendNotifcation.files).forEach((file: any) => {
+  //         formDataaa.append('files', file)
+  //       })
+  //       console.log('FORMDATA', sendNotifcation)
+  //       const response2 = await postNotification(formDataaa)
+  //       if (response2.status === 201) {
+  //         setOpen(false)
+  //         setLoading(false)
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log('ERROR', error)
+  //   }
+  // }
 
 
   const [typeNotify, setTypeNotify] = useState('1')
@@ -427,7 +427,7 @@ export default function DialogCreateNotifyArea({ actualNode, idArea, open, setOp
               ? <div className='flex items-center gap-2'><Spinner />Cargando...</div>
               : null
           }
-          <Button disabled={loading} type="button" onClick={async () => { await handleSubmit() }}> Guardar </Button>
+          {/* <Button disabled={loading} type="button" onClick={async () => { await handleSubmit() }}> Guardar </Button> */}
         </DialogFooter>
       </DialogContent>
     </Dialog >
