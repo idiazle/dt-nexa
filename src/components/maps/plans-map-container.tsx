@@ -640,8 +640,8 @@ export default function PlansMapContainer(Map: MapProps) {
           <div className='flex flex-col justify-center items-center w-1/3'>
             <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : 'GEMELO DIGITAL DE CONFIABILIDAD'}</h1>
           </div>
-          {/* <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
-            <Button
+          <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
+            {/* <Button
               title='Notificaciones'
               size={'icon'}
               className={`rounded-full bg-white hover:bg-[#7196A9] text-[#002645] hover:text-white ${openListAlerts ? 'bg-[#7196A9] text-white' : ''}`}
@@ -654,7 +654,7 @@ export default function PlansMapContainer(Map: MapProps) {
                     <h1 className='font-bold'>{1}</h1>
                   </>
               }
-            </Button>
+            </Button> */}
             <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
               <SelectTrigger className="w-52 bg-transparent border-white bg-white text-black">
                 <SelectValue placeholder="Seleccionar Planta" />
@@ -664,7 +664,7 @@ export default function PlansMapContainer(Map: MapProps) {
               </SelectContent>
             </Select>
             <UserInfoMenu />
-          </div> */}
+          </div>
         </div>
         <MapContainer
           ref={mapRef}
