@@ -243,26 +243,34 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
 
 
   const obtainInfoEquipment = () => {
-    const tempFinalShapesRender = finalShapesRender?.map((shape, index) => {
-      const temp = JSON.parse(shape.photogrammetry_node.markers)
-      const equipmentId = temp[0]?.equipment_id
-      const matchedEquipment = equipments.find(eq => eq.equipment_id === Number(equipmentId))
+    const updatedShapes = finalShapesRender?.map((shape) => {
+      const shapeWithPhotogrammetry = shape as any // ⚠️ Convertimos temporalmente
+      const markersRaw = shapeWithPhotogrammetry.photogrammetry_node?.markers
+
+      if (!markersRaw) return shape
+
+      const markers = JSON.parse(markersRaw)
+      const equipmentId = markers[0]?.equipment_id
+
+      const matchedEquipment = equipments.find(
+        (eq: any) => eq.equipment_id === Number(equipmentId)
+      )
 
       if (matchedEquipment) {
         return {
           ...shape,
           entity_id: {
-            ...shape.entity_id,
-            name: matchedEquipment.tag + '-' + matchedEquipment.name,
-          }
+            ...(shape.entity_id || {}),
+            name: `${matchedEquipment.tag}-${matchedEquipment.name}`,
+          },
         }
       }
+
       return shape
     })
 
-    setFinalShapesRender(tempFinalShapesRender)
+    setFinalShapesRender(updatedShapes ?? null)
   }
-
   useEffect(() => {
     if (equipments.length > 0) {
       obtainInfoEquipment()
