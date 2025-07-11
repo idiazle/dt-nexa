@@ -16,6 +16,7 @@ import { getNodes360 } from '@/api/admin/nodes360-api'
 import './styles.css'
 import { getReportsCond } from '@/api/admin/reports-api'
 import { report } from 'process'
+import { getEquipments } from '@/api/admin/equipments-api'
 
 interface ViewShapesStructure {
   shapesRender: ShapeStructure[] | null
@@ -89,7 +90,19 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     getShapesAll()
   }, [flagRefresh])
 
-  // console.log("SHAPES RENDERasdasdasd", shapesRender);
+  const [equipments, setEquipments] = useState({} as any)
+
+  const equipmentsInfo = () => {
+    getEquipments().then((response) => {
+      setEquipments(response.data.data)
+    }).catch((error) => {
+      console.error("Error fetching equipments data:", error);
+    })
+  }
+
+  useEffect(() => {
+    equipmentsInfo()
+  }, [])
 
   const getDataInfoShape = async (shapeSelected: ShapeStructure) => {
     try {
@@ -189,6 +202,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
 
   const infoReports = () => {
     getReportsCond().then((response) => {
+      console.log("RESPONSE REPORTS", response.data.data)
       setReportsData(response.data.data)
     }).catch((error) => {
       console.error("Error fetching reports data:", error);
@@ -225,6 +239,35 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
 
     setFinalShapesRender(enrichedShapes);
   }, [reportsData, shapesRender]);
+
+
+
+  const obtainInfoEquipment = () => {
+    const tempFinalShapesRender = finalShapesRender?.map((shape, index) => {
+      const temp = JSON.parse(shape.photogrammetry_node.markers)
+      const equipmentId = temp[0]?.equipment_id
+      const matchedEquipment = equipments.find(eq => eq.equipment_id === Number(equipmentId))
+
+      if (matchedEquipment) {
+        return {
+          ...shape,
+          entity_id: {
+            ...shape.entity_id,
+            name: matchedEquipment.tag + '-' + matchedEquipment.name,
+          }
+        }
+      }
+      return shape
+    })
+
+    setFinalShapesRender(tempFinalShapesRender)
+  }
+
+  useEffect(() => {
+    if (equipments.length > 0) {
+      obtainInfoEquipment()
+    }
+  }, [equipments])
 
 
   const circleRefs = useRef<{ [key: string]: L.Circle | null }>({});
@@ -270,8 +313,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     setSelectedShapeId(id);
   };
 
-  console.log("reportsData", reportsData);
-  // console.log("FINAL SHAPES RENDER", finalShapesRender);
+  console.log("FINAL SHAPES RENDER", finalShapesRender)
 
   return (
     <div>
@@ -353,7 +395,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                           <div className='flex flex-col items-center -mt-11 gap-2'>
                             <div className='bg-gray-300 p-1 rounded-md shadow-md'>
                               {/* <p className='text-xl font-bold'>{obj.photogrammetry_node.links}</p> */}
-                              <p className='text-xl font-bold'>Equipo</p>
+                              <p className='text-xl font-bold'>{obj.entity_id.name}</p>
                             </div>
                             <div className='flex flex-row items-end' >
                               <p className='text-xl font-bold'>E</p>
