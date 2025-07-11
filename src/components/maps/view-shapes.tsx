@@ -403,7 +403,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                           <div className='flex flex-col items-center -mt-11 gap-2'>
                             <div className='bg-gray-300 p-1 rounded-md shadow-md'>
                               {/* <p className='text-xl font-bold'>{obj.photogrammetry_node.links}</p> */}
-                              <p className='text-xl font-bold'>{obj.entity_id.name || "Equipo-" + index}</p>
+                              <p className='text-lg '>{obj.entity_id.name || "Equipo-" + index}</p>
                             </div>
                             <div className='flex flex-row items-end' >
                               <p className='text-xl font-bold'>E</p>

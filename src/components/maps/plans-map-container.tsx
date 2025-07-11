@@ -810,7 +810,7 @@ export default function PlansMapContainer(Map: MapProps) {
                     <h1 className='font-bold bg-slate-200 p-2 rounded-sm'>Leyenda de íconos</h1>
                     <div className='flex flex-row justify-center items-center gap-2'>
                       <Image
-                        src="/img/icons/peq.svg"
+                        src="/img/icons/paux.svg"
                         alt="leyenda planos"
                         width={20}
                         height={20}
@@ -828,7 +828,7 @@ export default function PlansMapContainer(Map: MapProps) {
                     </div>
                     <div className='flex flex-row justify-center items-center gap-2'>
                       <Image
-                        src="/img/icons/paux.svg"
+                        src="/img/icons/peq.svg"
                         alt="leyenda planos"
                         width={20}
                         height={20}
