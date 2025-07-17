@@ -230,15 +230,15 @@ export default function InformationEquipmentComponent({ equipmentIsPressed, refT
               // }))
             }} color={'white'} className="mr-1 hover:cursor-pointer" />
           </div> */}
-          <div className='flex flex-row justify-center items-center gap-1.5'>
+          <div className='flex flex-col justify-center items-center gap-1.5'>
             <Button
               onClick={() => { setReportSelected(true); set360ViewSelected(false) }}
-              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-t border-b border-[#c2c2c2]'>
+              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-sm'>
               Reportes
             </Button>
             <Button
               onClick={() => { setReportSelected(false); set360ViewSelected(true) }}
-              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-b border-b border-[#c2c2c2]'>
+              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-sm'>
               360°
             </Button>
           </div>

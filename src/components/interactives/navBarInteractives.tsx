@@ -2,8 +2,13 @@
 import Image from "next/image"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { UserInfoMenu } from "../auth/user-info-menu"
+import AlertsList from "../alerts/alerts-list"
+import { Button } from "../ui/button"
+import { IoNotifications } from "react-icons/io5"
+import { X } from "lucide-react"
+import { getAllAlerts } from "@/api/admin/alerts-api"
 
 const logos = [
   {
@@ -33,9 +38,28 @@ const NavBarInteractives = () => {
   const searchParams = useSearchParams()
   const mapType = searchParams.get('map-type')
   const [planeSelected, setPlaneSelected] = useState<string>('2')
+  const [openListAlerts, setOpenListsAlerts] = useState<boolean>(false)
+  const [totalAlerts, setTotalAlerts] = useState<number>(0)
+
+  useEffect(() => {
+    getAllAlerts()
+      .then(response => {
+        if (response.status === 200) {
+          // console.log("Alerts fetched successfully:", response.data.data.length);
+          setTotalAlerts(response.data.data.length)
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching alerts:", error);
+      })
+  }, [])
 
   return (
     <div className='absolute z-20 flex flex-row h-[52px] w-full justify-between items-center bg-[#002645] border-b border-gray-300 text-white px-3'>
+      <AlertsList
+        openAlerts={openListAlerts}
+        setOpenAlerts={setOpenListsAlerts}
+      />
       <div
         onClick={() => window.location.href = '/menu'}
         className='flex flex-row gap-3 w-1/3 items-center justify-start cursor-pointer'>
@@ -65,6 +89,20 @@ const NavBarInteractives = () => {
             <SelectItem value="2">Planta Cajamarquilla</SelectItem>
           </SelectContent>
         </Select>
+        <Button
+          title='Alertas'
+          size={'icon'}
+          className={`rounded-full bg-white hover:bg-[#7196A9] text-[#002645] hover:text-white ${openListAlerts ? 'bg-[#7196A9] text-white' : ''}`}
+          onClick={() => { setOpenListsAlerts(!openListAlerts) }}>
+          {
+            openListAlerts ?
+              <X size={20} className='' /> :
+              <>
+                <IoNotifications size={20} className='' />
+                <h1 className='font-bold'>{totalAlerts}</h1>
+              </>
+          }
+        </Button>
         <UserInfoMenu />
       </div>
     </div>

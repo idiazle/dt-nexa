@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
 import { Button } from '../ui/button';
 import { TbTriangleSquareCircleFilled, TbView360Number } from "react-icons/tb";
-import { FaAngleDown, FaAngleLeft, FaAngleRight, FaAnglesLeft, FaAnglesRight, FaAngleUp, FaBars, FaFile, FaLeaf, FaSquarePlus, FaTrash } from "react-icons/fa6";
+import { FaAngleDown, FaAngleLeft, FaAngleRight, FaAnglesLeft, FaAnglesRight, FaAngleUp, FaBars, FaFile, FaLeaf, FaSquarePlus, FaTrash, FaX } from "react-icons/fa6";
 import ShapesPlanDialog from '../admin/plans/shapes-plan-dialog';
 import { EyeClosedIcon } from '@radix-ui/react-icons';
 import { EyeIcon, X } from 'lucide-react';
@@ -42,7 +42,11 @@ import { getNodes360 } from '@/api/admin/nodes360-api';
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 import { IoNotifications } from 'react-icons/io5'
 import AlertsList from '../alerts/alerts-list';
-
+import NavBarInteractives from '../interactives/navBarInteractives';
+import Draggable, { DraggableCore } from 'react-draggable';
+import { Resizable } from 're-resizable'
+import { AiOutlineFullscreen } from 'react-icons/ai';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface MapProps {
   mapSelected: Map2dStructure | null
@@ -613,59 +617,21 @@ export default function PlansMapContainer(Map: MapProps) {
     }
   ]
 
+  const refVentana = useRef<HTMLDivElement>(null)
+
+  const toggleFullScreen = () => {
+    const el = refVentana.current
+    if (el && !document.fullscreenElement) {
+      el.requestFullscreen?.()
+    } else {
+      document.exitFullscreen?.()
+    }
+  }
+
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
-      <AlertsList
-        openAlerts={openListAlerts}
-        setOpenAlerts={setOpenListsAlerts}
-      />
       <div className='relative w-full h-full'>
-        <div className='absolute z-10 flex flex-row h-[52px] w-full justify-between items-center bg-[#002645] border-b border-gray-300 text-white px-3'>
-          <div
-            onClick={() => window.location.href = '/menu'}
-            className='flex flex-row gap-3 w-1/3 items-center justify-start cursor-pointer'>
-            {
-              logos.map((logo, index) => (
-                <Image
-                  key={index}
-                  src={logo.src}
-                  height={logo.height}
-                  width={logo.width}
-                  alt={logo.alt}
-                  className={logo.styles}
-                />
-              ))
-            }
-          </div>
-          <div className='flex flex-col justify-center items-center w-1/3'>
-            <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : 'GEMELO DIGITAL DE CONFIABILIDAD'}</h1>
-          </div>
-          <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
-            {/* <Button
-              title='Notificaciones'
-              size={'icon'}
-              className={`rounded-full bg-white hover:bg-[#7196A9] text-[#002645] hover:text-white ${openListAlerts ? 'bg-[#7196A9] text-white' : ''}`}
-              onClick={() => { setOpenListsAlerts(!openListAlerts) }}>
-              {
-                openListAlerts ?
-                  <X size={20} className='' /> :
-                  <>
-                    <IoNotifications size={20} className='' />
-                    <h1 className='font-bold'>{1}</h1>
-                  </>
-              }
-            </Button> */}
-            <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
-              <SelectTrigger className="w-52 bg-transparent border-white bg-white text-black">
-                <SelectValue placeholder="Seleccionar Planta" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2">Planta Cajamarquilla</SelectItem>
-              </SelectContent>
-            </Select>
-            <UserInfoMenu />
-          </div>
-        </div>
+        <NavBarInteractives />
         <MapContainer
           ref={mapRef}
           crs={L.CRS.Simple}
@@ -776,7 +742,7 @@ export default function PlansMapContainer(Map: MapProps) {
       }
       {
         mapType === '1' ?
-          <div className='absolute top-16 right-3 flex justify-center items-start z-20 bg-opacity-50'>
+          <div className='absolute top-16 right-3 flex justify-center items-start z-10 bg-opacity-50'>
             <div className='flex flex-col justify-center items-center gap-2 p-2 cursor-pointer bg-gray-400 rounded-md' onClick={() => { setActiveLegend(!activeLegend) }} title='Leyenda de Plano'>
               {
                 activeLegend ? <FaAngleRight size={20} className='text-white' /> : <FaAngleLeft size={20} className='text-white' />
@@ -1016,13 +982,13 @@ export default function PlansMapContainer(Map: MapProps) {
             </Button>
           </div>
         } */}
-        <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md'>
+        <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md px-2'>
           <p className='text-white ml-2 text-lg font-bold uppercase'>
             {entityType === 3
               ? `Informacion adicional de equipo ${infoShape?.entity_data.name}`
               : `${'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as EquipmentStructure).tag : ''} - ${infoShape?.entity_data.name}`}
           </p>
-          <FaWindowClose className='cursor-pointer' onClick={() => { setCloseInformation(true), setSelectedShape(null) }} size={35} color='white' />
+          <FaX className='cursor-pointer' onClick={() => { setCloseInformation(true), setSelectedShape(null) }} size={20} color='white' />
         </div>
 
         {/* <div className='flex flex-row items-center justify-between bg-[#e9851e] p-2'>
@@ -1031,197 +997,272 @@ export default function PlansMapContainer(Map: MapProps) {
               <FaCircleXmark className='text-white' size={25} />
             </button>
         </div> */}
-        <div
-          className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-          onClick={() => setIsOpen3(!isOpen3)}
-        >
-          <h1 className='font-bold text-white'>Reportes de Equipo</h1>
-        </div>
-        <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
-          {
-            reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
-              return (
-                <button
-                  key={index}
-                  onClick={() => {
-                    console.log("Click on report", obj);
-                    handleViewDoc(obj)
-                  }}
-                  className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
-                >
-                  <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
-                  <p className=' flex flex-row items-center gap-4 text-lg'>
-                    Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
-                      generalCondition === 1 ? 'Alerta'
-                        : generalCondition === 2 ? 'Precaución'
-                          : generalCondition === 3 ? 'Tolerable'
-                            : generalCondition === 4 ? 'Normal'
-                              : generalCondition === 5 ? 'No monitoreado'
-                                : generalCondition === 6 ? 'No aplica'
-                                  : ''
-                    }
-                  </p>
-                  <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
-                </button>
-              )
-            }) : (
-              <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                <p>No hay reportes disponibles</p>
-              </div>
-            )
-          }
-          {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+
+        <Tabs defaultValue="reports" className=''>
+          <TabsList className='flex flex-row w-full bg-white rounded-md gap-1'>
+            <TabsTrigger value="reports" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Reportes</TabsTrigger>
+            <TabsTrigger value="information" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Información</TabsTrigger>
+            <TabsTrigger value="options" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Opciones</TabsTrigger>
+          </TabsList>
+          <TabsContent value="reports" className=''>
+            <div
+              className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+              onClick={() => setIsOpen3(!isOpen3)}
+            >
+              <h1 className='font-bold text-white'>Reportes de Equipo</h1>
+            </div>
+            <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
+              {
+                reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        console.log("Click on report", obj);
+                        handleViewDoc(obj)
+                      }}
+                      className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
+                    >
+                      <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
+                      <p className=' flex flex-row items-center gap-4 text-lg'>
+                        Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
+                          generalCondition === 1 ? 'Alerta'
+                            : generalCondition === 2 ? 'Precaución'
+                              : generalCondition === 3 ? 'Tolerable'
+                                : generalCondition === 4 ? 'Normal'
+                                  : generalCondition === 5 ? 'No monitoreado'
+                                    : generalCondition === 6 ? 'No aplica'
+                                      : ''
+                        }
+                      </p>
+                      <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
+                    </button>
+                  )
+                }) : (
+                  <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                    <p>No hay reportes disponibles</p>
+                  </div>
+                )
+              }
+              {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
             <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
             <p className='text-sm'>Fecha: 20/03/2025</p>
             <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
           </div> */}
-
-
-        </div>
-        <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
-          {/* Header */}
-          <div
-            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <h1 className='font-bold text-white'>Información de Equipo</h1>
-            {isOpen ? (
-              <FaAngleUp className='text-white' size={20} />
-            ) : (
-              <FaAngleDown className='text-white' size={20} />
-            )}
-          </div>
-
-          {/* Contenido colapsable */}
-          <div className={`transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
-            <div className='flex flex-col gap-3 px-7 py-2'>
-              <div className='flex flex-col gap-1 text-black'>
-                <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
-                <p className='ml-4'>{'parent_data' in (infoShape?.entity_data ?? {}) && (infoShape?.entity_data as any)?.parent_data?.name ? (infoShape?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+            </div>
+          </TabsContent>
+          <TabsContent value="information" className=''>
+            <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
+              {/* Header */}
+              <div
+                className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                <h1 className='font-bold text-white'>Información de Equipo</h1>
+                {isOpen ? (
+                  <FaAngleUp className='text-white' size={20} />
+                ) : (
+                  <FaAngleDown className='text-white' size={20} />
+                )}
               </div>
-              <div className='flex flex-col gap-1 text-black'>
-                <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
-                <p className='ml-4'>{'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as any).tag : ''}</p>
-              </div>
-              <div className='flex flex-col gap-1 text-black'>
-                <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
-                <p className='ml-4'>{infoShape?.entity_data.name}</p>
-              </div>
-              <div className='flex flex-col gap-1 text-black'>
-                <h1 className='font-bold border-b-2 border-black'>Características:</h1>
-                <div className='flex flex-col gap-1 ml-4'>
-                  {
-                    (selectedShape !== null && infoShape !== null && 'properties' in infoShape.entity_data && infoShape.entity_data.properties) ?
-                      JSON.parse((infoShape.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
-                        return (
-                          <div className='flex flex-row justify-between items-center gap-2' key={index}>
-                            <FaCircle size={6} />
-                            <p className='w-1/3'>{obj.label}</p>
-                            <p className='w-2/3'>{obj.value}</p>
+
+              {/* Contenido colapsable */}
+              <div className={`transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
+                <div className='flex flex-col gap-3 px-7 py-2'>
+                  <div className='flex flex-col gap-1 text-black'>
+                    <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
+                    <p className='ml-4'>{'parent_data' in (infoShape?.entity_data ?? {}) && (infoShape?.entity_data as any)?.parent_data?.name ? (infoShape?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+                  </div>
+                  <div className='flex flex-col gap-1 text-black'>
+                    <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
+                    <p className='ml-4'>{'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as any).tag : ''}</p>
+                  </div>
+                  <div className='flex flex-col gap-1 text-black'>
+                    <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
+                    <p className='ml-4'>{infoShape?.entity_data.name}</p>
+                  </div>
+                  <div className='flex flex-col gap-1 text-black'>
+                    <h1 className='font-bold border-b-2 border-black'>Características:</h1>
+                    <div className='flex flex-col gap-1 ml-4'>
+                      {
+                        (selectedShape !== null && infoShape !== null && 'properties' in infoShape.entity_data && infoShape.entity_data.properties) ?
+                          JSON.parse((infoShape.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
+                            return (
+                              <div className='flex flex-row justify-between items-center gap-2' key={index}>
+                                <FaCircle size={6} />
+                                <p className='w-1/3'>{obj.label}</p>
+                                <p className='w-2/3'>{obj.value}</p>
+                              </div>
+                            )
+                          }) : <div>
+                            <p className='text-gray-500'>No hay características disponibles</p>
                           </div>
-                        )
-                      }) : <div>
-                        <p className='text-gray-500'>No hay características disponibles</p>
-                      </div>
-                  }
-                </div>
-              </div>
-              <div className='flex flex-col gap-1 text-black'>
-                <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                <div className='gap-1 flex flex-col overflow-auto h-44 ml-4'>
-                  {
-                    infoShape?.documents && infoShape.documents.length > 0 ? infoShape.documents.map((obj: any, index: number) => {
-                      const document = obj.document_id as DocumentStructure
-                      return (
-                        <button key={index} className=' text-black flex flex-row items-center text-start gap-2 p-1 hover:bg-gray-300 rounded-sm bg-gray-200' onClick={() => onSetViewDoc(document)}>
-                          <FaFile size={15} />
-                          <p className='text-sm'>{document.title}</p>
-                        </button>
-                      )
-                    }) : <p className='text-black'>No hay documentos disponibles</p>
-                  }
+                      }
+                    </div>
+                  </div>
+                  <div className='flex flex-col gap-1 text-black'>
+                    <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
+                    <div className='gap-1 flex flex-col overflow-auto h-[80%] ml-4'>
+                      {
+                        infoShape?.documents && infoShape.documents.length > 0 ? infoShape.documents.map((obj: any, index: number) => {
+                          const document = obj.document_id as DocumentStructure
+                          return (
+                            <button key={index} className=' text-black flex flex-row items-center text-start gap-2 p-1 hover:bg-gray-300 rounded-sm bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                              <FaFile size={15} />
+                              <p className='text-sm'>{document.title}</p>
+                            </button>
+                          )
+                        }) : <p className='text-black'>No hay documentos disponibles</p>
+                      }
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div className='flex flex-col text-sm bg-white h-auto gap-2'>
-          <div
-            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
-            onClick={() => setIsOpen2(!isOpen2)}
-          >
-            <h1 className='font-bold text-white'>Opciones de Equipo</h1>
-            {isOpen2 ? (
-              <FaAngleUp className='text-white' size={20} />
-            ) : (
-              <FaAngleDown className='text-white' size={20} />
-            )}
-          </div>
-          {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
-          <div className={`grid grid-cols-4 gap-1 px-2 text-white items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
-            {
-              selectedShape && selectedShape.id === 62 ?
-                <button
-                  onClick={() => {
-                    setOpenDespiece(true)
-                  }}
-                  className='flex flex-col  bg-[#002645] rounded-md items-center justify-start p-2 h-full gap-1 cursor-pointer hover:opacity-70'>
-                  <Image
-                    src={'/img/icons/ico-28.svg'}
-                    alt={'Despiece'}
-                    width={80}
-                    height={60}
-                  />
-                  <span className='font-bold'>Despiece</span>
-                </button>
-                :
-                <button
-                  disabled
-                  // href='https://nexa-b2025.dportal.app'
-                  className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
-                  <Image
-                    src={'/img/icons/ico-28.svg'}
-                    alt={'Despiece'}
-                    width={80}
-                    height={60}
-                  />
-                  <span className='font-bold'>Despiece</span>
-                </button>
-            }
-            {
-              options.map((option, index) => {
-                return (
-                  <>
-                    <button disabled className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+          </TabsContent>
+          <TabsContent value="options" className=''>
+            <div className='flex flex-col text-sm bg-white h-auto gap-2'>
+              <div
+                className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
+                onClick={() => setIsOpen2(!isOpen2)}
+              >
+                <h1 className='font-bold text-white'>Opciones de Equipo</h1>
+                {isOpen2 ? (
+                  <FaAngleUp className='text-white' size={20} />
+                ) : (
+                  <FaAngleDown className='text-white' size={20} />
+                )}
+              </div>
+              {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
+              <div className={`grid grid-cols-4 gap-1 px-2 text-white items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+                {
+                  selectedShape && selectedShape.id === 62 ?
+                    <button
+                      onClick={() => {
+                        setOpenDespiece(true)
+                      }}
+                      className='flex flex-col  bg-[#002645] rounded-md items-center justify-start p-2 h-full gap-1 cursor-pointer hover:opacity-70'>
                       <Image
-                        src={option.url}
-                        alt={option.label}
+                        src={'/img/icons/ico-28.svg'}
+                        alt={'Despiece'}
                         width={80}
                         height={60}
                       />
-                      <span className='font-bold'>{option.label}</span>
+                      <span className='font-bold'>Despiece</span>
                     </button>
-                  </>
-                )
-              }
-              )
-            }
-          </div>
-          <Dialog open={openDespiece} onOpenChange={setOpenDespiece}>
-            <DialogContent className='max-w-[75%] h-[75%] bg-gray-200'>
-              {/* <DialogHeader className='bg-blue-300'>
-                <DialogTitle className=''>B025 -  MOLINO DE BOLAS</DialogTitle>
-              </DialogHeader> */}
-              <div>
-                <h1 className='font-bold text-lg pb-3'>
-                  B025 -  MOLINO DE BOLAS
-                </h1>
-                <iframe className='w-full h-[95%]' src="https://nexa-b2025.dportal.app"></iframe>
+                    :
+                    <button
+                      disabled
+                      // href='https://nexa-b2025.dportal.app'
+                      className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                      <Image
+                        src={'/img/icons/ico-28.svg'}
+                        alt={'Despiece'}
+                        width={80}
+                        height={60}
+                      />
+                      <span className='font-bold'>Despiece</span>
+                    </button>
+                }
+                {
+                  options.map((option, index) => {
+                    return (
+                      <>
+                        <button disabled className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                          <Image
+                            src={option.url}
+                            alt={option.label}
+                            width={80}
+                            height={60}
+                          />
+                          <span className='font-bold'>{option.label}</span>
+                        </button>
+                      </>
+                    )
+                  }
+                  )
+                }
               </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+
+              {/* <Draggable> */}
+
+              {/* <Dialog open={openDespiece} onOpenChange={setOpenDespiece}>
+              <DialogContent className='max-w-[75%] h-[75%] bg-gray-200'>
+                <DialogHeader className='bg-blue-300'>
+                <DialogTitle className=''>B025 -  MOLINO DE BOLAS</DialogTitle>
+              </DialogHeader>
+                <div>
+                  <h1 className='font-bold text-lg pb-3'>
+                    B025 -  MOLINO DE BOLAS
+                  </h1>
+                  <iframe className='w-full h-[95%]' src="https://nexa-b2025.dportal.app"></iframe>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </Draggable> */}
+            </div>
+          </TabsContent>
+        </Tabs>
+
+
+
       </div>
+      {
+        openDespiece ?
+          <div className="fixed top-16 left-3 w-full h-full z-10">
+            <Draggable handle=".handle">
+              <Resizable
+                defaultSize={{ width: 720, height: 420 }}
+                minWidth={400}
+                minHeight={300}
+                maxWidth="100vw"
+                maxHeight="100vh"
+                className='absolute p-2 rounded-md border-2 border-gray-700 bg-gray-300'
+                style={{
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                }}
+              >
+                <div className="flex flex-col h-full" ref={refVentana}>
+                  <div className="handle flex justify-between items-center w-full mb-2 cursor-move">
+                    <div className='p-2 flex flex-row bg-[#002645] rounded-md justify-between items-center w-full'>
+                      {/* <h1 className='text-white font-bold'>Historial de alertas</h1> */}
+                      <h1 className="font-bold text-white ">B025 - MOLINO DE BOLAS</h1>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={toggleFullScreen}
+                          className="text-[#002645] bg-white p-1 text-md rounded shadow"
+                          title='Pantalla completa'
+                        >
+                          <AiOutlineFullscreen
+                            className="cursor-pointer"
+                            size={20} />
+                        </button>
+                        <button
+                          title='Cerrar ventana'
+                          className="text-white bg-red-500 p-1 text-md rounded shadow"
+                          onClick={() => setOpenDespiece(false)}
+                        >
+                          <FaX
+                            className=" cursor-pointer"
+                            size={20}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <iframe
+                    className="flex-1 w-full"
+                    src="https://nexa-b2025.dportal.app"
+                    title="Despiece"
+                    style={{ border: 'none' }}
+                  />
+                </div>
+              </Resizable>
+            </Draggable>
+          </div>
+          : null
+      }
 
       {
         controlMinimized ? <FaSquarePlus onClick={() => { setControlMinimized(false) }} className='absolute top-0 right-0' size={30} color='black' /> : null

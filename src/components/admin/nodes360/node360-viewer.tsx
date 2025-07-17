@@ -19,7 +19,7 @@ import "@photo-sphere-viewer/virtual-tour-plugin/index.css";
 import "@photo-sphere-viewer/gallery-plugin/index.css";
 import { PhotogrametryStructure } from '@/lib/utils';
 import MarkersLinksDialog from './markers-links-dialog';
-import { FaAngleDown, FaAngleUp, FaCircle, FaCircleXmark, FaFile } from 'react-icons/fa6';
+import { FaAngleDown, FaAnglesLeft, FaAngleUp, FaCircle, FaCircleXmark, FaFile, FaX } from 'react-icons/fa6';
 import { FanIcon } from 'lucide-react';
 import Image from 'next/image';
 import { getEntityInfo } from '@/api/admin/entities-api';
@@ -661,115 +661,120 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
 
           :
           selectedNode !== undefined ?
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogContent
+            <div
+              className={dialogOpen === true ? 'w-full h-full absolute top-12 left-0 bg-red-300 z-10' : 'hidden'}
+            >
+              <button className='flex flex-row gap-2 items-center absolute top-4 left-3 bg-gray-200 p-2 rounded-md z-20 hover:bg-gray-500 hover:text-white' onClick={() => { setDialogOpen(false) }}>
+                <FaAnglesLeft size={20} />
+                Regresar
+              </button>
+
+              {/* <div
                 // onEscapeKeyDown={(e) => e.preventDefault()}
-                onInteractOutside={(e) => e.preventDefault()}
-                className='h-full max-w-full pointer-events-auto'>
-                <DialogHeader>
+                // onInteractOutside={(e) => e.preventDefault()}
+                className='h-full w-80 pointer-events-auto'> */}
+
+              {/* <DialogHeader>
                   <DialogTitle>{selectedNode?.name}</DialogTitle>
                   <DialogDescription />
-                </DialogHeader>
-                <>
-                  <div className='relative w-full h-full flex flex-col items-center justify-center'>
-                    {
-                      polygonPoints.length >= 1 && userData?.groups?.includes(1)
-                        ? <div className="absolute top-0 right-0 z-50 bg-gray-200 p-3 rounded-md min-w-[300px]">
-                          <div className='flex flex-col gap-2'>
-                            <h1 className="text-lg font-bold">EQUIPO DELIMITADO</h1>
-                            <div className="flex flex-col gap-2">
-                              <Label>Seleccione equipo:</Label>
-                              <Select
-                                value={equipmentSelected || '0'}
-                                onValueChange={(value) => {
-                                  setEquipmentSelected(value)
-                                }
-                                }
-                                name="name"
-                                className="w-full"
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Selecciona un nombre" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {
-                                    equipments.map((equipment, index) => (
-                                      <SelectItem key={index} value={equipment.equipment_id.toString()}>
-                                        {equipment.tag}-{equipment.name}
-                                      </SelectItem>
-                                    ))
-                                  }
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <h1 className="text-base font-bold">Coordenadas:</h1>
-                            <div className="flex flex-col gap-2 overflow-auto max-h-[200px]">
+                </DialogHeader> */}
+              <div className='absolute w-full h-full flex flex-col items-center justify-center'>
+                {
+                  polygonPoints.length >= 1 && userData?.groups?.includes(1)
+                    ? <div className="absolute top-0 right-0 z-50 bg-gray-200 p-3 rounded-md min-w-[300px]">
+                      <div className='flex flex-col gap-2'>
+                        <h1 className="text-lg font-bold">EQUIPO DELIMITADO</h1>
+                        <div className="flex flex-col gap-2">
+                          <Label>Seleccione equipo:</Label>
+                          <Select
+                            value={equipmentSelected || '0'}
+                            onValueChange={(value) => {
+                              setEquipmentSelected(value)
+                            }
+                            }
+                            name="name"
+                            className="w-full"
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Selecciona un nombre" />
+                            </SelectTrigger>
+                            <SelectContent>
                               {
-                                polygonPoints.map((point, index) => (
-                                  <div key={index} className="flex flex-row items-center gap-2">
-                                    <div className='flex flex-row items-center'>
-                                      <FaCircle className="text-[#687C94]" />
-                                      <span className="text-sm font-semibold">P{index + 1}:</span>
-                                    </div>
-                                    <span className="text-sm">{`[${point[0].toFixed(2)}, ${point[1].toFixed(2)}]`}</span>
-                                  </div>
+                                equipments.map((equipment, index) => (
+                                  <SelectItem key={index} value={equipment.equipment_id.toString()}>
+                                    {equipment.tag}-{equipment.name}
+                                  </SelectItem>
                                 ))
                               }
-                            </div>
-                            <div className='flex flex-row gap-2 w-full'>
-                              {/* <Button className='w-1/2' onClick={() => { handleSubmitArea() }}>Guardar</Button> */}
-                              {/* <Button className='w-1/2' onClick={() => { setPolygonPoints([]) }}>Cancelar</Button> */}
-                            </div>
-                          </div>
-                          <div className='flex flex-row gap-2 w-full mt-2'>
-                            <Button className='w-full' onClick={() => { handleSubmitArea() }}>Guardar</Button>
-                            <Button className='w-full bg-red-500 hover:bg-red-400' onClick={() => { setPolygonPoints([]) }}>Cancelar</Button>
-                          </div>
+                            </SelectContent>
+                          </Select>
                         </div>
-                        : null
-                    }
+                        <h1 className="text-base font-bold">Coordenadas:</h1>
+                        <div className="flex flex-col gap-2 overflow-auto max-h-[200px]">
+                          {
+                            polygonPoints.map((point, index) => (
+                              <div key={index} className="flex flex-row items-center gap-2">
+                                <div className='flex flex-row items-center'>
+                                  <FaCircle className="text-[#687C94]" />
+                                  <span className="text-sm font-semibold">P{index + 1}:</span>
+                                </div>
+                                <span className="text-sm">{`[${point[0].toFixed(2)}, ${point[1].toFixed(2)}]`}</span>
+                              </div>
+                            ))
+                          }
+                        </div>
+                        <div className='flex flex-row gap-2 w-full'>
+                        </div>
+                      </div>
+                      <div className='flex flex-row gap-2 w-full mt-2'>
+                        <Button className='w-full' onClick={() => { handleSubmitArea() }}>Guardar</Button>
+                        <Button className='w-full bg-red-500 hover:bg-red-400' onClick={() => { setPolygonPoints([]) }}>Cancelar</Button>
+                      </div>
+                    </div>
+                    : null
+                }
 
-                  </div>
-                  <ReactPhotoSphereViewer
-                    ref={pSRef}
-                    // loadingImg={baseUrl + "loader.gif"}
-                    touchmoveTwoFingers={true}
-                    mousewheelCtrlKey={true}
-                    // navbar={["zoom", "move", "gallery", "download", "description", "caption", "fullscreen"]}
-                    navbar={false}
-                    height={"93vh"}
-                    width={"100%"}
-                    hideNavbarButton={true}
-                    onReady={handleReady}
-                    onClick={userData.groups?.includes(1) ? handleClick : undefined}
-                    onDblclick={
-                      userData.groups?.includes(1) ?
-                        (instance: any) => {
-                          setDialogMarkLink({
-                            ...dialogMarkLink,
-                            open: true,
-                            data: {
-                              ...instance.data,
-                              selectedNode: selectedNode
-                            }
-                          })
-                          setPolygonPoints([]) // Limpiar puntos al abrir el diálogo
+              </div>
+              <ReactPhotoSphereViewer
+                ref={pSRef}
+                // loadingImg={baseUrl + "loader.gif"}
+                touchmoveTwoFingers={true}
+                mousewheelCtrlKey={true}
+                // navbar={["zoom", "move", "gallery", "download", "description", "caption", "fullscreen"]}
+                navbar={false}
+                height={"100%"}
+                width={"100%"}
+                hideNavbarButton={true}
+                onReady={handleReady}
+                onClick={userData.groups?.includes(1) ? handleClick : undefined}
+                onDblclick={
+                  userData.groups?.includes(1) ?
+                    (instance: any) => {
+                      setDialogMarkLink({
+                        ...dialogMarkLink,
+                        open: true,
+                        data: {
+                          ...instance.data,
+                          selectedNode: selectedNode
                         }
-                        : undefined
+                      })
+                      setPolygonPoints([]) // Limpiar puntos al abrir el diálogo
                     }
-                    plugins={plugins}
-                    container={"container-360"}
-                    src={selectedNode?.panorama}
-                  />
+                    : undefined
+                }
+                plugins={plugins}
+                container={"container-360"}
+                src={selectedNode?.panorama}
+              />
 
-                  {
-                    dialogMarkLink.open ? <MarkersLinksDialog setDialogFather={setDialogOpen} allNodes={allNodes} dialogData={dialogMarkLink} setDialogData={setDialogMarkLink} /> : null
-                  }
-                  {
-                    showPanel ?
-                      <div className={`absolute max-w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
+              {
+                dialogMarkLink.open ? <MarkersLinksDialog setDialogFather={setDialogOpen} allNodes={allNodes} dialogData={dialogMarkLink} setDialogData={setDialogMarkLink} /> : null
+              }
+              {
+                showPanel ?
+                  <div className={`absolute max-w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
 
-                        {/* {
+                    {/* {
                         renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
                           <Spinner />
                         </div> : <div className='h-full w-full overflow-hidden flex flex-col'>
@@ -782,194 +787,192 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                           </Button>
                         </div>
                       } */}
-                        <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md'>
-                          <p className='text-white ml-2 font-bold'>{'REPORTES DE CONDICIÓN DE EQUIPOS'}</p>
-                          <FaWindowClose className='cursor-pointer' onClick={() => { setShowPanel(false) }} size={35} color='white' />
-                        </div>
+                    <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md'>
+                      <p className='text-white ml-2 font-bold'>{'REPORTES DE CONDICIÓN DE EQUIPOS'}</p>
+                      <FaWindowClose className='cursor-pointer' onClick={() => { setShowPanel(false) }} size={35} color='white' />
+                    </div>
 
-                        {/* <div className='flex flex-row items-center justify-between bg-[#e9851e] p-2'>
+                    {/* <div className='flex flex-row items-center justify-between bg-[#e9851e] p-2'>
                         <h1 className='font-bold text-white'>Reporte de Condición</h1>
                         <button onClick={() => { console.log("Cerrar reporte"), setShowPanel(false) }} >
                             <FaCircleXmark className='text-white' size={25} />
                           </button>
                       </div> */}
-                        <div
-                          className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-                          onClick={() => setIsOpen3(!isOpen3)}
-                        >
-                          <h1 className='font-bold text-white'>Reportes de Equipo</h1>
-                        </div>
-                        <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
-                          {
-                            reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
-                              return (
-                                <button
-                                  key={index}
-                                  onClick={() => {
-                                    console.log("Click on report", obj);
-                                    handleViewDoc(obj)
-                                  }}
-                                  className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
-                                >
-                                  <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
-                                  <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
-                                  <p className='text-sm flex flex-row items-center gap-4'>
-                                    Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
-                                      generalCondition === 1 ? 'Alerta'
-                                        : generalCondition === 2 ? 'Precaución'
-                                          : generalCondition === 3 ? 'Tolerable'
-                                            : generalCondition === 4 ? 'Normal'
-                                              : generalCondition === 5 ? 'No monitoreado'
-                                                : generalCondition === 6 ? 'No aplica'
-                                                  : ''
-                                    }
-                                  </p>
-                                </button>
-                              )
-                            }) : (
-                              <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                                <p>No hay reportes disponibles</p>
-                              </div>
-                            )
-                          }
-                          {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                    <div
+                      className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                      onClick={() => setIsOpen3(!isOpen3)}
+                    >
+                      <h1 className='font-bold text-white'>Reportes de Equipo</h1>
+                    </div>
+                    <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
+                      {
+                        reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
+                          return (
+                            <button
+                              key={index}
+                              onClick={() => {
+                                console.log("Click on report", obj);
+                                handleViewDoc(obj)
+                              }}
+                              className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
+                            >
+                              <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
+                              <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
+                              <p className='text-sm flex flex-row items-center gap-4'>
+                                Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
+                                  generalCondition === 1 ? 'Alerta'
+                                    : generalCondition === 2 ? 'Precaución'
+                                      : generalCondition === 3 ? 'Tolerable'
+                                        : generalCondition === 4 ? 'Normal'
+                                          : generalCondition === 5 ? 'No monitoreado'
+                                            : generalCondition === 6 ? 'No aplica'
+                                              : ''
+                                }
+                              </p>
+                            </button>
+                          )
+                        }) : (
+                          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                            <p>No hay reportes disponibles</p>
+                          </div>
+                        )
+                      }
+                      {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
                           <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
                           <p className='text-sm'>Fecha: 20/03/2025</p>
                           <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
                         </div> */}
 
 
-                        </div>
-                        <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
-                          {/* Header */}
-                          <div
-                            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-                            onClick={() => setIsOpen(!isOpen)}
-                          >
-                            <h1 className='font-bold text-white'>Información de Equipo</h1>
-                            {isOpen ? (
-                              <FaAngleUp className='text-white' size={20} />
-                            ) : (
-                              <FaAngleDown className='text-white' size={20} />
-                            )}
-                          </div>
+                    </div>
+                    <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
+                      {/* Header */}
+                      <div
+                        className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                        onClick={() => setIsOpen(!isOpen)}
+                      >
+                        <h1 className='font-bold text-white'>Información de Equipo</h1>
+                        {isOpen ? (
+                          <FaAngleUp className='text-white' size={20} />
+                        ) : (
+                          <FaAngleDown className='text-white' size={20} />
+                        )}
+                      </div>
 
-                          {/* Contenido colapsable */}
-                          <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
-                            <div className='flex flex-col gap-3 px-7 py-2'>
-                              <div className='flex flex-col gap-1 text-black'>
-                                <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
-                                <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
-                              </div>
-                              <div className='flex flex-col gap-1 text-black'>
-                                <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
-                                <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
-                              </div>
-                              <div className='flex flex-col gap-1 text-black'>
-                                <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
-                                <p>{infoEquipment?.entity_data.name}</p>
-                              </div>
-                              <div className='flex flex-col gap-1 text-black'>
-                                <h1 className='font-bold border-b-2 border-black'>Características:</h1>
-                                <div>
-                                  {
-                                    (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
-                                      JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
-                                        return (
-                                          <div className='flex flex-row justify-between items-center' key={index}>
-                                            <p className='w-1/3'>{obj.label}</p>
-                                            <p className='w-2/3'>{obj.value}</p>
-                                          </div>
-                                        )
-                                      }) : <div>
-                                        <p className='text-gray-500'>No hay características disponibles</p>
+                      {/* Contenido colapsable */}
+                      <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
+                        <div className='flex flex-col gap-3 px-7 py-2'>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
+                            <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+                          </div>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
+                            <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
+                          </div>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
+                            <p>{infoEquipment?.entity_data.name}</p>
+                          </div>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black'>Características:</h1>
+                            <div>
+                              {
+                                (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
+                                  JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
+                                    return (
+                                      <div className='flex flex-row justify-between items-center' key={index}>
+                                        <p className='w-1/3'>{obj.label}</p>
+                                        <p className='w-2/3'>{obj.value}</p>
                                       </div>
-                                  }
-                                </div>
-                              </div>
-                              <div className='flex flex-col gap-1 text-black'>
-                                <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                                <div className='gap-1 flex flex-col overflow-auto h-44 ml-4'>
-                                  {
-                                    infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
-                                      const document = obj.document_id as DocumentStructure
-                                      return (
-                                        <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
-                                          <FaFile size={25} />
-                                          <p className='text-sm'>{document.title}</p>
-                                        </button>
-                                      )
-                                    }) : <p className='text-black'>No hay documentos disponibles</p>
-                                  }
-                                </div>
-                              </div>
+                                    )
+                                  }) : <div>
+                                    <p className='text-gray-500'>No hay características disponibles</p>
+                                  </div>
+                              }
+                            </div>
+                          </div>
+                          <div className='flex flex-col gap-1 text-black'>
+                            <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
+                            <div className='gap-1 flex flex-col overflow-auto h-44 ml-4'>
+                              {
+                                infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
+                                  const document = obj.document_id as DocumentStructure
+                                  return (
+                                    <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                                      <FaFile size={25} />
+                                      <p className='text-sm'>{document.title}</p>
+                                    </button>
+                                  )
+                                }) : <p className='text-black'>No hay documentos disponibles</p>
+                              }
                             </div>
                           </div>
                         </div>
-                        <div className='flex flex-col text-sm bg-white h-auto gap-2'>
-                          <div
-                            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
-                            onClick={() => setIsOpen2(!isOpen2)}
-                          >
-                            <h1 className='font-bold text-white'>Opciones de Equipo</h1>
-                            {isOpen2 ? (
-                              <FaAngleUp className='text-white' size={20} />
-                            ) : (
-                              <FaAngleDown className='text-white' size={20} />
-                            )}
-                          </div>
-                          {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
-                          <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
-                            {
-                              options.map((option, index) => {
-                                return (
-                                  <>
-                                    <button key={index} disabled className='flex flex-col bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
-                                      <Image
-                                        src={option.url}
-                                        alt={option.label}
-                                        width={50}
-                                        height={50}
-                                      />
-                                      <span className='font-bold text-white'>{option.label}</span>
-                                    </button>
-                                  </>
-                                )
-                              })
-                            }
-                          </div>
-                        </div>
                       </div>
-                      : null
-                  }
-                  <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
-                    <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
-                      <TooltipProvider delayDuration={300} >
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              onClick={() => {
-                                console.log("Click on button ON");
-                                // if (!markersTourPlugin) return;
-                                // if (markersVisible) {
-                                //   markersTourPlugin.hideMarker("polyline");
-                                // } else {
-                                //   markersTourPlugin.showMarker("polyline");
-                                // }
-                                // setMarkersVisible(!markersVisible);
-                              }}
-                              className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
-                              <h1 className='font-bold'>{'ON'}</h1>
-                              <FaCircle size={25} color='green' />
-                            </button>
-                          </TooltipTrigger>
-                        </Tooltip>
-                      </TooltipProvider>
+                    </div>
+                    <div className='flex flex-col text-sm bg-white h-auto gap-2'>
+                      <div
+                        className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
+                        onClick={() => setIsOpen2(!isOpen2)}
+                      >
+                        <h1 className='font-bold text-white'>Opciones de Equipo</h1>
+                        {isOpen2 ? (
+                          <FaAngleUp className='text-white' size={20} />
+                        ) : (
+                          <FaAngleDown className='text-white' size={20} />
+                        )}
+                      </div>
+                      {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
+                      <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+                        {
+                          options.map((option, index) => {
+                            return (
+                              <>
+                                <button key={index} disabled className='flex flex-col bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                                  <Image
+                                    src={option.url}
+                                    alt={option.label}
+                                    width={50}
+                                    height={50}
+                                  />
+                                  <span className='font-bold text-white'>{option.label}</span>
+                                </button>
+                              </>
+                            )
+                          })
+                        }
+                      </div>
                     </div>
                   </div>
-
-                </>
-              </DialogContent>
+                  : null
+              }
+              <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
+                <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
+                  <TooltipProvider delayDuration={300} >
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => {
+                            console.log("Click on button ON");
+                            // if (!markersTourPlugin) return;
+                            // if (markersVisible) {
+                            //   markersTourPlugin.hideMarker("polyline");
+                            // } else {
+                            //   markersTourPlugin.showMarker("polyline");
+                            // }
+                            // setMarkersVisible(!markersVisible);
+                          }}
+                          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
+                          <h1 className='font-bold'>{'ON'}</h1>
+                          <FaCircle size={25} color='green' />
+                        </button>
+                      </TooltipTrigger>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                {/* </div> */}
+              </div>
               {
                 openDialogDoc
                   ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
@@ -978,7 +981,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
               {
                 openViewMedia ? <ModalViewMedia open={openViewMedia} setOpen={setOpenViewMedia} information={openMediaInfo} type={openMediaInfo.type} /> : null
               }
-            </Dialog >
+            </div >
             :
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogContent>

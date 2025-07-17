@@ -33,7 +33,7 @@ const OptionsNav = () => {
   return (
     <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md gap-1'>
       {/* PFD */}
-      <div className='flex flex-col items-center w-32 gap-2 mb-5 relative'>
+      <div className='flex flex-col items-center w-32 gap-2 relative'>
         {showPFDMenu && (
           <div
             className='absolute flex flex-col items-center w-40 bottom-28 mb-16 bg-white rounded-sm z-10'
@@ -86,7 +86,7 @@ const OptionsNav = () => {
       </div>
 
       {/* RBD */}
-      <div className='flex flex-col items-center w-32 gap-2 mb-5 relative'>
+      <div className='flex flex-col items-center w-32 gap-2 relative'>
         {showRBDMenu && (
           <div
             className='absolute flex flex-col items-center w-40 bottom-28 mb-16 bg-white rounded-sm z-10'
