@@ -125,6 +125,14 @@ export default function AdminAside() {
       enable: true,
       group: 'twin'
     },
+    {
+      id: 15,
+      icon_path: '/img/aside-icons/icon_icon.png',
+      icon_tooltip: 'Gestión de Imágenes',
+      route: '/admin/imagenes',
+      enable: true,
+      group: 'twin'
+    },
   ]
 
   return (

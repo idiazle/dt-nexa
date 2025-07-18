@@ -19,7 +19,7 @@ import { EyeClosedIcon } from '@radix-ui/react-icons';
 import { EyeIcon, X } from 'lucide-react';
 import ViewShapes from './view-shapes';
 import Spinner from '../ui/spinner';
-import { FaCircle, FaWindowClose } from "react-icons/fa";
+import { FaAngleDoubleRight, FaCircle, FaWindowClose } from "react-icons/fa";
 import ModalViewMedia from '../viewers/modal-viewer';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { deleteShapeById, putShapeById } from '@/api/shapes-api'
@@ -47,6 +47,8 @@ import Draggable, { DraggableCore } from 'react-draggable';
 import { Resizable } from 're-resizable'
 import { AiOutlineFullscreen } from 'react-icons/ai';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
+import { getImagenesByEquipment } from '@/api/admin/imagenes-api';
+import { Label } from '../ui/label';
 
 interface MapProps {
   mapSelected: Map2dStructure | null
@@ -627,6 +629,22 @@ export default function PlansMapContainer(Map: MapProps) {
       document.exitFullscreen?.()
     }
   }
+  const [openGallery, setOpenGallery] = useState<boolean>(false)
+  const [imagesByEquipment, setImagesByEquipment] = useState(null)
+  const [imageSelected, setImageSelected] = useState<any>(null)
+
+  useEffect(() => {
+    if (openGallery && equipmentSelected) {
+      // Fetch images for the selected equipment 
+      getImagenesByEquipment(4).then((response) => {
+        console.log("RESPONSE IMAGES", response.data.data);
+        setImagesByEquipment(response.data.data)
+      }).catch((error) => {
+        console.error("Error fetching images:", error);
+      })
+    }
+  }, [openGallery, equipmentSelected]);
+
 
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
@@ -738,8 +756,65 @@ export default function PlansMapContainer(Map: MapProps) {
             trouInfodocData={trouInfodocData}
             setReportSelected={setReportSelected}
             set360ViewSelected={setView360Selected}
+            setOpenGallery={setOpenGallery}
+            openGallery={openGallery}
           /> : null
       }
+      {
+        openGallery && (
+          <div className='flex flex-row absolute z-50 top-14 right-2 gap-2'>
+            <div className='w-[1000px] max-h-[60vh] min-h-[60vh] bg-gray-200 text-black rounded-md p-2 border-gray-400 border-2 shadow-lg flex flex-col gap-2'>
+              <div className='p-2 flex flex-row bg-[#002645] rounded-md justify-between items-center'>
+                <h1 className='text-white font-bold'>Galería de imágenes</h1>
+                <button
+                  onClick={() => { setOpenGallery(false) }}
+                  className='text-white font-bold hover:bg-gray-400 rounded-md p-1'>
+                  <FaX size={20} />
+                </button>
+              </div>
+              <div className='flex flex-col justify-start items-start gap-2 p-2 h-1/6'>
+                <div className='flex flex-row justify-between items-center p-2 gap-2'>
+                  <Label className='font-bold'>Nombre: </Label>
+                  <h1>{imagesByEquipment?.name} </h1>
+                </div>
+                <div className='flex flex-row justify-between items-center p-2 gap-2'>
+                  <Label className='font-bold'>Descripción: </Label>
+                  <p>{imagesByEquipment?.description} </p>
+                </div>
+              </div>
+              <div className='bg-white p-2 h-1/2'>
+                <Image
+                  src={imageSelected ? imageSelected.file : '/img/leyenda/leyenda.jpg'}
+                  alt="leyenda planos"
+                  width={200}
+                  height={300}
+                  className='rounded-md'
+                />
+              </div>
+              <div className='flex flex-row justify-start items-start gap-2 overflow-x-auto h-1/4 '>
+                {
+                  imagesByEquipment?.uploaded_files.map((image, index) => (
+                    <div key={index} className='flex flex-col justify-center items-center gap-2'>
+                      <Image
+                        src={image.file}
+                        alt={'image-' + (index + 1)}
+                        width={150}
+                        height={150}
+                        className='rounded-md cursor-pointer'
+                        onClick={() => {
+                          setImageSelected(image);
+                        }}
+                      />
+                    </div>
+                  ))
+                }
+
+              </div>
+            </div>
+          </div>
+        )
+      }
+
       {
         mapType === '1' ?
           <div className='absolute top-16 right-3 flex justify-center items-start z-10 bg-opacity-50'>

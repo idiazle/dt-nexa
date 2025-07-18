@@ -21,8 +21,10 @@ interface InfoEquipCompStructure {
   setNavIcons: (value: any) => void
   setReportSelected: (value: boolean) => void
   set360ViewSelected: (value: boolean) => void
+  setOpenGallery: (value: boolean) => void
+  openGallery: boolean
 }
-export default function InformationEquipmentComponent({ equipmentIsPressed, refToDivOverflow, equipmentSelected, setEquipmentSelected, setStateInformation, setNavIcons, trouInfodocData, setTrouInfodocData, setReportSelected, set360ViewSelected }: InfoEquipCompStructure) {
+export default function InformationEquipmentComponent({ equipmentIsPressed, refToDivOverflow, equipmentSelected, setEquipmentSelected, setStateInformation, setNavIcons, trouInfodocData, setTrouInfodocData, setReportSelected, set360ViewSelected, setOpenGallery, openGallery }: InfoEquipCompStructure) {
 
   // console.log("KDWOADKOWADWAO", equipmentSelected);
 
@@ -240,6 +242,11 @@ export default function InformationEquipmentComponent({ equipmentIsPressed, refT
               onClick={() => { setReportSelected(false); set360ViewSelected(true) }}
               className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-sm'>
               360°
+            </Button>
+            <Button
+              onClick={() => { setOpenGallery(true) }}
+              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-sm'>
+              Imágenes
             </Button>
           </div>
           {/* {
