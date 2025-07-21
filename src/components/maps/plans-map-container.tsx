@@ -630,7 +630,12 @@ export default function PlansMapContainer(Map: MapProps) {
     }
   }
   const [openGallery, setOpenGallery] = useState<boolean>(false)
-  const [imagesByEquipment, setImagesByEquipment] = useState(null)
+  type ImagesByEquipmentType = {
+    name?: string;
+    description?: string;
+    uploaded_files: { file: string }[];
+  } | null;
+  const [imagesByEquipment, setImagesByEquipment] = useState<ImagesByEquipmentType>(null)
   const [imageSelected, setImageSelected] = useState<any>(null)
 
   useEffect(() => {

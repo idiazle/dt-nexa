@@ -40,6 +40,7 @@ import { getEquipments } from '@/api/admin/equipments-api';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { patchPhotogNodeById } from '@/api/admin/nodes360-api';
 import { useSession } from 'next-auth/react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Nodes360ViewerStructure {
   allNodes: PhotogrametryStructure[] | null
@@ -444,8 +445,8 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                 dialogMarkLink.open ? <MarkersLinksDialog setDialogFather={setDialogOpen} allNodes={allNodes} dialogData={dialogMarkLink} setDialogData={setDialogMarkLink} /> : null
               }
               {
-                showPanel ?
-                  <div className={`absolute max-w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
+                showPanel && (
+                  <div className={`absolute w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
 
                     {/* {
                         renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
@@ -471,154 +472,167 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                             <FaCircleXmark className='text-white' size={25} />
                           </button>
                       </div> */}
-                    <div
-                      className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-                      onClick={() => setIsOpen3(!isOpen3)}
-                    >
-                      <h1 className='font-bold text-white'>Reportes de Equipo</h1>
-                    </div>
-                    <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
-                      {
-                        reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
-                          return (
-                            <button
-                              key={index}
-                              onClick={() => {
-                                console.log("Click on report", obj);
-                                handleViewDoc(obj)
-                              }}
-                              className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
-                            >
-                              <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
-                              <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
-                              <p className='text-sm flex flex-row items-center gap-4'>
-                                Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
-                                  generalCondition === 1 ? 'Alerta'
-                                    : generalCondition === 2 ? 'Precaución'
-                                      : generalCondition === 3 ? 'Tolerable'
-                                        : generalCondition === 4 ? 'Normal'
-                                          : generalCondition === 5 ? 'No monitoreado'
-                                            : generalCondition === 6 ? 'No aplica'
-                                              : ''
-                                }
-                              </p>
-                            </button>
-                          )
-                        }) : (
-                          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                            <p>No hay reportes disponibles</p>
-                          </div>
-                        )
-                      }
-                      {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                    <Tabs defaultValue='reports'>
+                      <TabsList className='flex flex-row w-full bg-white rounded-md gap-1'>
+                        <TabsTrigger value="reports" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Reportes</TabsTrigger>
+                        <TabsTrigger value="information" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Información</TabsTrigger>
+                        <TabsTrigger value="options" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Opciones</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value='reports'>
+                        <div
+                          className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                          onClick={() => setIsOpen3(!isOpen3)}
+                        >
+                          <h1 className='font-bold text-white'>Reportes de Equipo</h1>
+                        </div>
+                        <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
+                          {
+                            reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
+                              return (
+                                <button
+                                  key={index}
+                                  onClick={() => {
+                                    console.log("Click on report", obj);
+                                    handleViewDoc(obj)
+                                  }}
+                                  className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
+                                >
+                                  <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
+                                  <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
+                                  <p className='text-sm flex flex-row items-center gap-4'>
+                                    Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
+                                      generalCondition === 1 ? 'Alerta'
+                                        : generalCondition === 2 ? 'Precaución'
+                                          : generalCondition === 3 ? 'Tolerable'
+                                            : generalCondition === 4 ? 'Normal'
+                                              : generalCondition === 5 ? 'No monitoreado'
+                                                : generalCondition === 6 ? 'No aplica'
+                                                  : ''
+                                    }
+                                  </p>
+                                </button>
+                              )
+                            }) : (
+                              <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                                <p>No hay reportes disponibles</p>
+                              </div>
+                            )
+                          }
+                          {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
                           <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
                           <p className='text-sm'>Fecha: 20/03/2025</p>
                           <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
                         </div> */}
 
 
-                    </div>
-                    <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
-                      {/* Header */}
-                      <div
-                        className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-                        onClick={() => setIsOpen(!isOpen)}
-                      >
-                        <h1 className='font-bold text-white'>Información de Equipo</h1>
-                        {isOpen ? (
-                          <FaAngleUp className='text-white' size={20} />
-                        ) : (
-                          <FaAngleDown className='text-white' size={20} />
-                        )}
-                      </div>
+                        </div>
+                      </TabsContent>
+                      <TabsContent value='information'>
+                        <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
+                          {/* Header */}
+                          <div
+                            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                            onClick={() => setIsOpen(!isOpen)}
+                          >
+                            <h1 className='font-bold text-white'>Información de Equipo</h1>
+                            {isOpen ? (
+                              <FaAngleUp className='text-white' size={20} />
+                            ) : (
+                              <FaAngleDown className='text-white' size={20} />
+                            )}
+                          </div>
 
-                      {/* Contenido colapsable */}
-                      <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
-                        <div className='flex flex-col gap-3 px-7 py-2'>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
-                            <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
-                          </div>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
-                            <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
-                          </div>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
-                            <p>{infoEquipment?.entity_data.name}</p>
-                          </div>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black'>Características:</h1>
-                            <div>
-                              {
-                                (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
-                                  JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
-                                    return (
-                                      <div className='flex flex-row justify-between items-center' key={index}>
-                                        <p className='w-1/3'>{obj.label}</p>
-                                        <p className='w-2/3'>{obj.value}</p>
+                          {/* Contenido colapsable */}
+                          <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
+                            <div className='flex flex-col gap-3 px-7 py-2'>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
+                                <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+                              </div>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
+                                <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
+                              </div>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
+                                <p>{infoEquipment?.entity_data.name}</p>
+                              </div>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black'>Características:</h1>
+                                <div>
+                                  {
+                                    (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
+                                      JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
+                                        return (
+                                          <div className='flex flex-row justify-between items-center' key={index}>
+                                            <p className='w-1/3'>{obj.label}</p>
+                                            <p className='w-2/3'>{obj.value}</p>
+                                          </div>
+                                        )
+                                      }) : <div>
+                                        <p className='text-gray-500'>No hay características disponibles</p>
                                       </div>
-                                    )
-                                  }) : <div>
-                                    <p className='text-gray-500'>No hay características disponibles</p>
-                                  </div>
-                              }
-                            </div>
-                          </div>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                            <div className='gap-1 flex flex-col overflow-auto h-44'>
-                              {
-                                infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
-                                  const document = obj.document_id as DocumentStructure
-                                  return (
-                                    <button key={index} className=' text-black flex flex-row items-center gap-2 p-2 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
-                                      <FaFile size={20} />
-                                      <p className='text-sm text-start'>{document.title}</p>
-                                    </button>
-                                  )
-                                }) : <p className='text-black'>No hay documentos disponibles</p>
-                              }
+                                  }
+                                </div>
+                              </div>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
+                                <div className='gap-1 flex flex-col overflow-auto h-44'>
+                                  {
+                                    infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
+                                      const document = obj.document_id as DocumentStructure
+                                      return (
+                                        <button key={index} className=' text-black flex flex-row items-center gap-2 p-2 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                                          <FaFile size={20} />
+                                          <p className='text-sm text-start'>{document.title}</p>
+                                        </button>
+                                      )
+                                    }) : <p className='text-black'>No hay documentos disponibles</p>
+                                  }
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className='flex flex-col text-sm bg-white h-auto gap-2'>
-                      <div
-                        className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
-                        onClick={() => setIsOpen2(!isOpen2)}
-                      >
-                        <h1 className='font-bold text-white'>Opciones de Equipo</h1>
-                        {isOpen2 ? (
-                          <FaAngleUp className='text-white' size={20} />
-                        ) : (
-                          <FaAngleDown className='text-white' size={20} />
-                        )}
-                      </div>
-                      {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
-                      <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
-                        {
-                          options.map((option, index) => {
-                            return (
-                              <>
-                                <button key={index} disabled className='flex flex-col bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
-                                  <Image
-                                    src={option.url}
-                                    alt={option.label}
-                                    width={80}
-                                    height={60}
-                                  />
-                                  <span className='font-bold text-white'>{option.label}</span>
-                                </button>
-                              </>
-                            )
-                          })
-                        }
-                      </div>
-                    </div>
+                      </TabsContent>
+                      <TabsContent value='options'>
+                        <div className='flex flex-col text-sm bg-white h-auto gap-2'>
+                          <div
+                            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
+                            onClick={() => setIsOpen2(!isOpen2)}
+                          >
+                            <h1 className='font-bold text-white'>Opciones de Equipo</h1>
+                            {isOpen2 ? (
+                              <FaAngleUp className='text-white' size={20} />
+                            ) : (
+                              <FaAngleDown className='text-white' size={20} />
+                            )}
+                          </div>
+                          {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
+                          <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+                            {
+                              options.map((option, index) => {
+                                return (
+                                  <>
+                                    <button key={index} disabled className='flex flex-col bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                                      <Image
+                                        src={option.url}
+                                        alt={option.label}
+                                        width={80}
+                                        height={60}
+                                      />
+                                      <span className='font-bold text-white'>{option.label}</span>
+                                    </button>
+                                  </>
+                                )
+                              })
+                            }
+                          </div>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </div>
-                  : null
+                )
               }
               <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
                 <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
@@ -771,8 +785,8 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                 dialogMarkLink.open ? <MarkersLinksDialog setDialogFather={setDialogOpen} allNodes={allNodes} dialogData={dialogMarkLink} setDialogData={setDialogMarkLink} /> : null
               }
               {
-                showPanel ?
-                  <div className={`absolute max-w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
+                showPanel && (
+                  <div className={`absolute w-[20%] flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 bg-slate-100 z-20 border rounded-l-md`}>
 
                     {/* {
                         renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
@@ -798,154 +812,167 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                             <FaCircleXmark className='text-white' size={25} />
                           </button>
                       </div> */}
-                    <div
-                      className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-                      onClick={() => setIsOpen3(!isOpen3)}
-                    >
-                      <h1 className='font-bold text-white'>Reportes de Equipo</h1>
-                    </div>
-                    <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
-                      {
-                        reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
-                          return (
-                            <button
-                              key={index}
-                              onClick={() => {
-                                console.log("Click on report", obj);
-                                handleViewDoc(obj)
-                              }}
-                              className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
-                            >
-                              <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
-                              <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
-                              <p className='text-sm flex flex-row items-center gap-4'>
-                                Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
-                                  generalCondition === 1 ? 'Alerta'
-                                    : generalCondition === 2 ? 'Precaución'
-                                      : generalCondition === 3 ? 'Tolerable'
-                                        : generalCondition === 4 ? 'Normal'
-                                          : generalCondition === 5 ? 'No monitoreado'
-                                            : generalCondition === 6 ? 'No aplica'
-                                              : ''
-                                }
-                              </p>
-                            </button>
-                          )
-                        }) : (
-                          <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                            <p>No hay reportes disponibles</p>
-                          </div>
-                        )
-                      }
-                      {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                    <Tabs defaultValue='reports'>
+                      <TabsList className='flex flex-row w-full bg-white rounded-md gap-1'>
+                        <TabsTrigger value="reports" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Reportes</TabsTrigger>
+                        <TabsTrigger value="information" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Información</TabsTrigger>
+                        <TabsTrigger value="options" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Opciones</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value='reports'>
+                        <div
+                          className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                          onClick={() => setIsOpen3(!isOpen3)}
+                        >
+                          <h1 className='font-bold text-white'>Reportes de Equipo</h1>
+                        </div>
+                        <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
+                          {
+                            reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
+                              return (
+                                <button
+                                  key={index}
+                                  onClick={() => {
+                                    console.log("Click on report", obj);
+                                    handleViewDoc(obj)
+                                  }}
+                                  className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
+                                >
+                                  <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
+                                  <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
+                                  <p className='text-sm flex flex-row items-center gap-4'>
+                                    Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
+                                      generalCondition === 1 ? 'Alerta'
+                                        : generalCondition === 2 ? 'Precaución'
+                                          : generalCondition === 3 ? 'Tolerable'
+                                            : generalCondition === 4 ? 'Normal'
+                                              : generalCondition === 5 ? 'No monitoreado'
+                                                : generalCondition === 6 ? 'No aplica'
+                                                  : ''
+                                    }
+                                  </p>
+                                </button>
+                              )
+                            }) : (
+                              <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
+                                <p>No hay reportes disponibles</p>
+                              </div>
+                            )
+                          }
+                          {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
                           <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
                           <p className='text-sm'>Fecha: 20/03/2025</p>
                           <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
                         </div> */}
 
 
-                    </div>
-                    <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
-                      {/* Header */}
-                      <div
-                        className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-                        onClick={() => setIsOpen(!isOpen)}
-                      >
-                        <h1 className='font-bold text-white'>Información de Equipo</h1>
-                        {isOpen ? (
-                          <FaAngleUp className='text-white' size={20} />
-                        ) : (
-                          <FaAngleDown className='text-white' size={20} />
-                        )}
-                      </div>
+                        </div>
+                      </TabsContent>
+                      <TabsContent value='information'>
+                        <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
+                          {/* Header */}
+                          <div
+                            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
+                            onClick={() => setIsOpen(!isOpen)}
+                          >
+                            <h1 className='font-bold text-white'>Información de Equipo</h1>
+                            {isOpen ? (
+                              <FaAngleUp className='text-white' size={20} />
+                            ) : (
+                              <FaAngleDown className='text-white' size={20} />
+                            )}
+                          </div>
 
-                      {/* Contenido colapsable */}
-                      <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
-                        <div className='flex flex-col gap-3 px-7 py-2'>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
-                            <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
-                          </div>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
-                            <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
-                          </div>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
-                            <p>{infoEquipment?.entity_data.name}</p>
-                          </div>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black'>Características:</h1>
-                            <div>
-                              {
-                                (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
-                                  JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
-                                    return (
-                                      <div className='flex flex-row justify-between items-center' key={index}>
-                                        <p className='w-1/3'>{obj.label}</p>
-                                        <p className='w-2/3'>{obj.value}</p>
+                          {/* Contenido colapsable */}
+                          <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
+                            <div className='flex flex-col gap-3 px-7 py-2'>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
+                                <p>{'parent_data' in (infoEquipment?.entity_data ?? {}) && (infoEquipment?.entity_data as any)?.parent_data?.name ? (infoEquipment?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
+                              </div>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
+                                <p>{'tag' in (infoEquipment?.entity_data ?? {}) ? (infoEquipment?.entity_data as any).tag : ''}</p>
+                              </div>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
+                                <p>{infoEquipment?.entity_data.name}</p>
+                              </div>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black'>Características:</h1>
+                                <div>
+                                  {
+                                    (infoEquipment !== null && 'properties' in infoEquipment.entity_data && infoEquipment.entity_data.properties) ?
+                                      JSON.parse((infoEquipment.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
+                                        return (
+                                          <div className='flex flex-row justify-between items-center' key={index}>
+                                            <p className='w-1/3'>{obj.label}</p>
+                                            <p className='w-2/3'>{obj.value}</p>
+                                          </div>
+                                        )
+                                      }) : <div>
+                                        <p className='text-gray-500'>No hay características disponibles</p>
                                       </div>
-                                    )
-                                  }) : <div>
-                                    <p className='text-gray-500'>No hay características disponibles</p>
-                                  </div>
-                              }
-                            </div>
-                          </div>
-                          <div className='flex flex-col gap-1 text-black'>
-                            <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                            <div className='gap-1 flex flex-col overflow-auto h-44 ml-4'>
-                              {
-                                infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
-                                  const document = obj.document_id as DocumentStructure
-                                  return (
-                                    <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
-                                      <FaFile size={25} />
-                                      <p className='text-sm'>{document.title}</p>
-                                    </button>
-                                  )
-                                }) : <p className='text-black'>No hay documentos disponibles</p>
-                              }
+                                  }
+                                </div>
+                              </div>
+                              <div className='flex flex-col gap-1 text-black'>
+                                <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
+                                <div className='gap-1 flex flex-col overflow-auto h-44 ml-4'>
+                                  {
+                                    infoEquipment?.documents && infoEquipment.documents.length > 0 ? infoEquipment.documents.map((obj: any, index: number) => {
+                                      const document = obj.document_id as DocumentStructure
+                                      return (
+                                        <button key={index} className=' text-black flex flex-row items-center gap-2 p-1 hover:bg-gray-300 rounded-md bg-gray-200' onClick={() => onSetViewDoc(document)}>
+                                          <FaFile size={25} />
+                                          <p className='text-sm'>{document.title}</p>
+                                        </button>
+                                      )
+                                    }) : <p className='text-black'>No hay documentos disponibles</p>
+                                  }
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className='flex flex-col text-sm bg-white h-auto gap-2'>
-                      <div
-                        className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
-                        onClick={() => setIsOpen2(!isOpen2)}
-                      >
-                        <h1 className='font-bold text-white'>Opciones de Equipo</h1>
-                        {isOpen2 ? (
-                          <FaAngleUp className='text-white' size={20} />
-                        ) : (
-                          <FaAngleDown className='text-white' size={20} />
-                        )}
-                      </div>
-                      {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
-                      <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
-                        {
-                          options.map((option, index) => {
-                            return (
-                              <>
-                                <button key={index} disabled className='flex flex-col bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
-                                  <Image
-                                    src={option.url}
-                                    alt={option.label}
-                                    width={50}
-                                    height={50}
-                                  />
-                                  <span className='font-bold text-white'>{option.label}</span>
-                                </button>
-                              </>
-                            )
-                          })
-                        }
-                      </div>
-                    </div>
+                      </TabsContent>
+                      <TabsContent value='options'>
+                        <div className='flex flex-col text-sm bg-white h-auto gap-2'>
+                          <div
+                            className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
+                            onClick={() => setIsOpen2(!isOpen2)}
+                          >
+                            <h1 className='font-bold text-white'>Opciones de Equipo</h1>
+                            {isOpen2 ? (
+                              <FaAngleUp className='text-white' size={20} />
+                            ) : (
+                              <FaAngleDown className='text-white' size={20} />
+                            )}
+                          </div>
+                          {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
+                          <div className={`grid grid-cols-4 gap-1 px-2 text-black items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+                            {
+                              options.map((option, index) => {
+                                return (
+                                  <>
+                                    <button key={index} disabled className='flex flex-col bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                                      <Image
+                                        src={option.url}
+                                        alt={option.label}
+                                        width={50}
+                                        height={50}
+                                      />
+                                      <span className='font-bold text-white'>{option.label}</span>
+                                    </button>
+                                  </>
+                                )
+                              })
+                            }
+                          </div>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </div>
-                  : null
+                )
               }
               <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
                 <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
