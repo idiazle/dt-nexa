@@ -640,10 +640,10 @@ export default function PlansMapContainer(Map: MapProps) {
 
   useEffect(() => {
     if (openGallery && equipmentSelected) {
-      // Fetch images for the selected equipment 
-      getImagenesByEquipment(4).then((response) => {
-        console.log("RESPONSE IMAGES", response.data.data);
-        setImagesByEquipment(response.data.data)
+      console.log("Eqipment selected:", equipmentSelected?.obj.entity_id.id);
+      getImagenesByEquipment(equipmentSelected?.obj.entity_id.id).then((response) => {
+        console.log("RESPONSE IMAGES", response.data.data[response.data.data.length - 1]);
+        setImagesByEquipment(response.data.data[response.data.data.length - 1])
       }).catch((error) => {
         console.error("Error fetching images:", error);
       })
@@ -769,51 +769,68 @@ export default function PlansMapContainer(Map: MapProps) {
         openGallery && (
           <div className='flex flex-row absolute z-50 top-14 right-2 gap-2'>
             <div className='w-[1000px] max-h-[60vh] min-h-[60vh] bg-gray-200 text-black rounded-md p-2 border-gray-400 border-2 shadow-lg flex flex-col gap-2'>
+
+              {/* Encabezado */}
               <div className='p-2 flex flex-row bg-[#002645] rounded-md justify-between items-center'>
                 <h1 className='text-white font-bold'>Galería de imágenes</h1>
                 <button
-                  onClick={() => { setOpenGallery(false) }}
+                  onClick={() => {
+                    setOpenGallery(false)
+                    setImageSelected(null)
+                    setImagesByEquipment(null)
+                  }}
                   className='text-white font-bold hover:bg-gray-400 rounded-md p-1'>
                   <FaX size={20} />
                 </button>
               </div>
-              <div className='flex flex-col justify-start items-start gap-2 p-2 h-1/6'>
-                <div className='flex flex-row justify-between items-center p-2 gap-2'>
-                  <Label className='font-bold'>Nombre: </Label>
-                  <h1>{imagesByEquipment?.name} </h1>
-                </div>
-                <div className='flex flex-row justify-between items-center p-2 gap-2'>
-                  <Label className='font-bold'>Descripción: </Label>
-                  <p>{imagesByEquipment?.description} </p>
-                </div>
-              </div>
-              <div className='bg-white p-2 h-1/2'>
-                <Image
-                  src={imageSelected ? imageSelected.file : '/img/leyenda/leyenda.jpg'}
-                  alt="leyenda planos"
-                  width={200}
-                  height={300}
-                  className='rounded-md'
-                />
-              </div>
-              <div className='flex flex-row justify-start items-start gap-2 overflow-x-auto h-1/4 '>
-                {
-                  imagesByEquipment?.uploaded_files.map((image, index) => (
-                    <div key={index} className='flex flex-col justify-center items-center gap-2'>
-                      <Image
-                        src={image.file}
-                        alt={'image-' + (index + 1)}
-                        width={150}
-                        height={150}
-                        className='rounded-md cursor-pointer'
-                        onClick={() => {
-                          setImageSelected(image);
-                        }}
-                      />
-                    </div>
-                  ))
-                }
 
+              {/* Información del equipo */}
+              <div className='flex flex-col gap-2 px-2'>
+                <div className='flex flex-row gap-2 items-center'>
+                  <Label className='font-bold'>Nombre: </Label>
+                  <h1>{imagesByEquipment?.name}</h1>
+                </div>
+                <div className='flex flex-row gap-2 items-center'>
+                  <Label className='font-bold'>Descripción: </Label>
+                  <p>{imagesByEquipment?.description}</p>
+                </div>
+              </div>
+              {/* Imagen principal */}
+              <div className='flex-grow flex justify-center items-center overflow-hidden bg-white rounded-md'>
+                {imageSelected?.file ? (
+                  <Image
+                    src={imageSelected.file}
+                    alt="Imagen seleccionada"
+                    width={800}
+                    height={400}
+                    className='rounded-md object-contain max-h-full max-w-full'
+                  />
+                ) : (
+                  <p className="text-gray-500">Selecciona una imagen</p>
+                )}
+              </div>
+
+              {/* Miniaturas */}
+              <div className='flex flex-row gap-2 overflow-x-auto py-2'>
+                {
+                  imagesByEquipment ? (
+                    imagesByEquipment?.uploaded_files.map((image, index) => (
+                      <div key={index} className='flex-shrink-0 cursor-pointer justify-center items-center flex flex-col gap-1'>
+                        <Image
+                          src={image.file}
+                          alt={`image-${index + 1}`}
+                          width={100}
+                          height={100}
+                          className='rounded-md object-cover border-2 border-gray-300 hover:border-blue-500 transition-all duration-200'
+                          onClick={() => setImageSelected(image)}
+                        />
+                        <span>Imagen {index + 1}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p >No hay imágenes disponibles</p>
+                  )
+                }
               </div>
             </div>
           </div>

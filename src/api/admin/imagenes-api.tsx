@@ -15,6 +15,11 @@ export const postImagenesByEquipment = async (data: any) => {
 }
 
 export const getImagenesByEquipment = async (id: number) => {
-  const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/gallery-eq/${id}`)
+  const response = await axiosInstance.get(`${process.env.NEXT_PUBLIC_BACK_URL}/gallery-by-eq/${id}`)
+  return response
+}
+
+export const deleteImagenesByEquipment = async (id: number) => {
+  const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_BACK_URL}/gallery-eq/${id}`)
   return response
 }
