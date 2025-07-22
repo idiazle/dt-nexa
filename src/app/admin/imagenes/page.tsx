@@ -10,32 +10,21 @@ import React, { useEffect, useState } from 'react'
 import ImageDetail from './image-detail'
 import CreateImagesEquipments from '@/components/admin/imagenes/create-imagenes'
 import { getAllImagenes } from '@/api/admin/imagenes-api'
+import { getEquipments } from '@/api/admin/equipments-api'
 
 type Image = {
   name: string,
   description: string,
-  equipment: number,
-  file: []
+  equipment: string | number,
+  uploaded_files: []
 }
 
 const Imagenes = () => {
   const [openDialog, setOpenDialog] = useState(false)
   const [images, setImages] = useState<Image[]>([])
   const [openImageDetail, setOpenImageDetail] = useState(false)
-
-  // useEffect(() => {
-  //   getAllImagenes()
-  //     .then(response => {
-  //       if (response.status === 200) {
-  //         setImages(response.data.data)
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.error("Error fetching images:", error);
-  //     })
-  // }, [])
-
-  console.log("Images fetched:", images);
+  const [imageSelected, setImageSelected] = useState<Image | null>(null)
+  const [equipments, setEquipments] = useState([])
 
   useEffect(() => {
     if (openDialog === false) {
@@ -51,6 +40,7 @@ const Imagenes = () => {
     }
   }, [openDialog]);
 
+  console.log("Images after fetch:", images);
 
   return (
     <div>
@@ -88,7 +78,10 @@ const Imagenes = () => {
                   {/* <TableCell>{image.file.join(', ')}</TableCell> */}
                   <TableCell className='flex flex-row gap-2'>
                     <Button
-                      onClick={() => setOpenImageDetail(true)}
+                      onClick={() => {
+                        setOpenImageDetail(true)
+                        // setImageSelected(image)
+                      }}
                     >
                       Ver imágenes
                     </Button>

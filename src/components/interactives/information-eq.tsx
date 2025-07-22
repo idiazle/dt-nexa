@@ -232,20 +232,20 @@ export default function InformationEquipmentComponent({ equipmentIsPressed, refT
               // }))
             }} color={'white'} className="mr-1 hover:cursor-pointer" />
           </div> */}
-          <div className='flex flex-col justify-center items-center gap-1.5'>
+          <div className='flex flex-col justify-center items-center bg-gray-500 bg-opacity-70 gap-0.5 p-2 rounded-sm'>
             <Button
               onClick={() => { setReportSelected(true); set360ViewSelected(false) }}
-              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-sm'>
+              className='w-20 h-8 bg-[#002a98] text-white text-xs font-semibold'>
               Reportes
             </Button>
             <Button
               onClick={() => { setReportSelected(false); set360ViewSelected(true) }}
-              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-sm'>
+              className='w-20 h-8 bg-[#002a98] text-white text-xs font-semibold'>
               360°
             </Button>
             <Button
               onClick={() => { setOpenGallery(true) }}
-              className='w-20 h-10 bg-[#002a98] text-white text-xs font-semibold rounded-sm'>
+              className='w-20 h-8 bg-[#002a98] text-white text-xs font-semibold'>
               Imágenes
             </Button>
           </div>

@@ -644,6 +644,7 @@ export default function PlansMapContainer(Map: MapProps) {
       getImagenesByEquipment(equipmentSelected?.obj.entity_id.id).then((response) => {
         console.log("RESPONSE IMAGES", response.data.data[response.data.data.length - 1]);
         setImagesByEquipment(response.data.data[response.data.data.length - 1])
+        setImageSelected(response.data.data[response.data.data.length - 1]?.uploaded_files[0] || null);
       }).catch((error) => {
         console.error("Error fetching images:", error);
       })
@@ -806,30 +807,26 @@ export default function PlansMapContainer(Map: MapProps) {
                     className='rounded-md object-contain max-h-full max-w-full'
                   />
                 ) : (
-                  <p className="text-gray-500">Selecciona una imagen</p>
+                  <p className="text-gray-500">No hay imágenes</p>
                 )}
               </div>
 
               {/* Miniaturas */}
               <div className='flex flex-row gap-2 overflow-x-auto py-2'>
                 {
-                  imagesByEquipment ? (
-                    imagesByEquipment?.uploaded_files.map((image, index) => (
-                      <div key={index} className='flex-shrink-0 cursor-pointer justify-center items-center flex flex-col gap-1'>
-                        <Image
-                          src={image.file}
-                          alt={`image-${index + 1}`}
-                          width={100}
-                          height={100}
-                          className='rounded-md object-cover border-2 border-gray-300 hover:border-blue-500 transition-all duration-200'
-                          onClick={() => setImageSelected(image)}
-                        />
-                        <span>Imagen {index + 1}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <p >No hay imágenes disponibles</p>
-                  )
+                  imagesByEquipment?.uploaded_files.map((image, index) => (
+                    <div key={index} className='flex-shrink-0 cursor-pointer justify-center items-center flex flex-col gap-1'>
+                      <Image
+                        src={image.file}
+                        alt={`image-${index + 1}`}
+                        width={100}
+                        height={100}
+                        className='rounded-md object-cover border-2 border-gray-300 hover:border-blue-500 transition-all duration-200'
+                        onClick={() => setImageSelected(image)}
+                      />
+                      <span>Imagen {index + 1}</span>
+                    </div>
+                  ))
                 }
               </div>
             </div>

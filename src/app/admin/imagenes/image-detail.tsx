@@ -1,6 +1,8 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import React from 'react'
 
 type ImageDetailProps = {
@@ -17,12 +19,15 @@ const ImageDetail = ({ openDetail, setOpenDetail }: ImageDetailProps) => {
         </DialogHeader>
         <div className='flex flex-col gap-4'>
           {/* Aquí puedes agregar los detalles de la imagen */}
-          <p className='bg.white'>Nombre: Imagen 1</p>
-          <p>Descripción: Esta es una imagen de ejemplo.</p>
-          <p>Equipo: Equipo 1</p>
+          <p className='bg.white'>Nombre: </p>
+          <p>Descripción: </p>
+          <p>Equipo: </p>
+        </div>
+        <Separator className='my-4' />
+        <div className='flex flex-col gap-2'>
+          <Label>Archivos Subidos:</Label>
         </div>
         <DialogFooter>
-          <Button onClick={() => setOpenDetail(false)}>Cerrar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
