@@ -2,13 +2,14 @@
 import Image from "next/image"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { UserInfoMenu } from "../auth/user-info-menu"
 import AlertsList from "../alerts/alerts-list"
 import { Button } from "../ui/button"
 import { IoNotifications } from "react-icons/io5"
 import { X } from "lucide-react"
 import { getAllAlerts } from "@/api/admin/alerts-api"
+import { Toast } from "../ui/toast"
 
 const logos = [
   {
@@ -40,26 +41,57 @@ const NavBarInteractives = () => {
   const [planeSelected, setPlaneSelected] = useState<string>('2')
   const [openListAlerts, setOpenListsAlerts] = useState<boolean>(false)
   const [totalAlerts, setTotalAlerts] = useState<number>(0)
+  const prevTotalRef = useRef<number | null>(null)
 
   useEffect(() => {
-    getAllAlerts()
-      .then(response => {
-        if (response.status === 200) {
-          // console.log("Alerts fetched successfully:", response.data.data.length);
-          setTotalAlerts(response.data.data.length)
-        }
-      })
-      .catch(error => {
-        console.error("Error fetching alerts:", error);
-      })
+
+    const fetchAlerts = () => {
+      getAllAlerts()
+        .then(response => {
+          if (response.status === 200) {
+            const newTotal = response.data.data.filter((alert: any) => alert.status === 0).length
+
+            // Comparar con el valor anterior
+            if (prevTotalRef.current !== null && prevTotalRef.current !== newTotal) {
+              const difference = newTotal - prevTotalRef.current
+              console.log(`Total alerts changed by ${difference} (from ${prevTotalRef.current} to ${newTotal})`)
+            }
+
+            prevTotalRef.current = newTotal
+            setTotalAlerts(newTotal)
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching alerts:", error)
+        })
+    }
+
+    fetchAlerts()
+    const interval = setInterval(fetchAlerts, 5000)
+    return () => clearInterval(interval)
   }, [])
+
+  // useEffect(() => {
+  //   const fetchAlerts = () => {
+  //     getAllAlerts().then(response => {
+  //       if (response.status === 200) {
+  //         setTotalAlerts(response.data.data.filter((alert: any) => alert.status === 0).length)
+  //       }
+  //     })
+  //       .catch(error => {
+  //         console.error("Error fetching alerts:", error);
+  //       })
+  //   }
+  //   fetchAlerts()
+  //   // Intervalo de 5 segundos
+  //   const interval = setInterval(fetchAlerts, 5000)
+
+  //   // Limpieza del intervalo al desmontar el componente
+  //   return () => clearInterval(interval)
+  // }, [])
 
   return (
     <div className='absolute z-20 flex flex-row h-[52px] w-full justify-between items-center bg-[#002645] border-b border-gray-300 text-white px-3'>
-      <AlertsList
-        openAlerts={openListAlerts}
-        setOpenAlerts={setOpenListsAlerts}
-      />
       <div
         onClick={() => window.location.href = '/menu'}
         className='flex flex-row gap-3 w-1/3 items-center justify-start cursor-pointer'>
@@ -74,7 +106,6 @@ const NavBarInteractives = () => {
               className={logo.styles}
             />
           ))
-
         }
       </div>
       <div className='flex flex-col justify-center items-center w-1/3'>
@@ -105,6 +136,15 @@ const NavBarInteractives = () => {
         </Button>
         <UserInfoMenu />
       </div>
+      {/* <Toast
+        title="Información"
+        description="Para una mejor experiencia, recomendamos utilizar el navegador Google Chrome."
+      // variant="info"
+      /> */}
+      <AlertsList
+        openAlertsView={openListAlerts}
+        setOpenAlertsView={setOpenListsAlerts}
+      />
     </div>
   )
 }
