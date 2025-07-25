@@ -49,7 +49,7 @@ const NavBarInteractives = () => {
       getAllAlerts()
         .then(response => {
           if (response.status === 200) {
-            const newTotal = response.data.data.filter((alert: any) => alert.status === 0).length
+            const newTotal = response.data.data.filter((alert: any) => alert.status === 1).length
 
             // Comparar con el valor anterior
             if (prevTotalRef.current !== null && prevTotalRef.current !== newTotal) {

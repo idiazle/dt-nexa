@@ -37,7 +37,7 @@ type Alert = {
   message: string
   created_at: string
   creator_id: number
-  send_to: number
+  send_to: [string]
   extra_field: string
   uploaded_files: Array<{
     id: number
@@ -51,9 +51,8 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
   const [filterNotifies, setFilterNotifies] = React.useState('0')
   const [openCreateAlert, setOpenCreateAlert] = React.useState(false)
   const [actualNode, setActualNode] = React.useState(null)
-  const [openAlert, setOpenAlert] = React.useState<number | null>(null)
+  const [openAlert, setOpenAlert] = React.useState<boolean>(false)
   const refSpheere = React.useRef(null)
-  const nodes = [{ id: 1, panorama: 'panorama1' }] // Mock nodes data
   const [allAlerts, setAllAlerts] = useState<Alert[]>([])
   const [openAllAlerts, setOpenAllAlerts] = useState(false)
   const [modifiesAlerts, setModifiesAlerts] = useState<any[]>([])
@@ -65,19 +64,41 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
     message: string
     creator_id: any
     extra_field: any
-    send_to_id: any
+    send_to: any
     files: null | any[] | any
   }>({
     title: '',
     inspection_id: '',
-    status: '0',
+    status: '1',
     priority: '',
     message: '',
     creator_id: session?.user.id,
     extra_field: null,
-    send_to_id: null,
+    send_to: null,
     files: null
   })
+  const [alertDataEdit, setAlertDataEdit] = useState<{
+    title: string
+    inspection_id: string
+    status: string
+    priority: string
+    message: string
+    creator_id: any
+    extra_field: any
+    send_to: any
+    files: null | any[] | any
+  }>({
+    title: '',
+    inspection_id: '',
+    status: '1',
+    priority: '',
+    message: '',
+    creator_id: null,
+    extra_field: null,
+    send_to: null,
+    files: null
+  })
+
   const [equipmentList, setEquipmentList] = useState<any[]>([])
   const [users, setUsers] = useState<any[]>([])
 
@@ -94,21 +115,14 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
             console.error('Error fetching alerts:', error)
           })
       }
-
-      // // Llamada inicial
       fetchAlerts()
     }
-    else {
-      setAllAlerts([])
-      setOpenAlert(null)
-      setSelectedAlert(null)
-      setOpenCreateAlert(false)
-    }
-    // // Intervalo de 5 segundos
-    // const interval = setInterval(fetchAlerts, 5000)
-
-    // // Limpieza del intervalo al desmontar el componente
-    // return () => clearInterval(interval)
+    // else {
+    //   setAllAlerts([])
+    //   setOpenAlert(null)
+    //   setSelectedAlert(null)
+    //   setOpenCreateAlert(false)
+    // }
   }, [openAlertsView])
 
   useEffect(() => {
@@ -118,7 +132,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
         setUsers(users);
         const updatedAlerts = allAlerts.map(alert => {
           const creatorName =
-            users.find((user: any) => user.id === alert.creator_id)?.name || alert.creator_id;
+            users.find((user: any) => user.id === alert.creator_id)?.username || alert.creator_id;
 
           let sendToNames: string[] = [];
           try {
@@ -126,7 +140,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
             if (Array.isArray(sendToIds)) {
               sendToNames = sendToIds.map((id: number) => {
                 const user = users.find((u: any) => u.id === id);
-                return user ? user.name : id.toString();
+                return user ? user.username : id.toString();
               });
             }
           } catch (err) {
@@ -165,11 +179,9 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
   //   return notify.priority === parseInt(filterNotifies)
   // })
 
-  const noAttendedAlerts = modifiesAlerts.filter(notify => notify.status === 0)
-  const attendedAlerts = modifiesAlerts.filter(notify => notify.status === 1)
+  const noAttendedAlerts = modifiesAlerts.filter(notify => notify.status === 1)
+  const attendedAlerts = modifiesAlerts.filter(notify => notify.status === 0)
   const [usersSelected, setUsersSelected] = useState<number[]>([])
-
-  console.log('Selected Users:', usersSelected);
 
   const [inspectionData, setInspectionData] = useState({
     parameters: JSON.stringify({
@@ -183,6 +195,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
 
   const [loading, setLoading] = useState(false)
 
+  const [attendedAlertOption, setAttendedAlertOption] = useState(false)
 
   const handleSubmit = async () => {
     setLoading(true)
@@ -223,8 +236,28 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
     }
   }
 
+  useEffect(() => {
+    if (selectedAlert?.status === 0) {
+      setAttendedAlertOption(true)
+      setAlertDataEdit({
+        title: selectedAlert.title,
+        inspection_id: selectedAlert.inspection_data?.entity_id?.toString() ?? '',
+        status: selectedAlert.status?.toString() ?? '',
+        priority: selectedAlert.priority?.toString() ?? '',
+        message: selectedAlert.message,
+        creator_id: selectedAlert.creator_id,
+        extra_field: selectedAlert.extra_field,
+        send_to: selectedAlert.send_to,
+        files: null
+      })
+    } else {
+      setAttendedAlertOption(false)
+    }
+  }, [selectedAlert])
+
   return (
     <div className='flex flex-row absolute z-50 top-14 right-1 gap-2 items-start'>
+      {/* lista general de alertas */}
       <div className={`w-[1000px] max-h-[60vh] min-h-[60vh] bg-gray-200 text-black rounded-md p-2 mt-28 border-gray-400 border-2 shadow-lg flex flex-col gap-2 ${openAllAlerts ? '' : 'hidden'}`}>
         <div className='p-2 flex flex-row bg-[#002645] rounded-md justify-between items-center'>
           <h1 className='text-white font-bold'>Historial de alertas</h1>
@@ -304,19 +337,27 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
           </Table>
         </div>
       </div>
-      <div className={`w-[400px] max-h-[60vh] min-h-[60vh] bg-gray-200 text-black rounded-md p-2 mt-28 border-gray-400 border-2 shadow-lg flex flex-col gap-1 ${openAlert ? '' : 'hidden'}`}>
+
+      {/* Arir alerta de lista */}
+      {
+        selectedAlert && (
+          <DialogInfoNotify open={openAlert} setOpen={setOpenAlert} dataSelected={selectedAlert} />
+        )
+      }
+
+      {/* <div className={`w-[400px] max-h-[60vh] min-h-[60vh] bg-gray-200 text-black rounded-md p-2 mt-28 border-gray-400 border-2 shadow-lg flex flex-col gap-1 ${openAlert ? '' : 'hidden'}`}>
         <div className='p-2 flex flex-row bg-[#002645] rounded-md justify-between items-center'>
           <h1 className='text-white font-bold'>Alerta #{selectedAlert?.id}</h1>
           <button
             onClick={() => {
-              setOpenAlert(null)
+              setOpenAlert(false)
               setSelectedAlert(null)
             }}
             className='text-white font-bold'>
             <FaAngleDoubleRight size={25} />
           </button>
         </div>
-        <div className='flex flex-col rounded-md p-2 h-full'>
+        <div className='flex flex-col p-2 h-full overflow-auto'>
           <div className='flex flex-row gap-5 w-full h-full'>
             <div className='flex flex-col w-1/3 gap-3 my-2'>
               <Label className='font-bold'>Tipo:</Label>
@@ -333,14 +374,14 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
             </div>
             <div className='flex flex-col justify-center items-start w-2/3 gap-3 my-2'>
               <Label className='font-bold'>Área/Equipo:</Label>
-              <Input value={selectedAlert?.inspection_data?.entity_id ?? ''} />
+              <Input disabled value={alertDataEdit?.inspection_data?.entity_id ?? ''} />
             </div>
           </div>
           <div className='flex flex-row gap-5 w-full'>
             <div className='flex flex-col justify-center items-start w-1/2 gap-3 my-2'>
               <Label className='font-bold'>Estado:</Label>
               <Select
-                value={String(selectedAlert?.status)}
+                value={String(alertDataEdit?.status)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Seleccione el estado" />
@@ -355,7 +396,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
             </div>
             <div className='flex flex-col justify-center items-start w-1/2 gap-3 my-2'>
               <Label className='font-bold'>Prioridad:</Label>
-              <Select value={String(selectedAlert?.priority)}>
+              <Select disabled value={String(alertDataEdit?.priority)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Seleccione la prioridad" />
                 </SelectTrigger>
@@ -372,26 +413,51 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
           </div>
           <div className='flex flex-col justify-center items-start w-full gap-1 my-2'>
             <Label className='font-bold'>Creado por:</Label>
-            <Input value={selectedAlert?.creator_id ?? ''} />
+            <Input disabled value={alertDataEdit?.creator_id ?? ''} />
           </div>
           <div className='flex flex-col justify-center items-start w-full gap-1 my-2'>
             <Label className='font-bold'>Enviado a:</Label>
-
-            <Input value={selectedAlert?.send_to} />
+            <div className='flex flex-row gap-1 w-full bg-white p-2 rounded-md'>
+              {
+                alertDataEdit && alertDataEdit.send_to && alertDataEdit.send_to.length > 0 ? (
+                  alertDataEdit?.send_to?.map((user: string, index: number) => (
+                    <span key={index} className='bg-gray-300 p-1 text-sm rounded-md'>{user}</span>
+                  ))
+                ) : (
+                  <span className='text-sm p-1'>No hay usuarios asignados</span>
+                )
+              }
+            </div>
+          </div>
+          <div className='flex flex-col justify-center items-start w-full gap-1 my-2'>
+            <Label className='font-bold'>Título:</Label>
+            <Input disabled value={alertDataEdit?.title} />
           </div>
           <div className='flex flex-col justify-center items-start w-full gap-1 my-2'>
             <Label className='font-bold'>Mensaje:</Label>
-            <Textarea value={selectedAlert?.message} className='resize-none' />
+            <Textarea disabled value={alertDataEdit?.message} className='resize-none' />
           </div>
+          {
+            attendedAlertOption &&
+            <div className='flex flex-col justify-center items-start w-full gap-1 my-2'>
+              <Label className='font-bold'>Nuevo mensaje:</Label>
+              <Textarea value={selectedAlert?.message} className='resize-none' />
+            </div>
+          }
           <div className='flex flex-col justify-center items-start w-full my-2 gap-1 '>
             <Label className='font-bold'>Evidencias:</Label>
-            <div className='flex flex-col gap-2 w-full h-40 overflow-auto'>
+            <div className='flex flex-row gap-2 w-full h-40 overflow-x-auto'>
               {
                 selectedAlert && selectedAlert.uploaded_files && selectedAlert.uploaded_files.length > 0 ?
                   selectedAlert.uploaded_files.map((file, index) => (
-                    <div key={index} className='bg-white w-full rounded-md gap-1 p-2'>
-                      <h1>{file.file}</h1>
-                      {/* <Image width={30} height={13} src={file.file} className='w-full h-32 object-cover' /> */}
+                    <div key={index} className='bg-white w-40 h-40 rounded-md gap-1 p-2'>
+                      <Image
+                        width={300}
+                        height={130}
+                        src={file.file}
+                        alt={`Evidencia ${index + 1}`}
+                        className='w-full h-full object-cover'
+                      />
                     </div>
                   ))
                   :
@@ -401,8 +467,34 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
               }
             </div>
           </div>
+          {
+            attendedAlertOption && selectedAlert?.status === 0 && (
+              <div className='flex flex-row items-center gap-2'>
+                <Button
+                  onClick={() => {
+                    console.log('Atender Alert', selectedAlert?.id)
+
+                  }}
+                  className='w-full'>
+                  Actualizar
+                </Button>
+                <Button
+                  onClick={() => {
+                    // setOpenAlert(null)
+                    // setSelectedAlert(null)
+
+                  }}
+                  variant='destructive'
+                  className='w-full'>
+                  Limpiar
+                </Button>
+              </div>
+            )
+          }
         </div>
-      </div>
+      </div> */}
+
+      {/* Crear nueva alerta */}
       <div className={`w-[400px] max-h-[60vh] min-h-[60vh] bg-gray-200 text-black rounded-md p-2 mt-28 border-gray-400 border-2 shadow-lg flex flex-col gap-1 ${openCreateAlert ? '' : 'hidden'}`}>
         <div className='p-2 flex flex-row bg-[#002645] rounded-md justify-between items-center'>
           <h1 className='text-white font-bold'>Nueva Alerta</h1>
@@ -417,7 +509,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                 message: '',
                 creator_id: session?.user.id,
                 extra_field: null,
-                send_to_id: null,
+                send_to: null,
                 files: null
               })
               setInspectionData({
@@ -434,7 +526,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
             <FaAngleDoubleRight size={25} />
           </button>
         </div>
-        <div className='flex flex-col rounded-md p-2 h-full'>
+        <div className='flex flex-col p-2 h-full overflow-auto rounded-md'>
           <div className='flex flex-row gap-5 w-full h-full'>
             <div className='flex flex-col w-1/3 gap-3 my-2'>
               <Label className='font-bold'>Tipo:</Label>
@@ -545,16 +637,19 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
               }}
             />
           </div>
-          <div className='flex flex-row justify-end  items-center gap-3'>
+          <div className='flex flex-row justify-end  items-center gap-2'>
             {
               loading
                 ? <div className='flex items-center gap-2'><Spinner />Cargando...</div>
                 : null
             }
-            <Button disabled={loading} type="button" onClick={async () => { await handleSubmit() }}> Guardar </Button>
+            <Button className='w-full' disabled={loading} type="button" onClick={async () => { await handleSubmit() }}> Guardar </Button>
+            <Button className='w-full' disabled={loading} onClick={() => { console.log('Limpiando...') }} variant='destructive'> Limpiar </Button>
           </div>
         </div>
       </div>
+
+      {/* Lista de alertas no atendidas */}
       {
         openAlertsView && (
           <div className='flex flex-col min-h-[80vh] max-h-[80vh]  w-[300px] bg-gray-200  text-black rounded-md p-1 border-gray-400 border-2 shadow-lg'>
@@ -611,14 +706,15 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                       return (
                         <button
                           key={index}
-                          className={`bg-white rounded-md border border-gray-400 hover:bg-slate-100 flex flex-col gap-2 ${notify.send_to === session.user.id ? 'bg-red-200' : ''}`}
+                          className={`bg-white rounded-md border border-gray-400 hover:bg-slate-100 flex flex-col gap-2 ${notify.send_to === session?.user.id ? 'bg-red-200' : ''}`}
                           onClick={() => {
                             if (openAlert === notify.id) {
-                              setOpenAlert(null)
+                              setOpenAlert(false)
                               setSelectedAlert(null)
                             } else {
-                              setOpenAlert(notify.id)
+                              setOpenAlert(true)
                               setSelectedAlert(notify)
+                              console.log('Selected Alert:', notify)
                             }
                           }}
                         >
@@ -632,7 +728,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                             </div>
                           </div>
                           <div className='flex flex-col items-start w-full px-1 mb-2'>
-                            <div className='text-sm'>Equipo: Molino de Bolas 005</div>
+                            <div className='text-sm'>{notify?.inspection_data.entity_id}</div>
                             <div className='text-sm'>{notify.title}</div>
                           </div>
                         </button>
@@ -646,7 +742,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                         return (
                           <button
                             key={index}
-                            className={`bg-white rounded-md border border-gray-400 hover:bg-slate-100 flex flex-col gap-2 ${notify.send_to === session.user.id ? 'bg-red-200' : ''}`}
+                            className={`bg-white rounded-md border border-gray-400 hover:bg-slate-100 flex flex-col gap-2 ${notify.send_to === session?.user.id ? 'bg-red-200' : ''}`}
                             onClick={() => {
                               if (openAlert === notify.id) {
                                 setOpenAlert(null)
@@ -654,6 +750,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                               } else {
                                 setOpenAlert(notify.id)
                                 setSelectedAlert(notify)
+                                console.log('Selected Alert:', notify)
                               }
                             }}
                           >
@@ -667,7 +764,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                               </div>
                             </div>
                             <div className='flex flex-col items-start w-full px-1 mb-2'>
-                              <div className='text-sm'>Equipo: Molino de Bolas 005</div>
+                              <div className='text-sm'>{notify?.inspection_data.entity_id}</div>
                               <div className='text-sm'>{notify.title}</div>
                             </div>
                           </button>
@@ -677,19 +774,6 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
             </div>
           </div>)
       }
-      {/* {
-        <DialogListNotifies open={openAllNotifies} setOpen={setOpenAllNotifies} />
-      } */}
-      {/* {
-        openAlert && selectedAlert !== null
-          ? <DialogInfoNotify open={openAlert} setOpen={setOpenAlert} dataSelected={selectedAlert} />
-          : null
-      } */}
-      {/* {
-        openCreateAlert
-          ? <DialogCreateNotifyArea actualNode={actualNode} idArea={12} open={openCreateAlert} setOpen={setOpenCreateAlert} />
-          : null
-      } */}
     </div>
   )
 }
