@@ -321,7 +321,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     setSelectedShapeId(id);
   };
 
-  console.log("FINAL SHAPES RENDER", finalShapesRender)
+  // console.log("FINAL SHAPES RENDER", finalShapesRender)
 
   return (
     <div>

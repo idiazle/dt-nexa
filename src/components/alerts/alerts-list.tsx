@@ -20,6 +20,7 @@ import { getEquipments } from '@/api/admin/equipments-api'
 import { useSession } from 'next-auth/react'
 import { MultiSelect } from '../ui/multiselect'
 import Spinner from '../ui/spinner'
+import { useToast } from '../ui/use-toast'
 
 interface AlertsListProps {
   openAlertsView: boolean
@@ -130,31 +131,6 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
       .then(response => {
         const users = response.data.data;
         setUsers(users);
-        const updatedAlerts = allAlerts.map(alert => {
-          const creatorName =
-            users.find((user: any) => user.id === alert.creator_id)?.username || alert.creator_id;
-
-          let sendToNames: string[] = [];
-          try {
-            const sendToIds = JSON.parse(alert.send_to.toString());
-            if (Array.isArray(sendToIds)) {
-              sendToNames = sendToIds.map((id: number) => {
-                const user = users.find((u: any) => u.id === id);
-                return user ? user.username : id.toString();
-              });
-            }
-          } catch (err) {
-            console.warn('Error parsing send_to', alert.send_to);
-          }
-
-          return {
-            ...alert,
-            creator_id: creatorName,
-            send_to: sendToNames
-          };
-        });
-
-        setModifiesAlerts(updatedAlerts);
       })
       .catch(error => {
         console.error('Error fetching users:', error);
@@ -162,25 +138,52 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
   }, [allAlerts]);
 
   useEffect(() => {
-    if (openCreateAlert) {
-      getEquipments()
-        .then(response => {
-          const equipments = response.data.data;
-          setEquipmentList(equipments);
-        })
-        .catch(error => {
-          console.error('Error fetching equipments:', error);
-        });
-    }
-  }, [openCreateAlert]);
+    getEquipments().then(response => {
+      const equipments = response.data.data;
+      console.log('Equipments fetched:', equipments);
+      setEquipmentList(equipments);
+    })
+  }, [])
 
+  const nameEquipmentView = (id: number) => {
+    const equipment = equipmentList.find(e => e.equipment_id === id);
+    return equipment ? `${equipment.tag} - ${equipment.name}` : 'Equipo no encontrado';
+  }
+
+  const nameUserView = (id: number) => {
+    const user = users.find(u => u.id === id);
+    return user ? user.username : 'Usuario no encontrado';
+  }
+
+  const nameSendToView = (array: string) => {
+    try {
+      const sendToIds = JSON.parse(array);
+      if (Array.isArray(sendToIds)) {
+        return sendToIds.map((id: number) => {
+          const user = users.find((u: any) => u.id === id);
+          return user ? user.username : id.toString();
+        }).join(', ');
+      }
+    } catch (err) {
+      console.warn('Error parsing send_to', array);
+    }
+    return 'No asignado';
+  }
   // const filterDataNotifies = modifiesAlerts.filter(notify => {
   //   if (filterNotifies === '0') return true
   //   return notify.priority === parseInt(filterNotifies)
   // })
 
-  const noAttendedAlerts = modifiesAlerts.filter(notify => notify.status === 1)
-  const attendedAlerts = modifiesAlerts.filter(notify => notify.status === 0)
+  const changesAllAlerts = () =>{
+    getAllAlerts().then(response => {
+      const alerts = response.data.data;
+      console.log('Alerts fetched:', alerts);
+      setAllAlerts(alerts);
+    })
+  }
+
+  const noAttendedAlerts = allAlerts.filter(notify => notify.status === 1)
+  const attendedAlerts = allAlerts.filter(notify => notify.status === 0)
   const [usersSelected, setUsersSelected] = useState<number[]>([])
 
   const [inspectionData, setInspectionData] = useState({
@@ -287,8 +290,8 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
             </TableHeader>
             <TableBody className='bg-white'>
               {
-                modifiesAlerts.length > 0
-                  ? modifiesAlerts?.map((notify, index) => (
+                allAlerts.length > 0
+                  ? allAlerts?.map((notify, index) => (
                     <TableRow key={index}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell className='w-[50px]'>{
@@ -299,24 +302,21 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                                 <FaCircle size={20} className='text-gray-500' />
                       }</TableCell>
                       {/* <TableCell>{notify.type}</TableCell> */}
-                      <TableCell className='w-[200px]'>{notify.inspection_data?.entity_id}</TableCell>
+                      <TableCell className='w-[200px]'>{nameEquipmentView(Number(notify.inspection_data?.entity_id))}</TableCell>
                       <TableCell className='w-[200px]'>{notify.title}</TableCell>
-                      <TableCell>{notify?.creator_id}</TableCell>
+                      <TableCell>{nameUserView(Number(notify?.creator_id))}</TableCell>
                       <TableCell>
                         <div className='flex flex-row gap-1'>
-                          {
-                            notify.send_to.map((user: string, idx: number) => {
-                              return (
-                                <span key={idx} className='bg-gray-200 p-1 rounded-lg'>{user}</span>
-                              )
-                            })
-                          }
+                          <span className='bg-gray-200 p-1 rounded-lg'>
+                            {
+                              nameSendToView((notify.send_to).toString())
+                            }
+                          </span>
                         </div>
                       </TableCell>
-                      <TableCell className='flex flex-row gap-1 items-center'>{notify.status === 1 ? <FaCheck className='text-green-500' /> : <FaTimes className='text-red-500' />}{notify.status === 1 ? 'Atendido' : "No atendido"}</TableCell>
-                      {/* <TableCell>
-                        <Textarea className='resize-none' value={notify.message} readOnly />
-                      </TableCell> */}
+                      <TableCell className='flex flex-row gap-1 items-center'>
+                        {notify.status === 0 ? <FaCheck className='text-green-500' /> : <FaTimes className='text-red-500' />}{notify.status === 0 ? 'Atendido' : "No atendido"}
+                      </TableCell>
                       <TableCell>
                         <Button
                           onClick={() => {
@@ -341,7 +341,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
       {/* Arir alerta de lista */}
       {
         selectedAlert && (
-          <DialogInfoNotify open={openAlert} setOpen={setOpenAlert} dataSelected={selectedAlert} />
+          <DialogInfoNotify open={openAlert} setOpen={setOpenAlert} dataSelected={selectedAlert} setAllAlerts={setAllAlerts} />
         )
       }
 
@@ -706,7 +706,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                       return (
                         <button
                           key={index}
-                          className={`bg-white rounded-md border border-gray-400 hover:bg-slate-100 flex flex-col gap-2 ${notify.send_to === session?.user.id ? 'bg-red-200' : ''}`}
+                          className={`bg-white rounded-md border border-gray-400 hover:bg-slate-100 flex flex-col gap-2 ${Number(notify.send_to) === session?.user.id ? 'bg-red-200' : ''}`}
                           onClick={() => {
                             if (openAlert === notify.id) {
                               setOpenAlert(false)
@@ -728,7 +728,13 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                             </div>
                           </div>
                           <div className='flex flex-col items-start w-full px-1 mb-2'>
-                            <div className='text-sm'>{notify?.inspection_data.entity_id}</div>
+                            <div className='text-sm'>
+                              {
+                                notify?.inspection_data?.entity_id
+                                  ? nameEquipmentView(Number(notify?.inspection_data.entity_id))
+                                  : 'Equipo no encontrado'
+                              }
+                            </div>
                             <div className='text-sm'>{notify.title}</div>
                           </div>
                         </button>
@@ -738,11 +744,10 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                       ? <div className='flex flex-row justify-center items-center w-full h-full py-5'>
                         <h1 className='italic'>No hay notificaciones</h1></div>
                       : noAttendedAlerts?.map((notify, index) => {
-                        const extraInfo = JSON.parse(notify.extra_field)
                         return (
                           <button
                             key={index}
-                            className={`bg-white rounded-md border border-gray-400 hover:bg-slate-100 flex flex-col gap-2 ${notify.send_to === session?.user.id ? 'bg-red-200' : ''}`}
+                            className={`bg-white rounded-md border border-gray-400 hover:bg-slate-100 flex flex-col gap-2 ${Number(notify.send_to) === session?.user.id ? 'bg-red-200' : ''}`}
                             onClick={() => {
                               if (openAlert === notify.id) {
                                 setOpenAlert(null)
@@ -764,7 +769,11 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                               </div>
                             </div>
                             <div className='flex flex-col items-start w-full px-1 mb-2'>
-                              <div className='text-sm'>{notify?.inspection_data.entity_id}</div>
+                              <div className='text-sm'>
+                                {
+                                  notify?.inspection_data?.entity_id ? nameEquipmentView(notify.inspection_data.entity_id) : 'Equipo no encontrado'
+                                }
+                              </div>
                               <div className='text-sm'>{notify.title}</div>
                             </div>
                           </button>

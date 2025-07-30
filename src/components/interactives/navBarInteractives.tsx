@@ -10,6 +10,7 @@ import { IoNotifications } from "react-icons/io5"
 import { X } from "lucide-react"
 import { getAllAlerts } from "@/api/admin/alerts-api"
 import { Toast } from "../ui/toast"
+import { useToast } from "../ui/use-toast"
 
 const logos = [
   {
@@ -36,6 +37,7 @@ const logos = [
 ]
 
 const NavBarInteractives = () => {
+  const { toast } = useToast()
   const searchParams = useSearchParams()
   const mapType = searchParams.get('map-type')
   const [planeSelected, setPlaneSelected] = useState<string>('2')
@@ -44,7 +46,6 @@ const NavBarInteractives = () => {
   const prevTotalRef = useRef<number | null>(null)
 
   useEffect(() => {
-
     const fetchAlerts = () => {
       getAllAlerts()
         .then(response => {
@@ -55,6 +56,14 @@ const NavBarInteractives = () => {
             if (prevTotalRef.current !== null && prevTotalRef.current !== newTotal) {
               const difference = newTotal - prevTotalRef.current
               console.log(`Total alerts changed by ${difference} (from ${prevTotalRef.current} to ${newTotal})`)
+              if (difference > 0) {
+                toast({
+                  variant: 'destructive',
+                  title: 'Nueva alerta',
+                  description: `Se han detectado ${difference} nuevas alertas.`,
+                  duration: 5000,
+                })
+              }
             }
 
             prevTotalRef.current = newTotal
