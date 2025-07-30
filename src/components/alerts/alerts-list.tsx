@@ -52,7 +52,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
   const [filterNotifies, setFilterNotifies] = React.useState('0')
   const [openCreateAlert, setOpenCreateAlert] = React.useState(false)
   const [actualNode, setActualNode] = React.useState(null)
-  const [openAlert, setOpenAlert] = React.useState<boolean>(false)
+  const [openAlert, setOpenAlert] = React.useState<number | boolean | null >(false)
   const refSpheere = React.useRef(null)
   const [allAlerts, setAllAlerts] = useState<Alert[]>([])
   const [openAllAlerts, setOpenAllAlerts] = useState(false)
@@ -321,7 +321,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
                         <Button
                           onClick={() => {
                             setSelectedAlert(notify)
-                            setOpenAlert(notify.id)
+                            setOpenAlert(true)
                           }}
                         >
                           <FaEye size={20} />
@@ -341,7 +341,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
       {/* Arir alerta de lista */}
       {
         selectedAlert && (
-          <DialogInfoNotify open={openAlert} setOpen={setOpenAlert} dataSelected={selectedAlert} setAllAlerts={setAllAlerts} />
+          <DialogInfoNotify open={!!openAlert} setOpen={setOpenAlert} dataSelected={selectedAlert} setAllAlerts={setAllAlerts} />
         )
       }
 

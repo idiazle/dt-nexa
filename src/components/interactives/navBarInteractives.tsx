@@ -44,6 +44,7 @@ const NavBarInteractives = () => {
   const [openListAlerts, setOpenListsAlerts] = useState<boolean>(false)
   const [totalAlerts, setTotalAlerts] = useState<number>(0)
   const prevTotalRef = useRef<number | null>(null)
+  const [hasNewAlert, setHasNewAlert] = useState(false)
 
   useEffect(() => {
     const fetchAlerts = () => {
@@ -57,6 +58,7 @@ const NavBarInteractives = () => {
               const difference = newTotal - prevTotalRef.current
               console.log(`Total alerts changed by ${difference} (from ${prevTotalRef.current} to ${newTotal})`)
               if (difference > 0) {
+                setHasNewAlert(true)
                 toast({
                   variant: 'destructive',
                   title: 'Nueva alerta',
@@ -132,8 +134,8 @@ const NavBarInteractives = () => {
         <Button
           title='Alertas'
           size={'icon'}
-          className={`rounded-full bg-white hover:bg-[#7196A9] text-[#002645] hover:text-white ${openListAlerts ? 'bg-[#7196A9] text-white' : ''}`}
-          onClick={() => { setOpenListsAlerts(!openListAlerts) }}>
+          className={`rounded-full bg-white hover:bg-[#7196A9] text-[#002645] hover:text-white ${openListAlerts ? 'bg-[#7196A9] text-white' : ''} ${hasNewAlert ? 'animate-pulse bg-red-500 text-white' : ''}`}
+          onClick={() => { setOpenListsAlerts(!openListAlerts); setHasNewAlert(false) }}>
           {
             openListAlerts ?
               <X size={20} className='' /> :

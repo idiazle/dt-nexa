@@ -1,3 +1,4 @@
+'use client'
 import React, { use, useEffect, useState } from 'react'
 import {
   Dialog,
@@ -313,7 +314,7 @@ export default function DialogInfoNotify({ open, setOpen, dataSelected, setAllAl
           <div className='flex flex-row gap-2 w-full h-40 overflow-x-auto'>
             {
               data && data.uploaded_files && data.uploaded_files.length > 0 ?
-                data.uploaded_files.map((file: File, index: number) => (
+                data.uploaded_files.map((file: any, index: number) => (
                   <div key={index} className='bg-white w-40 h-40 rounded-md gap-1 p-2'>
                     <Image
                       width={300}
