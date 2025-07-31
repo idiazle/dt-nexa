@@ -226,10 +226,10 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
         Array.from(sendNotifcation.files).forEach((file: any) => {
           formDataaa.append('files', file)
         })
-        console.log('FORMDATA', sendNotifcation)
+        // console.log('FORMDATA', sendNotifcation)
         const response2 = await postNotification(formDataaa)
         if (response2.status === 201) {
-          console.log('Notification sent successfully', response2.data);
+          // console.log('Notification sent successfully', response2.data);
           setOpenCreateAlert(false)
           setLoading(false)
         }

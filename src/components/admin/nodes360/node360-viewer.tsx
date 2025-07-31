@@ -634,7 +634,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                   </div>
                 )
               }
-              <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
+              {/* <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
                 <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
                   <TooltipProvider delayDuration={300} >
                     <Tooltip>
@@ -658,7 +658,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-              </div>
+              </div> */}
               <OptionsNav />
             </>
             {
@@ -974,7 +974,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                   </div>
                 )
               }
-              <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
+              {/* <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center w-7 h-7`}>
                 <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
                   <TooltipProvider delayDuration={300} >
                     <Tooltip>
@@ -998,8 +998,7 @@ export default function Node360Viewer({ allNodes, selectedNode, dialogOpen, setD
                     </Tooltip>
                   </TooltipProvider>
                 </div>
-                {/* </div> */}
-              </div>
+              </div> */}
               {
                 openDialogDoc
                   ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />

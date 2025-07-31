@@ -30,9 +30,12 @@ interface ViewShapesStructure {
   showShapes: boolean
   flagRefresh: boolean
   refDivOverflow: any
+  set360ViewSelected: (value: boolean) => void
+  pndImage: any
+  setPndImage: (value: any) => void
 }
 
-export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, refDivOverflow, flagRefresh, showShapes, shapesRender, setShapesRender, setSelectedShape, setCloseInformation, setRenderLeftInformation, setReportSelected }: ViewShapesStructure) {
+export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, refDivOverflow, flagRefresh, showShapes, shapesRender, setShapesRender, setSelectedShape, setCloseInformation, setRenderLeftInformation, setReportSelected, set360ViewSelected, pndImage, setPndImage }: ViewShapesStructure) {
   const renderColor = (option: number) => {
     let color = ''
     if (option === 1) {
@@ -321,7 +324,13 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
     setSelectedShapeId(id);
   };
 
-  // console.log("FINAL SHAPES RENDER", finalShapesRender)
+  useEffect(() => {
+    if (nodeSelected) {
+      setPndImage(nodeSelected);
+      // set360ViewSelected(true);
+      // setOpen360Dialog(true);
+    }
+  }, [nodeSelected]);
 
   return (
     <div>
@@ -359,6 +368,7 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
                           })
                         } else {
                           setNodeSelected(obj.photogrammetry_node)
+                          set360ViewSelected(true)
                           setOpen360Dialog(true)
                           setSelectedMarkerIcon(
                             {
@@ -545,11 +555,11 @@ export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, 
       }
       {/* Aquí va el dialog de información */}
       {/* Aquí va el dialog del 360 */}
-      {
+      {/* {
         Open360Dialog ?
           <Node360Viewer selectedNode={nodeSelected} allNodes={nodes360} dialogOpen={Open360Dialog} setDialogOpen={setOpen360Dialog} />
           : null
-      }
+      } */}
     </div>
 
 

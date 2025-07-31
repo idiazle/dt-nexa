@@ -551,6 +551,7 @@ export default function PlansMapContainer(Map: MapProps) {
   const [allNodes, setAllNodes] = useState<any[]>([])
   const [nodeSelected, setNodeSelected] = useState<any>(null)
   const [nodesFilter, setNodesFilter] = useState<any[]>([])
+  const [pndImage, setPndImage] = useState<any>(null)
 
   console.log("MAP SELECTED", selectedShape);
 
@@ -651,7 +652,8 @@ export default function PlansMapContainer(Map: MapProps) {
     }
   }, [openGallery, equipmentSelected]);
 
-
+  console.log("nodeSelected", nodeSelected);
+  console.log("pndImage", pndImage);
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
       <div className='relative w-full h-full'>
@@ -744,6 +746,9 @@ export default function PlansMapContainer(Map: MapProps) {
                   setEquipmentPressed={setEquipmentPressed}
                   setEquipmentSelected={setEquipmentSelected}
                   setReportSelected={setReportSelected}
+                  set360ViewSelected={setView360Selected}
+                  setPndImage={setPndImage}
+                  pndImage={pndImage}
                 />
               </> : null
           }
@@ -1052,7 +1057,7 @@ export default function PlansMapContainer(Map: MapProps) {
           // </div>
           <Node360Viewer
             allNodes={allNodes}
-            selectedNode={nodeSelected}
+            selectedNode={nodeSelected || pndImage || undefined}
             dialogOpen={view360Selected}
             setDialogOpen={setView360Selected}
           />
