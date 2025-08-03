@@ -9,22 +9,31 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import React, { useEffect, useState } from 'react'
 import ImageDetail from './image-detail'
 import CreateImagesEquipments from '@/components/admin/imagenes/create-imagenes'
-import { getAllImagenes } from '@/api/admin/imagenes-api'
+import { getAllImagenes, getImagenesByEquipment } from '@/api/admin/imagenes-api'
 import { getEquipments } from '@/api/admin/equipments-api'
+import { EquipmentStructure } from '@/lib/utils'
+import DialogHistory from './dialog-history'
+import DialogEdit from './dialog-edit'
 
-type Image = {
+export type ImageType = {
   name: string,
   description: string,
   equipment: string | number,
-  uploaded_files: []
+  uploaded_files: [],
+  created_at: string
 }
 
 const Imagenes = () => {
   const [openDialog, setOpenDialog] = useState(false)
-  const [images, setImages] = useState<Image[]>([])
+  const [images, setImages] = useState<ImageType[]>([])
   const [openImageDetail, setOpenImageDetail] = useState(false)
-  const [imageSelected, setImageSelected] = useState<Image | null>(null)
-  const [equipments, setEquipments] = useState([])
+  const [openHistory, setOpenHistory] = useState(false)
+  const [openEdit, setOpenEdit] = useState(false)
+  const [imageSelected, setImageSelected] = useState<ImageType | null>(null)
+  // Define the EquipmentStructure type or import it if already defined
+  // type EquipmentStructure = { id: number; name: string; ... } // Example
+
+  const [equipments, setEquipments] = useState<EquipmentStructure[]>([])
 
   useEffect(() => {
     if (openDialog === false) {
@@ -41,6 +50,51 @@ const Imagenes = () => {
   }, [openDialog]);
 
   console.log("Images after fetch:", images);
+
+  const uniqueLatestByEquipment = (items: { equipment: number; created_at: string }[]) => {
+    const latestMap = new Map<number, any>();
+
+    items.forEach(item => {
+      const current = latestMap.get(item.equipment);
+
+      if (!current || new Date(item.created_at) > new Date(current.created_at)) {
+        latestMap.set(item.equipment, item);
+      }
+    });
+
+    return Array.from(latestMap.values());
+  };
+
+  console.log("Unique latest images by equipment:", uniqueLatestByEquipment(images));
+
+  useEffect(() => {
+    getEquipments()
+      .then(response => {
+        if (response.status === 200) {
+          setEquipments(response.data.data)
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching equipments:", error);
+      })
+  }, [])
+
+  const getEquipmentName = (id: string | number) => {
+    const equipment = equipments.find(e => e.equipment_id === id);
+    return equipment ? equipment.tag + ' - ' + equipment.name : 'Unknown Equipment';
+  };
+
+  useEffect(() => {
+    getImagenesByEquipment(16)
+      .then(response => {
+        if (response.status === 200) {
+          console.log("Fetched images by equipment:", response.data.data);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching images by equipment:", error);
+      })
+  }, [])
 
   return (
     <div>
@@ -72,7 +126,7 @@ const Imagenes = () => {
               images.map((image, index) => (
                 <TableRow key={index}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell>{image.equipment}</TableCell>
+                  <TableCell>{getEquipmentName(image.equipment)}</TableCell>
                   <TableCell>{image.name}</TableCell>
                   <TableCell>{image.description}</TableCell>
                   {/* <TableCell>{image.file.join(', ')}</TableCell> */}
@@ -80,13 +134,23 @@ const Imagenes = () => {
                     <Button
                       onClick={() => {
                         setOpenImageDetail(true)
-                        // setImageSelected(image)
+                        setImageSelected(image)
                       }}
                     >
                       Ver imágenes
                     </Button>
-                    <Button disabled>Ver historial</Button>
-                    <Button disabled>Editar info.</Button>
+                    <Button
+                      onClick={() => {
+                        setOpenHistory(true)
+                        setImageSelected(image)
+                      }}
+                    >Ver historial</Button>
+                    <Button
+                      onClick={() => {
+                        setOpenEdit(true)
+                        setImageSelected(image)
+                      }}
+                    >Editar info.</Button>
                     <Button variant='destructive'>Eliminar</Button>
                   </TableCell>
                 </TableRow>
@@ -96,20 +160,16 @@ const Imagenes = () => {
         </Table>
       </div>
       {
-        openDialog && (
-          <CreateImagesEquipments
-            openDialog={openDialog}
-            setOpenDialog={setOpenDialog}
-          />
-        )
+        openDialog && <CreateImagesEquipments openDialog={openDialog} setOpenDialog={setOpenDialog} />
       }
       {
-        openImageDetail && (
-          <ImageDetail
-            openDetail={openImageDetail}
-            setOpenDetail={setOpenImageDetail}
-          />
-        )
+        openImageDetail && <ImageDetail images={imageSelected} openDetail={openImageDetail} setOpenDetail={setOpenImageDetail} />
+      }
+      {
+        openHistory && <DialogHistory openHistory={openHistory} setOpenHistory={setOpenHistory} image={imageSelected} />
+      }
+      {
+        openEdit && <DialogEdit openEdit={openEdit} setOpenEdit={setOpenEdit} image={imageSelected} />
       }
     </div>
   )

@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button'
 import { getDocumentsByArea } from '@/api/admin/documents-api'
 import { getTroubleByEqId } from '@/api/admin/troubles-api'
 import { TshootInfDocumButtons } from './trouble-Info-doc-btn'
+import { useSpring, animated } from '@react-spring/web'
+import { useDrag } from '@use-gesture/react'
+import { getImagenesByEquipment } from '@/api/admin/imagenes-api'
 
 interface InfoEquipCompStructure {
   equipmentIsPressed: boolean
@@ -78,7 +81,7 @@ export default function InformationEquipmentComponent({ equipmentIsPressed, refT
       }
     }
   }
-  useLayoutEffect(() => {
+  useEffect(() => {
     controlOverflowDiv()
     moveMoreinfoDiv()
   }, [equipmentSelected])
@@ -146,9 +149,54 @@ export default function InformationEquipmentComponent({ equipmentIsPressed, refT
     }
   }, [overflowValues])
 
+  const initialPositionsDrag = {
+    x: 0,
+    y: 0
+  }
+
+  const posA = useSpring(initialPositionsDrag)
+
+  const bindA = useDrag((params) => {
+    posA.x.set(params.offset[0])
+    posA.y.set(params.offset[1])
+  }, {
+    from: ({ args: [originalIndex] }) => [
+      posA.x.get(),
+      posA.y.get()
+    ]
+  })
+
+  const [isHave360View, setIsHave360View] = useState<boolean>(false)
+  const [isHaveImages, setIsHaveImages] = useState<boolean>(false)
+
+  useEffect(() => {
+    getImagenesByEquipment(equipmentSelected.obj.entity_id.id as number)
+      .then((response) => {
+        if (response.status === 200 && response.data.data.length > 0) {
+          setIsHaveImages(true)
+        } else {
+          setIsHaveImages(false)
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching images:', error)
+        setIsHaveImages(false)
+      })
+  }, [equipmentSelected])
+
+  console.log("equipmentSelected", equipmentSelected)
+  console.log("isHaveImages", isHaveImages)
+
   return (
     <div style={{ left: equipmentSelected?.position?.x - overflowValues.axisX, top: equipmentSelected?.position?.y - overflowValues.axisY }} className={`absolute bg-[#eeeeee] rounded-lg transition-all duration-300 ${equipmentSelected?.isVisible === true ? 'opacity-100 visible' : 'opacity-0 hidden'}`} >
-      <div className='flex flex-col justify-center items-center bg-gray-500 bg-opacity-70 gap-0.5 p-2 rounded-sm'>
+      <animated.div {...bindA()}
+        className={'h-full w-full overflow-hidden'}
+        style={{
+          x: posA.x,
+          y: posA.y,
+          touchAction: 'none'
+        }} >
+      <div className='absolute flex flex-row bg-gray-500 bg-opacity-70 gap-0.5 p-2 rounded-md mt-5'>
         <Button
           onClick={() => { setReportSelected(true); set360ViewSelected(false) }}
           className='w-20 h-8 bg-[#002a98] text-white text-xs font-semibold'>
@@ -160,11 +208,14 @@ export default function InformationEquipmentComponent({ equipmentIsPressed, refT
           360°
         </Button>
         <Button
+          disabled={!isHaveImages}
           onClick={() => { setOpenGallery(true) }}
           className='w-20 h-8 bg-[#002a98] text-white text-xs font-semibold'>
           Imágenes
         </Button>
       </div>
-    </div>
+
+    </animated.div>
+    </div >
   )
 }

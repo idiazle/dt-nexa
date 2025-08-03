@@ -23,3 +23,12 @@ export const deleteImagenesByEquipment = async (id: number) => {
   const response = await axiosInstance.delete(`${process.env.NEXT_PUBLIC_BACK_URL}/gallery-eq/${id}`)
   return response
 }
+
+export const putImagenesByEquipment = async (id: number, data: any) => {
+  const response = await axiosInstance.put(`${process.env.NEXT_PUBLIC_BACK_URL}/gallery-eq/${id}`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+  return response
+}

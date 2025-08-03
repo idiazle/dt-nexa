@@ -49,6 +49,7 @@ import { AiOutlineFullscreen } from 'react-icons/ai';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { getImagenesByEquipment } from '@/api/admin/imagenes-api';
 import { Label } from '../ui/label';
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 interface MapProps {
   mapSelected: Map2dStructure | null
@@ -652,8 +653,9 @@ export default function PlansMapContainer(Map: MapProps) {
     }
   }, [openGallery, equipmentSelected]);
 
-  console.log("nodeSelected", nodeSelected);
-  console.log("pndImage", pndImage);
+  console.log("Images by Equipment", imagesByEquipment);
+  const [isZoomed, setIsZoomed] = useState(false);
+
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
       <div className='relative w-full h-full'>
@@ -802,34 +804,61 @@ export default function PlansMapContainer(Map: MapProps) {
                 </div>
               </div>
               {/* Imagen principal */}
-              <div className='flex-grow flex justify-center items-center overflow-hidden bg-white rounded-md'>
+              <div className='flex-grow flex justify-center items-center overflow-hidden bg-white rounded-md h-[500px]'>
                 {imageSelected?.file ? (
-                  <Image
-                    src={imageSelected.file}
-                    alt="Imagen seleccionada"
-                    width={800}
-                    height={400}
-                    className='rounded-md object-contain max-h-full max-w-full'
-                  />
+
+                  <TransformWrapper
+                    doubleClick={{ mode: 'zoomIn' }}
+                    wheel={{ step: 0.2 }}
+                    pinch={{ step: 5 }}
+                  >
+                    <TransformComponent wrapperStyle={{ height: 500, width: '100%' }}>
+                      <Image
+                        src={imageSelected.file}
+                        alt="Imagen seleccionada"
+                        width={800}
+                        height={400}
+                        className='rounded-md object-contain max-h-[500px] max-w-full'
+                      />
+                    </TransformComponent>
+                  </TransformWrapper>
                 ) : (
                   <p className="text-gray-500">No hay imágenes</p>
                 )}
               </div>
-
+              {/* Botón para cambiar imagen
+              <div className='flex justify-center items-center py-2'>
+                <button
+                  onClick={() => {
+                    const currentIndex = imagesByEquipment?.uploaded_files.findIndex(img => img.file === imageSelected?.file);
+                    const nextIndex = currentIndex !== undefined && currentIndex < imagesByEquipment?.uploaded_files.length - 1 ? currentIndex + 1 : 0;
+                    setImageSelected(imagesByEquipment?.uploaded_files[nextIndex]);
+                  }}
+                  className='bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600 transition duration-200'
+                >
+                  Siguiente imagen
+                </button>
+              </div> */}
+          
               {/* Miniaturas */}
               <div className='flex flex-row gap-2 overflow-x-auto py-2'>
                 {
                   imagesByEquipment?.uploaded_files.map((image, index) => (
-                    <div key={index} className='flex-shrink-0 cursor-pointer justify-center items-center flex flex-col gap-1'>
-                      <Image
-                        src={image.file}
-                        alt={`image-${index + 1}`}
-                        width={100}
-                        height={100}
-                        className='rounded-md object-cover border-2 border-gray-300 hover:border-blue-500 transition-all duration-200'
-                        onClick={() => setImageSelected(image)}
-                      />
-                      <span>Imagen {index + 1}</span>
+                    <div
+                      key={index}
+                      className='flex-shrink-0 cursor-pointer justify-center items-center flex flex-col gap-1 w-[120px]'
+                    >
+                      <div className='w-[100px] h-[100px] relative rounded-md border-2 border-gray-300 hover:border-blue-500 transition-all duration-200 overflow-hidden'>
+                        <Image
+                          src={image.file}
+                          alt={`image-${index + 1}`}
+                          layout='fill'
+                          objectFit='cover'
+                          className='rounded-md'
+                          onClick={() => setImageSelected(image)}
+                        />
+                      </div>
+                      <span className='text-sm text-center'>Imagen {index + 1}</span>
                     </div>
                   ))
                 }
@@ -1381,6 +1410,6 @@ export default function PlansMapContainer(Map: MapProps) {
           ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
           : null
       }
-    </div>
+    </div >
   )
 }
