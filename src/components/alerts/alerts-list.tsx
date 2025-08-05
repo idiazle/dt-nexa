@@ -193,7 +193,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
     }),
     inspection_type: 1,
     entity_id: '',
-    creator_id: session?.user.id,
+    creator_id: alertData?.creator_id,
   })
 
   const [loading, setLoading] = useState(false)
@@ -226,7 +226,7 @@ const AlertsList = ({ openAlertsView, setOpenAlertsView }: AlertsListProps) => {
         Array.from(sendNotifcation.files).forEach((file: any) => {
           formDataaa.append('files', file)
         })
-        // console.log('FORMDATA', sendNotifcation)
+        console.log('FORMDATA', sendNotifcation)
         const response2 = await postNotification(formDataaa)
         if (response2.status === 201) {
           // console.log('Notification sent successfully', response2.data);

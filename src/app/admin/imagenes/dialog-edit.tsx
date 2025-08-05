@@ -22,7 +22,13 @@ const DialogEdit = ({ openEdit, setOpenEdit, image }: DialogEditProps) => {
     created_at: '',
     uploaded_files: []
   })
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  interface UploadedFile {
+    id: number;
+    file: string; // URL or path to the image
+    [key: string]: any; // for any additional properties
+  }
+
+  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 
   useEffect(() => {
     if (image) {

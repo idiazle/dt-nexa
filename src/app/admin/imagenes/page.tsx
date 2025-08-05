@@ -65,7 +65,7 @@ const Imagenes = () => {
     return Array.from(latestMap.values());
   };
 
-  console.log("Unique latest images by equipment:", uniqueLatestByEquipment(images));
+  // console.log("Unique latest images by equipment:", uniqueLatestByEquipment(images));
 
   useEffect(() => {
     getEquipments()

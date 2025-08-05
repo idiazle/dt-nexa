@@ -25,7 +25,7 @@ const ImageDetail = ({ images, openDetail, setOpenDetail }: ImageDetailProps) =>
         <div className='flex flex-row items-center gap-2 overflow-x-auto'>
           {
             images && images.uploaded_files && images.uploaded_files.length > 0 ? (
-              images.uploaded_files.map((file, index) => (
+              images.uploaded_files.map((file: { file: string }, index: number) => (
                 <div
                   key={index}
                   className='flex flex-col gap-1 '
