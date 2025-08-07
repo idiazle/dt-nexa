@@ -563,6 +563,7 @@ export default function PlansMapContainer(Map: MapProps) {
 
   //ALERTS VARIABLES
   const [openListAlerts, setOpenListsAlerts] = useState<boolean>(false)
+  const [openDialogPhotoDetail, setOpenDialogPhotoDetail] = useState<boolean>(false)
 
 
   useEffect(() => {
