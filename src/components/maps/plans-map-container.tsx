@@ -1,5 +1,5 @@
 "use client"
-import React, { act, useEffect, useRef, useState } from 'react'
+import React, { act, use, useEffect, useRef, useState } from 'react'
 import { MapContainer, ImageOverlay, FeatureGroup } from "react-leaflet";
 import { LatLngExpression, LatLngTuple, map } from 'leaflet';
 import L from 'leaflet'
@@ -13,7 +13,7 @@ import { useSession } from 'next-auth/react';
 import { EditControl } from "react-leaflet-draw"
 import { Button } from '../ui/button';
 import { TbTriangleSquareCircleFilled, TbView360Number } from "react-icons/tb";
-import { FaAngleDown, FaAngleLeft, FaAngleRight, FaAnglesLeft, FaAnglesRight, FaAngleUp, FaBars, FaFile, FaLeaf, FaSquarePlus, FaTrash, FaX } from "react-icons/fa6";
+import { FaAngleDown, FaAngleLeft, FaAngleRight, FaAnglesLeft, FaAnglesRight, FaAngleUp, FaBars, FaEye, FaFile, FaLeaf, FaSquarePlus, FaTrash, FaX } from "react-icons/fa6";
 import ShapesPlanDialog from '../admin/plans/shapes-plan-dialog';
 import { EyeClosedIcon } from '@radix-ui/react-icons';
 import { EyeIcon, X } from 'lucide-react';
@@ -50,6 +50,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { getImagenesByEquipment } from '@/api/admin/imagenes-api';
 import { Label } from '../ui/label';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { Input } from '../ui/input';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { getEquipments } from '@/api/admin/equipments-api';
 
 interface MapProps {
   mapSelected: Map2dStructure | null
@@ -554,6 +557,8 @@ export default function PlansMapContainer(Map: MapProps) {
   const [nodesFilter, setNodesFilter] = useState<any[]>([])
   const [pndImage, setPndImage] = useState<any>(null)
 
+  const [openSpare, setOpenSpare] = useState<boolean>(false)
+
   console.log("MAP SELECTED", selectedShape);
 
   const currentIndex = navMaps.findIndex(map => map.map_id === mapId);
@@ -657,11 +662,127 @@ export default function PlansMapContainer(Map: MapProps) {
   console.log("Images by Equipment", imagesByEquipment);
   const [isZoomed, setIsZoomed] = useState(false);
 
+
+  // SECCION DE SPARES
+  const [spares, setSpares] = useState<any[]>([])
+  const [sparesInstalled, setSparesInstalled] = useState<any[]>([])
+  const [sparesNotInstalled, setSparesNotInstalled] = useState<any[]>([])
+  const [noSpares, setNoSpares] = useState<any[]>([])
+
+  const [repuestos, setRepuestos] = useState<any[]>([])
+  const [repuestosBySpare, setRepuestosBySpare] = useState<any[]>([])
+  const [tempSpare, setTempSpare] = useState<any[]>([])
+  const [tempRepuesto, setTempRepuesto] = useState<any[]>([])
+
+  const [mm60General, setMm60General] = useState<any | null>(null)
+
+  useEffect(() => {
+    fetch('/data/spares.json').then(response => response.json()).then(data => {
+      setSpares(data);
+    }).catch(error => {
+      console.error('Error al leer el JSON:', error);
+    });
+
+    fetch('/data/repuestos.json').then(response => response.json()).then(data => {
+      setRepuestos(data);
+    }).catch(error => {
+      console.error('Error al leer el JSON:', error);
+    });
+
+    fetch('/data/mm60_general.json').then(response => response.json()).then(data => {
+      setMm60General(data);
+    }).catch(error => {
+      console.error('Error al leer el JSON:', error);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (spares.length > 0) {
+      const installed = spares.filter(spare => spare.installed);
+      const notInstalled = spares.filter(spare => (spare.estado === 'Reparado' || spare.estado === 'Nuevo') && spare);
+      const noSpare = spares.filter(spare => (spare.estado === 'En Gestión' || spare.estado === 'Sin Gestión' || spare.estado === 'En Reparación' || spare.estado === 'Por Reparar') && spare);
+      setSparesInstalled(installed);
+      setSparesNotInstalled(notInstalled);
+      setNoSpares(noSpare);
+    }
+    if (repuestos.length > 0) {
+      const bySpare = repuestos.filter(repuesto => repuesto.spare);
+      setRepuestosBySpare(bySpare);
+    }
+
+  }, [spares, repuestos])
+
+  console.log("Spares Not Installed", sparesNotInstalled);
+  // console.log("Equipment Selected", (equipmentSelected?.obj.entity_id.id === 11) ? true : false);
+
+  const equip = {
+    id: equipmentSelected?.obj.entity_id.id,
+    tag: 'A018',
+    name: "Faja Transportadora"
+  }
+
+  useEffect(() => {
+    if (equipmentSelected?.obj.entity_id.id === equip.id) {
+      console.log("ENTRO AQUIII");
+      const temp = sparesNotInstalled.filter(spare => (spare.tag === equip.tag) && spare);
+      setTempSpare(temp)
+    }
+  }, [equipmentSelected, sparesNotInstalled])
+
+  const busquedaRepuestos = (id_spare: number) => {
+    const tempRepuesto = repuestos.filter(repuesto => (repuesto.spare_component === id_spare));
+    setRepuestosBySpare(tempRepuesto);
+  }
+
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const [equipments, setEquipments] = useState<any[]>([]);
+
+  useEffect(() => {
+    getEquipments().then((response) => {
+      setEquipments(response.data.data);
+    }).catch((error) => {
+      console.error('Error al obtener los equipos:', error);
+    });
+  }, []);
+
+  const [openMm60RepuestoDialog, setOpenMm60RepuestoDialog] = useState(false);
+  const [repuestoSelected, setRepuestoSelected] = useState<any | null>(null);
+  const [mm60info, setMm60Info] = useState<any | null>(null);
+
+
+  const searchMm60ByRepuesto = (component: number) => {
+    if (mm60General !== null) {
+      const mm60 = mm60General.filter((obj: any) => obj.material === component);
+      setMm60Info(mm60);
+    }
+  }
+
+  const [openModoFallaDialog, setOpenModoFallaDialog] = useState(false);
+  const [infoRepairSpare, setInfoRepairSpare] = useState<any | null>(null);
+
+  const searchinfoRepairEquipment = (spare: any) => {
+    if(spare.stock === 0){
+      setInfoRepairSpare({
+        id: 1,
+        name: "Motor",
+        repair_location: "Talleres de reparacion SOMEX",
+        date: "23-09-2025",
+        criticidad: "A",
+        modo_de_falla: "Desgaste"
+      })
+    }
+    else {
+      setInfoRepairSpare(null);
+    }
+  }
+
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
       <div className='relative w-full h-full'>
         <NavBarInteractives />
         <MapContainer
+          key={openSpare ? "map-half" : "map-full"}
           ref={mapRef}
           crs={L.CRS.Simple}
           center={[centerLat, centerLng]} // Centra la imagen en el inicio
@@ -674,10 +795,10 @@ export default function PlansMapContainer(Map: MapProps) {
           bounds={bounds}
           style={{
             height: '100%',
-            width: '100%',
+            width: openSpare === true ? '50%' : '100%',
             background: 'white'
           }}
-          className='z-0'
+          className={`z-0`}
           maxBounds={maxBounds} // Limita el panning al área de la imagen
           attributionControl={false}
         >
@@ -772,6 +893,7 @@ export default function PlansMapContainer(Map: MapProps) {
             set360ViewSelected={setView360Selected}
             setOpenGallery={setOpenGallery}
             openGallery={openGallery}
+            setOpenSpare={setOpenSpare}
           /> : null
       }
       {
@@ -840,7 +962,7 @@ export default function PlansMapContainer(Map: MapProps) {
                   Siguiente imagen
                 </button>
               </div> */}
-          
+
               {/* Miniaturas */}
               <div className='flex flex-row gap-2 overflow-x-auto py-2'>
                 {
@@ -938,34 +1060,33 @@ export default function PlansMapContainer(Map: MapProps) {
       }
       {
         //Cambio de imagen
-        activeNavigation && (mapId === "10006" || mapId === "10009" || mapId === "20014") ?
-          (
-            <div>
-              {prevMap && (
-                <a
-                  href={`/interactives?map-id=${prevMap.map_id}&map-type=${prevMap.map_type}`}
-                  title="Anterior plano"
-                  className="absolute left-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md ml-5"
-                >
-                  <FaAnglesLeft size={70} className="text-gray-200" />
-                </a>
-              )}
-              {nextMap && (
-                <a
-                  href={`/interactives?map-id=${nextMap.map_id}&map-type=${nextMap.map_type}`}
-                  title="Siguiente plano"
-                  className="absolute right-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md mr-5"
-                >
-                  <FaAnglesRight size={70} className="text-gray-200" />
-                </a>
-              )}
-            </div>
-          ) : null
+        activeNavigation && (mapId === "10006" || mapId === "10009" || mapId === "20014") ? (
+          <div>
+            {prevMap && (
+              <a
+                href={`/interactives?map-id=${prevMap.map_id}&map-type=${prevMap.map_type}`}
+                title="Anterior plano"
+                className="absolute left-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md ml-5"
+              >
+                <FaAnglesLeft size={70} className="text-gray-200" />
+              </a>
+            )}
+            {nextMap && (
+              <a
+                href={`/interactives?map-id=${nextMap.map_id}&map-type=${nextMap.map_type}`}
+                title="Siguiente plano"
+                className="absolute right-0 z-10 flex justify-center items-center bg-gray-400 opacity-50 top-1/2 p-2 rounded-md mr-5"
+              >
+                <FaAnglesRight size={70} className="text-gray-200" />
+              </a>
+            )}
+          </div>
+        ) : null
       }
 
       {/* TOP MENU CONTROL */}
-      <div className='absolute top-14 left-1/2 -translate-x-1/2 z-50 flex flex-row gap-2'>
-        <h1 className='bg-gray-500 text-white font-bold p-2 rounded-md text-2xl uppercase'>{Map.mapSelected?.name}</h1>
+      <div className='absolute bottom-5 left-2 z-40 flex flex-row gap-2'>
+        <h1 className='bg-gray-500 text-white font-bold p-2 rounded-md text-xl uppercase'>{Map.mapSelected?.name}</h1>
       </div>
       <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center ${!controlMinimized ? 'opacity-100' : 'opacity-0'} w-7 h-7`}>
         <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
@@ -1019,72 +1140,10 @@ export default function PlansMapContainer(Map: MapProps) {
         </div>
       </div>
 
-      {/* LEFT BOTTOM MENU CONTROL */}
-      {/* <div className='absolute bottom-20 left-5 flex flex-col items-center w-32 gap-2'>
-        <button
-          onClick={() => {
-            setActivateEquipments(!activateEquipments)
-          }}
-          className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
-          {
-            activateEquipments ? <FaCircle size={25} color='red' /> : null
-          }
-          <h1 className='font-bold'>{activateEquipments ? 'OFF' : 'ON'}</h1>
-          {
-            activateEquipments ? null : <FaCircle size={25} color='green' />
-          }
-        </button>
-      </div> */}
-
-
       {/* CENTER BOTTOM MENU CONTROL */}
       <OptionsNav />
-
       {
         view360Selected ?
-          // <div className='absolute bottom-2 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 bg-gray-200 w-[90%] h-[90%] rounded-md p-4'>
-          //   <div className='flex flex-row items-center w-full gap-2 justify-between'>
-          //     <h1 className=' bg-white py-1 px-4 text-lg font-bold rounded-md w-full'>
-          //       Imagen 360
-          //     </h1>
-          //     <MdOutlineClose className='bg-white p-1 h-full rounded-md cursor-pointer hover:bg-gray-400' size={30} color='black' onClick={() => { setView360Selected(false), setSelectedShape(null) }} />
-          //   </div>
-          //   <div className='w-full h-full bg-red-400 rounded-md'>
-          //     <div className='flex flex-row justify-center items-center w-full bg-gray-300 rounded-md gap-2 overflow-auto p-10'>
-          //       {
-          //         nodesFilter.map((obj: any) => {
-          //           return (
-
-          //             < Image
-          //               key={obj.id}
-          //               src={obj?.thumbnail}
-          //               alt="Imagen 360"
-          //               width={150}
-          //               height={150}
-          //               className='object-cover rounded-md'
-          //             // onClick={() => {
-          //             //   setNodeSelected(null)
-          //             //   setView360Selected(false)
-          //             //   setSelectedShape(null)
-          //             // }
-          //             />
-          //           )
-          //         })
-          //       }
-          //     </div>
-          //     <ReactPhotoSphereViewer
-          //       src={nodesFilter[0].panorama}
-          //       width='100%'
-          //       height='100%'
-          //       navbar={false}
-          //       container={'container-360'}
-          //       // plugins={plugins}
-          //       mousemove={true}
-          //       mousewheel={true}
-          //       loadingImg='/img/menu-icons/gemelo_digital.png'
-          //     />
-          //   </div>
-          // </div>
           <Node360Viewer
             allNodes={allNodes}
             selectedNode={nodeSelected || pndImage || undefined}
@@ -1392,7 +1451,6 @@ export default function PlansMapContainer(Map: MapProps) {
           </div>
           : null
       }
-
       {
         controlMinimized ? <FaSquarePlus onClick={() => { setControlMinimized(false) }} className='absolute top-0 right-0' size={30} color='black' /> : null
       }
@@ -1411,6 +1469,307 @@ export default function PlansMapContainer(Map: MapProps) {
           ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
           : null
       }
+
+      <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 ${openSpare ? 'w-[50%] opacity-100' : 'w-0 opacity-0'} bg-slate-300 z-50 border rounded-l-md p-2`}>
+        <div className='p-2 bg-[#002645] rounded-md flex flex-row justify-between items-center w-full'>
+          <h1 className='text-white font-bold'>SPARE - REPUESTOS</h1>
+          <FaX className='text-white right-2 top-2 cursor-pointer hover:bg-gray-300 p-1 rounded-md' onClick={() => { setOpenSpare(false) }} size={20} />
+        </div>
+        <div className='px-2 py-4 overflow-y-auto flex flex-row gap-4'>
+          <div className='flex flex-row gap-2 items-center w-1/2'>
+            <Label className='font-bold'>Equipo:</Label>
+            <div className='flex bg-white w-full px-2 py-1 rounded-md'>{equip.tag} - {equip.name}</div>
+          </div>
+          <div className='flex flex-row gap-2 items-center w-1/2'>
+            <Label className='font-bold'>Familia:</Label>
+            <div className='flex bg-white w-full px-2 py-1 rounded-md'>Faja de alimentacion</div>
+          </div>
+        </div>
+        <Tabs defaultValue="installed" className='h-[85%] '>
+          <TabsList className='flex flex-row w-full bg-white rounded-md gap-1'>
+            <TabsTrigger value="installed" className='w-1/2 bg-gray-300 hover:bg-gray-500 hover:text-white'>Instalados</TabsTrigger>
+            <TabsTrigger value="spare" className='w-1/2 bg-gray-300 hover:bg-gray-500 hover:text-white'>Spare</TabsTrigger>
+          </TabsList>
+          <TabsContent value="installed" className='gap-4'>
+            <div className=' h-full'>
+              <h1 className='font-bold text-lg'>Lista de Equipos </h1>
+              <div className="bg-white max-h-[300px] flex flex-col">
+                {/* Encabezado fijo */}
+                <Table className="w-full">
+                  <TableHeader className="bg-gray-200">
+                    <TableRow>
+                      <TableHead className="w-[30%]">Equipo</TableHead>
+                      <TableHead className="w-[15%]">TAG</TableHead>
+                      <TableHead className="w-[20%]">Criticidad</TableHead>
+                      <TableHead className="w-[30%]">Estado</TableHead>
+                      <TableHead className="w-[5%]">Condición</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                </Table>
+                {/* Cuerpo con scroll */}
+                <div className="overflow-y-auto flex-1">
+                  <Table className="w-full">
+                    <TableBody>
+                      {
+                        tempSpare && tempSpare.length > 0 ?
+                          tempSpare.filter((obj, index, self) =>
+                            index === self.findIndex(o => o.spare === obj.spare)
+                          ).map((obj: any, index: number) => {
+                            return (
+                              <TableRow key={index}
+                                className={`hover:bg-green-300 cursor-pointer ${selectedIndex === index ? 'bg-green-300' : ''}`}
+                                onClick={() => {
+                                  setSelectedIndex(index);
+                                  busquedaRepuestos(obj?.id_spare);
+                                }}>
+                                <TableCell className="w-[30%]">{obj.spare}</TableCell>
+                                <TableCell className="w-[15%]">{obj.tag}</TableCell>
+                                <TableCell className="w-[20%]">Criticidad</TableCell>
+                                <TableCell className="w-[30%]">{obj.estado}</TableCell>
+                                <TableCell className="w-[5%]">
+                                  <FaCircle className={`text-${obj.condicion === 'Bueno' ? 'green' : 'yellow'}-500`} />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          }) : (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center">No hay datos disponibles</TableCell>
+                            </TableRow>
+                          )
+                      }
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </div>
+            <div className=''>
+              <h1 className='font-bold text-lg'>Lista de Repuestos </h1>
+              <div className="bg-white h-[350px] flex flex-col">
+                <Table className="w-full">
+                  <TableHeader className="bg-gray-200">
+                    <TableRow>
+                      <TableHead className='w-[12%]'>Componente</TableHead>
+                      <TableHead className='w-[33%]'>Texto breve del material</TableHead>
+                      <TableHead className='w-[10%]'>Ubicación Técnica</TableHead>
+                      <TableHead className='w-[15%]'>Tipo de material</TableHead>
+                      <TableHead className='w-[10%]'># posición</TableHead>
+                      <TableHead className='w-[10%]'>Stock</TableHead>
+                      <TableHead className='w-[10%]'>Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                </Table>
+                <div className="overflow-y-auto flex-1">
+                  <Table className="w-full">
+                    <TableBody>
+                      {
+                        repuestosBySpare.length > 0 ? repuestosBySpare.map((obj: any, index: number) => {
+                          return (
+                            <TableRow
+                              key={index}
+                              className="">
+                              <TableCell className='w-[12%]'>{obj.component}</TableCell>
+                              <TableCell className='w-[33%]'>{obj.material_text}</TableCell>
+                              <TableCell className='w-[10%]'>{obj.location}</TableCell>
+                              <TableCell className='w-[15%]'>{obj.material_type}</TableCell>
+                              <TableCell className='w-[10%]'>{obj.position}</TableCell>
+                              <TableCell className='w-[10%]'>{obj.quantity}</TableCell>
+                              <TableCell className='w-[10%]'>
+                                <Button
+                                  onClick={() => {
+                                    setOpenMm60RepuestoDialog(true)
+                                    searchMm60ByRepuesto(obj.component)
+                                  }}
+                                >
+                                  <FaEye size={20} color='white' />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          )
+                        }) : (
+                          repuestos.length > 0 ? (
+                            repuestos.map((obj: any, index: number) => {
+                              return (
+                                <TableRow key={index} className="">
+                                  <TableCell className='w-[12%]'>{obj.component}</TableCell>
+                                  <TableCell className='w-[33%]'>{obj.material_text}</TableCell>
+                                  <TableCell className='w-[10%]'>{obj.location}</TableCell>
+                                  <TableCell className='w-[15%]'>{obj.material_type}</TableCell>
+                                  <TableCell className='w-[10%]'>{obj.position}</TableCell>
+                                  <TableCell className='w-[10%]'>{obj.quantity}</TableCell>
+                                  <TableCell className='w-[10%]'></TableCell>
+                                </TableRow>
+                              )
+                            })
+                          ) : (
+                            <TableRow>
+                              <TableCell colSpan={6} className=" text-center italic">No existe repuestos de spares</TableCell>
+                            </TableRow>
+                          )
+                        )
+                      }
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="spare">
+            <div className=' h-full'>
+              <h1 className='font-bold text-lg'>Lista de Equipos </h1>
+              <div className="bg-white max-h-[300px] flex flex-col">
+                {/* SPARES */}
+                <Table className="w-full">
+                  <TableHeader className="bg-gray-200">
+                    <TableRow>
+                      <TableHead className="w-[30%]">Equipo</TableHead>
+                      <TableHead className="w-[15%]">Spare</TableHead>
+                      <TableHead className="w-[15%]">Estado</TableHead>
+                      <TableHead className="w-[30%]">Ubicación</TableHead>
+                      <TableHead className="w-[10%]">Stock</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                </Table>
+                <div className="overflow-y-auto flex-1">
+                  <Table className="w-full">
+                    <TableBody>
+                      {
+                        tempSpare && tempSpare.length > 0 ? tempSpare.map((obj: any, index: number) => {
+                          return (
+                            <TableRow
+                              key={index}
+                              onClick={() => {
+                                setSelectedIndex(index);
+                                searchinfoRepairEquipment(obj)
+                              }}
+                              className={`hover:bg-green-300 cursor-pointer ${selectedIndex === index ? 'bg-green-300' : ''}`}>
+                              <TableCell className="w-[30%]">{obj.equipo}</TableCell>
+                              <TableCell className="w-[15%]">{obj.spare}</TableCell>
+                              <TableCell className="w-[15%]">{obj.estado}</TableCell>
+                              <TableCell className="w-[30%]">{obj.ubicación}</TableCell>
+                              <TableCell className="w-[10%]">{obj.stock}</TableCell>
+                            </TableRow>
+                          )
+                        }) : (
+                          <TableRow>
+                            <TableCell colSpan={5} className=" text-center italic">No existe spare</TableCell>
+                          </TableRow>
+                        )
+                      }
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </div>
+            {/* REPUESTOS */}
+            <div className='mt-5'>
+              {
+                infoRepairSpare ? (
+                  <>
+                    <h1 className='font-bold text-lg'>Información: </h1>
+                    <div className="bg-white h-[350px] flex flex-col">
+                      <div className='flex flex-row items-center p-2 gap-2'>
+                        <Label className='font-bold text-md w-1/3'>Lugar de reparación:</Label>
+                        <h1 className='text-md bg-gray-200 p-1 rounded-md w-full'>{infoRepairSpare.repair_location}</h1>
+                      </div>
+                      <div className='flex flex-row items-center p-2 gap-2'>
+                        <Label className='font-bold text-md w-1/3'>Fecha de entrega:</Label>
+                        <h1 className='text-md bg-gray-200 p-1 rounded-md w-full'>{infoRepairSpare.date}</h1>
+                      </div>
+                      <div className='flex flex-row items-center p-2 gap-2'>
+                        <Label className='font-bold text-md w-1/3'>Criticidad:</Label>
+                        <h1 className='text-md bg-gray-200 p-1 rounded-md w-full'>{infoRepairSpare.criticidad}</h1>
+                      </div>
+                      <div className='flex flex-row items-center p-2 gap-2'>
+                        <Label className='font-bold text-md w-1/3'>Modos de falla:</Label>
+                        <h1 className='text-md bg-gray-200 p-1 rounded-md w-full'>{infoRepairSpare.modo_de_falla}</h1>
+                      </div>
+                    </div>
+                  </>
+                )
+                  :
+                  <>
+                    <h1 className='text-md bg-gray-200 p-1 rounded-md'>No hay información disponible</h1>
+                  </>
+
+              }
+
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+
+      <Dialog open={openMm60RepuestoDialog} onOpenChange={() => { setOpenMm60RepuestoDialog(false) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Detalles del Repuesto segun MM60</DialogTitle>
+          </DialogHeader>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Componente</TableHead>
+                <TableHead>Campo</TableHead>
+                <TableHead>Valor</TableHead>
+                <TableHead>Moodo de falla</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {
+                mm60info && mm60info.length > 0 ? mm60info.map((obj: any, index: number) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell>{obj.material}</TableCell>
+                      <TableCell>{obj.caract_planif_nec}</TableCell>
+                      <TableCell>{obj.indicador_abc}</TableCell>
+                      <TableCell>
+                        <Button
+                          onClick={() => { setOpenModoFallaDialog(true) }}
+                        >
+                          <FaEye size={20} color='white' />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                }) : (
+                  <TableRow>
+                    <TableCell colSpan={2} className="text-center italic">No hay información disponible</TableCell>
+                  </TableRow>
+                )
+              }
+            </TableBody>
+          </Table>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={openModoFallaDialog} onOpenChange={() => { setOpenModoFallaDialog(false) }}>
+        <DialogContent className='bg-gray-200'>
+          <DialogHeader>
+            <DialogTitle>Modo de Falla</DialogTitle>
+          </DialogHeader>
+          <div className='flex flex-col gap-2'>
+            <div className='flex flex-row gap-2 items-center'>
+              <Label className='text-md font-bold w-1/3'>Tecnica:</Label>
+              <h1 className='bg-white p-1 rounded-md w-full'>Analisis Vibracional</h1>
+            </div>
+            <div className='flex flex-row gap-2 items-center'>
+              <Label className='text-md font-bold w-1/3'>Modo de falla:</Label>
+              <h1 className='bg-white p-1 rounded-md w-full'>Defectos en componentes del sistema de transporte de calcina.</h1>
+            </div>
+            <div className='flex flex-row gap-2 items-center'>
+              <Label className='text-md font-bold w-1/3'>Numero de aviso:</Label>
+              <h1 className='bg-white p-1 rounded-md w-full'>20853598</h1>
+            </div>
+            <div className='flex flex-row gap-2 items-center'>
+              <Label className='text-md font-bold w-1/3'>#O.T.:</Label>
+              <h1 className='bg-white p-1 rounded-md w-full'>S/N</h1>
+            </div>
+            <div className='flex flex-row gap-2 items-center'>
+              <Label className='text-md font-bold w-1/3'>Fecha Inicio:</Label>
+              <h1 className='bg-white p-1 rounded-md w-full'>S/F</h1>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </div >
   )
 }
