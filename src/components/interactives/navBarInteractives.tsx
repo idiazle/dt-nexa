@@ -46,41 +46,41 @@ const NavBarInteractives = () => {
   const prevTotalRef = useRef<number | null>(null)
   const [hasNewAlert, setHasNewAlert] = useState(false)
 
-  useEffect(() => {
-    const fetchAlerts = () => {
-      getAllAlerts()
-        .then(response => {
-          if (response.status === 200) {
-            const newTotal = response.data.data.filter((alert: any) => alert.status === 1).length
+  // useEffect(() => {
+  //   const fetchAlerts = () => {
+  //     getAllAlerts()
+  //       .then(response => {
+  //         if (response.status === 200) {
+  //           const newTotal = response.data.data.filter((alert: any) => alert.status === 1).length
 
-            // Comparar con el valor anterior
-            if (prevTotalRef.current !== null && prevTotalRef.current !== newTotal) {
-              const difference = newTotal - prevTotalRef.current
-              console.log(`Total alerts changed by ${difference} (from ${prevTotalRef.current} to ${newTotal})`)
-              if (difference > 0) {
-                setHasNewAlert(true)
-                toast({
-                  variant: 'destructive',
-                  title: 'Nueva alerta',
-                  description: `Se han detectado ${difference} nuevas alertas.`,
-                  duration: 5000,
-                })
-              }
-            }
+  //           // Comparar con el valor anterior
+  //           if (prevTotalRef.current !== null && prevTotalRef.current !== newTotal) {
+  //             const difference = newTotal - prevTotalRef.current
+  //             console.log(`Total alerts changed by ${difference} (from ${prevTotalRef.current} to ${newTotal})`)
+  //             if (difference > 0) {
+  //               setHasNewAlert(true)
+  //               toast({
+  //                 variant: 'destructive',
+  //                 title: 'Nueva alerta',
+  //                 description: `Se han detectado ${difference} nuevas alertas.`,
+  //                 duration: 5000,
+  //               })
+  //             }
+  //           }
 
-            prevTotalRef.current = newTotal
-            setTotalAlerts(newTotal)
-          }
-        })
-        .catch(error => {
-          console.error("Error fetching alerts:", error)
-        })
-    }
+  //           prevTotalRef.current = newTotal
+  //           setTotalAlerts(newTotal)
+  //         }
+  //       })
+  //       .catch(error => {
+  //         console.error("Error fetching alerts:", error)
+  //       })
+  //   }
 
-    fetchAlerts()
-    const interval = setInterval(fetchAlerts, 5000)
-    return () => clearInterval(interval)
-  }, [])
+  //   fetchAlerts()
+  //   const interval = setInterval(fetchAlerts, 5000)
+  //   return () => clearInterval(interval)
+  // }, [])
 
   // useEffect(() => {
   //   const fetchAlerts = () => {

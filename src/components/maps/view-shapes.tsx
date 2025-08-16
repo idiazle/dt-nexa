@@ -36,18 +36,38 @@ interface ViewShapesStructure {
 }
 
 export default function ViewShapes({ setEquipmentSelected, setEquipmentPressed, refDivOverflow, flagRefresh, showShapes, shapesRender, setShapesRender, setSelectedShape, setCloseInformation, setRenderLeftInformation, setReportSelected, set360ViewSelected, pndImage, setPndImage }: ViewShapesStructure) {
+
+  // SECCION CON INFORMACION DE JSON - INICIO - ELIMINAR
+  const [filterData, setFilterData] = useState([])
+
+  useEffect(() => {
+    fetch("/data/avisos_skf_s32.json")
+      .then(response => response.json())
+      .then(data => {
+        const result = data.filter((item: any) => (item.SEMANA === 32 && item.AREA.includes("TOSTACION")))
+        setFilterData(result)
+      })
+      .catch(error => {
+        console.error("Error fetching filter data:", error);
+      });
+  }, [])
+
+  console.log("FILTER DATA", filterData)
+
+  // SECCION CON INFORMACION DE JSON - FIN - ELIMINAR
+
   const renderColor = (option: number) => {
     let color = ''
-    if (option === 1) {
-      color = '#ff0000' // red
-    } else if (option === 2) {
-      color = '#ff8000' // orange
+    if (option === 4) {
+      color = '#00ff00' //normal
     } else if (option === 3) {
-      color = '#ffff00' // yellow
-    } else if (option === 4) {
-      color = '#00ff00' // green
+      color = '#ffff00' // tolerable
+    } else if (option === 2) {
+      color = '#ff8000' // precaucion
+    } else if (option === 1) {
+      color = '#ff0000' // alarma
     } else if (option === 5) {
-      color = '#00ff' // blue
+      color = '#00ff' // informacion
     } else {
       color = '#fff' // black or default color
     }
