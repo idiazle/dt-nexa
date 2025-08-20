@@ -49,7 +49,7 @@ const OptionsNav = () => {
           onClick={() => handleToggle('pfd')}
           onMouseEnter={() => setHoveringPFD('pfd')}
           onMouseLeave={() => setHoveringPFD(null)}
-          className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center hover:bg-[#002645] hover:text-white ${openPFDlist || mapType === "1" ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'} `}
+          className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center hover:bg-[#002645] hover:text-white ${openPFDlist || mapType === "1" ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'}`}
         >
           PFD
         </button>

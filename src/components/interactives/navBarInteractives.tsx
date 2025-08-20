@@ -11,6 +11,7 @@ import { X } from "lucide-react"
 import { getAllAlerts } from "@/api/admin/alerts-api"
 import { Toast } from "../ui/toast"
 import { useToast } from "../ui/use-toast"
+import { useWindowSize } from "@/hooks/useWindowSize"
 
 const logos = [
   {
@@ -45,7 +46,9 @@ const NavBarInteractives = () => {
   const [totalAlerts, setTotalAlerts] = useState<number>(0)
   const prevTotalRef = useRef<number | null>(null)
   const [hasNewAlert, setHasNewAlert] = useState(false)
+  const { width, height } = useWindowSize();
 
+  console.log('Window size:', width, height);
   // useEffect(() => {
   //   const fetchAlerts = () => {
   //     getAllAlerts()
@@ -120,17 +123,21 @@ const NavBarInteractives = () => {
         }
       </div>
       <div className='flex flex-col justify-center items-center w-1/3'>
-        <h1 className='text-xl font-bold'>{mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD' : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA' : 'GEMELO DIGITAL DE CONFIABILIDAD'}</h1>
+        <h1 className='text-xl font-bold'>
+          {mapType === '1' ? 'DIAGRAMA DE FLUJO DE CONFIABILIDAD'
+            : mapType === '3' ? 'DIAGRAMA DE NAVEGACIÓN DE PLANTA'
+              : 'GEMELO DIGITAL DE CONFIABILIDAD'}
+        </h1>
       </div>
       <div className='flex flex-row gap-7 items-center w-1/3 justify-end'>
-        <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
+        {/* <Select value={planeSelected} onValueChange={(val) => { setPlaneSelected(val) }}>
           <SelectTrigger className="w-52 bg-transparent border-white bg-white text-black">
             <SelectValue placeholder="Seleccionar Planta" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="2">Planta Cajamarquilla</SelectItem>
           </SelectContent>
-        </Select>
+        </Select> */}
         <Button
           title='Alertas'
           size={'icon'}

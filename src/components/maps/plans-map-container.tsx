@@ -701,7 +701,7 @@ export default function PlansMapContainer(Map: MapProps) {
           bounds={bounds}
           style={{
             height: '100%',
-            width: openSpare === true ? '50%' : '100%',
+            width: openSpare === true ? '60%' : '100%',
             background: 'white'
           }}
           className={`z-0`}
