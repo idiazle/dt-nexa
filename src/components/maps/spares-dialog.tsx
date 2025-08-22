@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Textarea } from "../ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 interface SpareDialogProps {
   openSpare: boolean
@@ -148,6 +149,61 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
   const [openRepuestosDialog, setOpenRepuestosDialog] = useState(false);
   const [openReporteDialog, setOpenReporteDialog] = useState(false);
 
+
+  // REPUESTOS - FALLAS
+  const [repuestosFallaData, setRepuestosFallaData] = useState<any[]>([]);
+  const [equipmentsRF, setEquipmentsRF] = useState<any[]>([]);
+  const [failureModeRF, setFailureModeRF] = useState<any[]>([]);
+  const [consultRF, setConsultRF] = useState({
+    "Ubicación técnica": "",
+    "Modo de falla": ""
+  });
+  const [resultRFConsult, setResultRFConsult] = useState<any[]>([]);
+
+  const [openDialogModosFalla, setOpenDialogModosFalla] = useState(false);
+
+  useEffect(() => {
+    fetch('/data/repuestos_fallas.json')
+      .then((response) => response.json())
+      .then((data) => {
+        setRepuestosFallaData(data);
+
+        // --- Ubicaciones técnicas únicas ---
+        const ubicaciones = Array.from(new Set(data.map((item: any) => item["Ubicación técnica"])));
+        setEquipmentsRF(ubicaciones);
+
+        // --- Modos de falla únicos ---
+        const modos: string[] = [];
+        data.forEach((item: any) => {
+          ["Modo Falla 1", "Modo Falla 2", "Modo Falla 3", "Modo Falla 4"].forEach((col) => {
+            if (item[col] && !modos.includes(item[col])) {
+              modos.push(item[col]);
+            }
+          });
+        });
+        setFailureModeRF(modos);
+      });
+  }, []);
+
+  const filterByLocationAndMode = () => {
+    return repuestosFallaData.filter(
+      (item: any) =>
+        item["Ubicación técnica"] === consultRF["Ubicación técnica"] &&
+        ["Modo Falla 1", "Modo Falla 2", "Modo Falla 3", "Modo Falla 4"].some(
+          (col) => item[col] === consultRF["Modo de falla"]
+        )
+    );
+  };
+
+  useEffect(() => {
+    if (consultRF["Ubicación técnica"] && consultRF["Modo de falla"]) {
+      const filtered = filterByLocationAndMode();
+      setResultRFConsult(filtered);
+    }
+  }, [consultRF, repuestosFallaData]);
+
+  console.log("Repuestos por falla:", failureModeRF);
+
   return (
     <div className={`absolute flex flex-col max-h-[92%] right-0 top-14 bottom-0 ${openSpare ? 'w-[45%] opacity-100' : 'w-0 opacity-0'} bg-slate-300 z-50 border rounded-l-md p-2`}>
       <div className='p-2 bg-[#002645] rounded-md flex flex-row justify-between items-center w-full'>
@@ -199,9 +255,10 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
         </div> */}
       </div>
       <Tabs defaultValue="installed" className='h-[100%]'>
-        <TabsList className='flex flex-row w-full bg-white'>
+        <TabsList className='flex flex-row w-full bg-white gap-1'>
           <TabsTrigger value="installed" className='w-1/2 bg-gray-300 hover:bg-gray-500 hover:text-white'>Equipos Instalados</TabsTrigger>
           <TabsTrigger value="spare" className='w-1/2 bg-gray-300 hover:bg-gray-500 hover:text-white'>Spare</TabsTrigger>
+          {/* <TabsTrigger value="failure_mode" className='w-1/2 bg-gray-300 hover:bg-gray-500 hover:text-white'>Modo de Falla</TabsTrigger> */}
         </TabsList>
         <TabsContent value="installed" className=''>
           {/* Lista de componentes instalados y seleccionados en el mapa */}
@@ -241,10 +298,14 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
                               Rep.
                             </Button>
                             <Button
-                              disabled
                               className="hover:bg-gray-500"
                               onClick={() => {
-                                searchRepuestobyComponent(component["TAG-HIJO"])
+                                setOpenDialogModosFalla(true);
+                                console.log("Componente seleccionado:", component["TAG-HIJO"]);
+                                setConsultRF({
+                                  "Ubicación técnica": component["TAG-HIJO"],
+                                  "Modo de falla": ""
+                                });
                               }}>
                               Mod.
                             </Button>
@@ -257,8 +318,6 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
               </div>
             </div>
           </div>
-          {/* Lista de repuestos segun el componente seleccionado */}
-
         </TabsContent>
 
         <TabsContent value="spare" >
@@ -360,6 +419,80 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
             }
           </div>
         </TabsContent>
+
+        {/* <TabsContent value="failure_mode">
+          <div className="flex flex-col gap-2">
+            <div className='h-full gap-2 flex flex-row'>
+              <div className="flex flex-row gap-2 items-center w-1/2">
+                <Label className='font-bold text-xs w-1/3'>Componente:</Label>
+                <Select
+                  value={consultRF["Ubicación técnica"]}
+                  onValueChange={(value) => setConsultRF({ ...consultRF, "Ubicación técnica": value })}
+                >
+                  <SelectTrigger className="w-2/3">
+                    <SelectValue placeholder="Seleccionar componente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {
+                      equipmentsRF.map((item: string, index: number) => (
+                        <SelectItem key={index} value={item}>{item}</SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-row gap-2 items-center w-1/2">
+                <Label className='font-bold text-xs w-1/3'>Modo de Falla:</Label>
+                <Select
+                  value={consultRF["Modo de falla"]}
+                  onValueChange={(value) => setConsultRF({ ...consultRF, "Modo de falla": value })}
+                >
+                  <SelectTrigger className="w-2/3">
+                    <SelectValue placeholder="Seleccionar modo de falla" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {
+                      failureModeRF.map((item: string, index: number) => (
+                        <SelectItem key={index} value={item}>{item}</SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className='bg-white'>
+              <Table>
+                <TableHeader>
+                  <TableRow className="text-xs bg-gray-200">
+                    <TableHead>Ubicacion Tecnica</TableHead>
+                    <TableHead>Componente</TableHead>
+                    <TableHead>Descripcion</TableHead>
+                    <TableHead>Stock</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {
+                    resultRFConsult && resultRFConsult.length > 0 ?
+                      resultRFConsult.map((item: any, index: number) => (
+                        <TableRow key={index} className="text-xs">
+                          <TableCell>{item["Ubicación técnica"]}</TableCell>
+                          <TableCell>{item["Componente"]}</TableCell>
+                          <TableCell>{item["Texto breve de material"]}</TableCell>
+                          <TableCell></TableCell>
+                        </TableRow>
+                      ))
+                      :
+                      (
+                        <TableRow className="text-xs">
+                          <TableCell colSpan={3} className="text-center italic">No hay datos disponibles</TableCell>
+                        </TableRow>
+                      )
+                  }
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </TabsContent> */}
       </Tabs>
 
       {/* Dialog for MM60 Repuesto */}
@@ -608,6 +741,77 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
             </div>
           </div>
 
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog Modos de falla segun equipo instalado. */}
+      <Dialog open={openDialogModosFalla} onOpenChange={() => setOpenDialogModosFalla(false)}>
+        <DialogContent className="min-w-[60vw]">
+
+          <DialogHeader>
+            <DialogTitle>Repuestos según ISO 14224</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 h-[70vh]">
+            <div className="flex flex-row gap-2 items-center w-full">
+              <Label className='font-bold text-xs'>Componente:</Label>
+              <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{consultRF["Ubicación técnica"]}</h1>
+            </div>
+            <div className="flex flex-row gap-2 items-center w-full">
+              <Label className='font-bold text-xs w-1/3'>Modo de Falla:</Label>
+              <Select
+                value={consultRF["Modo de falla"]}
+                onValueChange={(value) => setConsultRF({ ...consultRF, "Modo de falla": value })}
+              >
+                <SelectTrigger className="w-2/3">
+                  <SelectValue placeholder="Seleccionar modo de falla" />
+                </SelectTrigger>
+                <SelectContent>
+                  {
+                    failureModeRF.map((item: string, index: number) => (
+                      <SelectItem key={index} value={item}>{item}</SelectItem>
+                    ))
+                  }
+                </SelectContent>
+              </Select>
+            </div>
+            <div className=''>
+              <div className="sticky top-0 z-10">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="text-xs bg-gray-200">
+                      <TableHead>Ubicacion Tecnica</TableHead>
+                      <TableHead>Componente</TableHead>
+                      <TableHead>Descripcion</TableHead>
+                      <TableHead>Stock</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                </Table>
+              </div>
+              <div className="bg-white flex overflow-auto h-[90%]">
+                <Table>
+                  <TableBody>
+                    {
+                      resultRFConsult && resultRFConsult.length > 0 ?
+                        resultRFConsult.map((item: any, index: number) => (
+                          <TableRow key={index} className="text-xs">
+                            <TableCell>{item["Ubicación técnica"]}</TableCell>
+                            <TableCell>{item["Componente"]}</TableCell>
+                            <TableCell>{item["Texto breve de material"]}</TableCell>
+                            <TableCell></TableCell>
+                          </TableRow>
+                        ))
+                        :
+                        (
+                          <TableRow className="text-xs">
+                            <TableCell colSpan={3} className="text-center italic">No hay datos disponibles</TableCell>
+                          </TableRow>
+                        )
+                    }
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div >

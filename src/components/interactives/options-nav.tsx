@@ -41,8 +41,8 @@ const OptionsNav = () => {
             onMouseLeave={() => setHoveringPFD(null)}
           >
             <a href={"/interactives?map-id=10013&map-type=1"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 10</a>
-            <a href={"/interactives?map-id=20013&map-type=1"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20</a>
-            <a href={"/interactives?map-id=10006&map-type=1"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25</a>
+            <a href={"/interactives?map-id=20013&map-type=1"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25</a>
+            <a href={"/interactives?map-id=10006&map-type=1"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20</a>
           </div>
         )}
         <button
@@ -64,14 +64,14 @@ const OptionsNav = () => {
             onMouseLeave={() => setHoveringPND(null)}
             className='absolute flex flex-col items-center w-40 bottom-28 mb-16 bg-white rounded-sm z-10'>
             <a href={"/interactives?map-id=20019&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 10</a>
-            <a href={"/interactives?map-id=10007&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20-1</a>
-            <a href={"/interactives?map-id=10010&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20-2</a>
-            <a href={"/interactives?map-id=10011&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20-3</a>
-            <a href={"/interactives?map-id=10012&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20-4</a>
-            <a href={"/interactives?map-id=20015&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25-1</a>
-            <a href={"/interactives?map-id=20016&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25-2</a>
-            <a href={"/interactives?map-id=20017&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25-3</a>
-            <a href={"/interactives?map-id=20018&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25-4</a>
+            <a href={"/interactives?map-id=10007&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25-1</a>
+            <a href={"/interactives?map-id=10010&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25-2</a>
+            <a href={"/interactives?map-id=10011&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25-3</a>
+            <a href={"/interactives?map-id=10012&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25-4</a>
+            <a href={"/interactives?map-id=20015&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20-1</a>
+            <a href={"/interactives?map-id=20016&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20-2</a>
+            <a href={"/interactives?map-id=20017&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20-3</a>
+            <a href={"/interactives?map-id=20018&map-type=3"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20-4</a>
           </div>
         )}
         <button
