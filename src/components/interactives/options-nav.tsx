@@ -116,8 +116,8 @@ const OptionsNav = () => {
             onMouseLeave={() => setHovering360(null)}
             className='absolute flex flex-col items-center w-40 bottom-28 mb-16 bg-white rounded-sm z-10'>
             <a href={"/interactives/nav360?nodeId=626"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 10</a>
-            <a href={"/interactives/nav360?nodeId=9"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20</a>
-            <a href={"/interactives/nav360?nodeId=167"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25</a>
+            <a href={"/interactives/nav360?nodeId=9"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25</a>
+            <a href={"/interactives/nav360?nodeId=167"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20</a>
           </div>
         )}
         <button

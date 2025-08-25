@@ -58,7 +58,7 @@ export default function RenderDataMenu({ data, dataPlants }: RenderDataMenuStruc
             alt="Picture of the author"
             className='contain bg-white p-0.5 rounded-lg'
           />
-          <div className='flex flex-col justify-center items-center w-full pt-10'>
+          {/* <div className='flex flex-col justify-center items-center w-full pt-10'>
             <Select value='5' onValueChange={(val) => { setSelectedPlant(val) }}>
               <SelectTrigger className="w-1/3 bg-transparent border-white">
                 <SelectValue placeholder="Seleccione planta" />
@@ -73,8 +73,8 @@ export default function RenderDataMenu({ data, dataPlants }: RenderDataMenuStruc
                 }
               </SelectContent>
             </Select>
-          </div>
-          <h1 className='font-bold text-2xl mt-20'>MÓDULOS</h1>
+          </div> */}
+          {/* <h1 className='font-bold text-2xl mt-20'>MÓDULOS</h1> */}
         </div>
       </div>
 

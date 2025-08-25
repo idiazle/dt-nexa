@@ -32,9 +32,9 @@ export default function AdminNav() {
         />
       </div>
       <div className=' flex flex-col justify-center items-center w-1/3'>
-        <h1 className='text-white font-bold'>Administración - CAJAMARQUILLA</h1>
+        <h1 className='text-white font-bold text-sm'>Administración - CAJAMARQUILLA</h1>
       </div>
-      <div className='flex flex-row gap-5 items-center w-1/3 justify-end'>
+      <div className='flex flex-row gap-5 items-center w-1/3 justify-end text-sm'>
         <UserInfoMenu />
       </div>
       {/* <div className='flex flex-row justify-center items-center gap-5'>

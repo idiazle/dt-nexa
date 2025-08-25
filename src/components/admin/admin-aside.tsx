@@ -16,7 +16,7 @@ export default function AdminAside() {
     {
       id: 1,
       icon_path: '/img/aside-icons/I_G. de entidades.png',
-      icon_tooltip: 'Gestión de Entidades',
+      icon_tooltip: 'Entidades',
       route: '/admin/entities',
       enable: true,
       group: 'dp'
@@ -24,7 +24,7 @@ export default function AdminAside() {
     {
       id: 2,
       icon_path: '/img/aside-icons/I_G. de tags.png',
-      icon_tooltip: 'Gestión de Equipos',
+      icon_tooltip: 'Equipos',
       route: '/admin/equipments',
       enable: true,
       group: 'dp'
@@ -32,7 +32,7 @@ export default function AdminAside() {
     {
       id: 3,
       icon_path: '/img/aside-icons/I_G. de documentos.png',
-      icon_tooltip: 'Gestión de Documentos',
+      icon_tooltip: 'Documentos',
       route: '/admin/documents',
       enable: true,
       group: 'mio'
@@ -40,7 +40,7 @@ export default function AdminAside() {
     {
       id: 4,
       icon_path: '/img/aside-icons/imagenes.png',
-      icon_tooltip: 'Gestión de Imágenes',
+      icon_tooltip: 'Imágenes',
       route: '/admin/icons',
       enable: false,
       group: 'mio'
@@ -48,7 +48,7 @@ export default function AdminAside() {
     {
       id: 5,
       icon_path: '/img/aside-icons/I_G. de planos.png',
-      icon_tooltip: 'Gestión de Planos',
+      icon_tooltip: 'Planos',
       route: '/admin/plans',
       enable: true,
       group: 'mio'
@@ -56,7 +56,7 @@ export default function AdminAside() {
     {
       id: 6,
       icon_path: '/img/aside-icons/icon_icon.png',
-      icon_tooltip: 'Gestión de Íconos 2D',
+      icon_tooltip: 'Íconos 2D',
       route: '/admin/map2d-icons',
       enable: true,
       group: 'twin'
@@ -64,23 +64,23 @@ export default function AdminAside() {
     {
       id: 7,
       icon_path: '/img/aside-icons/icon_icon.png',
-      icon_tooltip: 'Gestión de Mapas 2D',
+      icon_tooltip: 'Mapas 2D',
       route: '/admin/maps2d',
       enable: true,
       group: 'twin'
     },
-    {
-      id: 8,
-      icon_path: '/img/aside-icons/icon_icon.png',
-      icon_tooltip: 'Gestión de Shapes',
-      route: '/admin/map2d-shapes',
-      enable: false,
-      group: 'twin'
-    },
+    // {
+    //   id: 8,
+    //   icon_path: '/img/aside-icons/icon_icon.png',
+    //   icon_tooltip: 'Shapes',
+    //   route: '/admin/map2d-shapes',
+    //   enable: false,
+    //   group: 'twin'
+    // },
     {
       id: 9,
       icon_path: '/img/aside-icons/I_G. de troubleshooting.png',
-      icon_tooltip: 'Gestión de Incidencias',
+      icon_tooltip: 'Incidencias',
       route: '/admin/troubles',
       enable: false,
       group: 'mio'
@@ -88,7 +88,7 @@ export default function AdminAside() {
     {
       id: 10,
       icon_path: '/img/aside-icons/I_G. de usuarios.png',
-      icon_tooltip: 'Gestión de Usuarios',
+      icon_tooltip: 'Usuarios',
       route: '/admin/users',
       enable: true,
       group: 'dp'
@@ -96,7 +96,7 @@ export default function AdminAside() {
     {
       id: 11,
       icon_path: '/img/aside-icons/I_G. de autorizaciones.png',
-      icon_tooltip: 'Gestión de Autorizaciones',
+      icon_tooltip: 'Autorizaciones',
       route: '/admin/authorizations',
       enable: true,
       group: 'dp'
@@ -104,7 +104,7 @@ export default function AdminAside() {
     {
       id: 12,
       icon_path: '/img/aside-icons/I_G. de despieces.png',
-      icon_tooltip: 'Gestión de Despieces',
+      icon_tooltip: 'Despieces',
       route: '/admin/despieces',
       enable: true,
       group: 'mio'
@@ -112,7 +112,7 @@ export default function AdminAside() {
     {
       id: 13,
       icon_path: '/img/aside-icons/icon_icon.png',
-      icon_tooltip: 'Gestión de Nodos 360',
+      icon_tooltip: 'Nodos 360',
       route: '/admin/nodes360-photos',
       enable: true,
       group: 'twin'
@@ -120,7 +120,7 @@ export default function AdminAside() {
     {
       id: 14,
       icon_path: '/img/aside-icons/icon_icon.png',
-      icon_tooltip: 'Gestión de Reportes',
+      icon_tooltip: 'Reportes',
       route: '/admin/reports',
       enable: true,
       group: 'twin'
@@ -128,7 +128,7 @@ export default function AdminAside() {
     {
       id: 15,
       icon_path: '/img/aside-icons/icon_icon.png',
-      icon_tooltip: 'Gestión de Imágenes',
+      icon_tooltip: 'Imágenes',
       route: '/admin/imagenes',
       enable: true,
       group: 'twin'
@@ -136,8 +136,8 @@ export default function AdminAside() {
   ]
 
   return (
-    <div className={`w-full h-full flex flex-col flex-wrap justify-start items-center gap-1 p-2`}>
-      <div className='w-full h-[47px] rounded border-b-2'>
+    <div className={`w-full h-full flex flex-col justify-start gap-2 p-2 overflow-auto`}>
+      <div className='w-full rounded border-b-2'>
         <Button
           // onClick={() => {
           //   setChangeLocation('/admin')
@@ -152,103 +152,111 @@ export default function AdminAside() {
           </Link>
         </Button>
       </div>
-      <Label className='font-bold mt-4 text-base'>Digital Portal - Core</Label>
-      <Separator />
-      {
-        moduleList
-          .filter((obj: moduleListStructure) => obj.group === 'dp')
-          .map((obj: moduleListStructure, i: number) => {
-            return (
-              <div key={obj.id} className='w-full h-[47px] rounded-sm'>
-                <Button
-                  onClick={() => {
-                    setChangeLocation(obj.route)
-                  }}
-                  variant={'ghost'}
-                  disabled={!obj.enable}
-                  className={`w-full h-full p-0 hover:hover:bg-[#556E83] hover:text-white rounded-sm ${obj.enable ? 'cursor-pointer pointer-events-auto' : 'cursor-not-allowed'} ${changeLocation === obj.route ? 'bg-[#556E83] text-white' : ''} `}>
-                  <Link
-                    href={obj.route}
-                    className={`w-full h-full flex flex-row justify-start items-center gap-2 p-1`}>
-                    <Image
-                      className={`${obj.enable ? 'opacity-100' : 'opacity-50'} `}
-                      src={obj.icon_path || "/img/icons/default-icon.png"}
-                      height={30}
-                      width={30}
-                      alt={obj.icon_tooltip + obj.id}
-                    />
-                    <p className=''>{obj.icon_tooltip}</p>
-                  </Link>
-                </Button>
-              </div>
-            )
-          })
-      }
-      <Label className='font-bold mt-4 text-base'>Manual Interactivo de Operación</Label>
-      <Separator />
-      {
-        moduleList
-          .filter((obj: moduleListStructure) => obj.group === 'mio')
-          .map((obj: moduleListStructure, i: number) => {
-            return (
-              <div key={obj.id} className='w-full h-[47px] rounded-sm'>
-                <Button
-                  onClick={() => {
-                    setChangeLocation(obj.route)
-                  }}
-                  variant={'ghost'}
-                  disabled={!obj.enable}
-                  className={`w-full h-full p-0 hover:hover:bg-[#556E83] hover:text-white rounded-sm ${obj.enable ? 'cursor-pointer pointer-events-auto' : 'cursor-not-allowed'} ${changeLocation === obj.route ? 'bg-[#556E83] text-white' : ''} `}>
-                  <Link
-                    href={obj.route}
-                    className={`w-full h-full flex flex-row justify-start items-center gap-2 p-1`}>
-                    <Image
-                      className={`${obj.enable ? 'opacity-100' : 'opacity-50'} `}
-                      src={obj.icon_path || "/img/icons/default-icon.png"}
-                      height={30}
-                      width={30}
-                      alt={obj.icon_tooltip + obj.id}
-                    />
-                    <p className=''>{obj.icon_tooltip}</p>
-                  </Link>
-                </Button>
-              </div>
-            )
-          })
-      }
+      <div>
+        <Label className='font-bold text-base'>Digital Portal - Core</Label>
+        <Separator />
+        {
+          moduleList
+            .filter((obj: moduleListStructure) => obj.group === 'dp')
+            .map((obj: moduleListStructure, i: number) => {
+              return (
+                <div key={obj.id} className='w-full rounded-sm'>
+                  <Button
+                    onClick={() => {
+                      setChangeLocation(obj.route)
+                    }}
+                    variant={'ghost'}
+                    disabled={!obj.enable}
+                    className={`w-full h-full p-0 hover:hover:bg-[#556E83] hover:text-white rounded-sm ${obj.enable ? 'cursor-pointer pointer-events-auto' : 'cursor-not-allowed'} ${changeLocation === obj.route ? 'bg-[#556E83] text-white' : ''} `}>
+                    <Link
+                      href={obj.route}
+                      className={`w-full h-full flex flex-row justify-start items-center gap-2 p-1`}>
+                      <Image
+                        className={`${obj.enable ? 'opacity-100' : 'opacity-50'} `}
+                        src={obj.icon_path || "/img/icons/default-icon.png"}
+                        height={30}
+                        width={30}
+                        alt={obj.icon_tooltip + obj.id}
+                      />
+                      <p className=''>{obj.icon_tooltip}</p>
+                    </Link>
+                  </Button>
+                </div>
+              )
+            })
+        }
 
-      <Label className='font-bold gap-4 text-base mt-4'>Gemelo Digital</Label>
-      <Separator />
-      {
-        moduleList
-          .filter((obj: moduleListStructure) => obj.group === 'twin')
-          .map((obj: moduleListStructure, i: number) => {
-            return (
-              <div key={obj.id} className='w-full h-[47px] rounded-sm'>
-                <Button
-                  onClick={() => {
-                    setChangeLocation(obj.route)
-                  }}
-                  variant={'ghost'}
-                  disabled={!obj.enable}
-                  className={`w-full h-full p-0 hover:hover:bg-[#556E83] hover:text-white rounded-sm ${obj.enable ? 'cursor-pointer pointer-events-auto' : 'cursor-not-allowed'} ${changeLocation === obj.route ? 'bg-[#556E83] text-white' : ''} `}>
-                  <Link
-                    href={obj.route}
-                    className={`w-full h-full flex flex-row justify-start items-center gap-2 p-1 `}>
-                    <Image
-                      className={`${obj.enable ? 'opacity-100' : 'opacity-50'}`}
-                      src={obj.icon_path || "/img/menu-icons/gemelo_digital.png"}
-                      height={30}
-                      width={30}
-                      alt={obj.icon_tooltip + obj.id}
-                    />
-                    <p className=''>{obj.icon_tooltip}</p>
-                  </Link>
-                </Button>
-              </div>
-            )
-          })
-      }
+      </div>
+      <div>
+        <Label className='font-bold text-base'>Manual Interactivo de Operación</Label>
+        <Separator />
+        {
+          moduleList
+            .filter((obj: moduleListStructure) => obj.group === 'mio')
+            .map((obj: moduleListStructure, i: number) => {
+              return (
+                <div key={obj.id} className='w-full rounded-sm'>
+                  <Button
+                    onClick={() => {
+                      setChangeLocation(obj.route)
+                    }}
+                    variant={'ghost'}
+                    disabled={!obj.enable}
+                    className={`w-full h-full p-0 hover:hover:bg-[#556E83] hover:text-white rounded-sm ${obj.enable ? 'cursor-pointer pointer-events-auto' : 'cursor-not-allowed'} ${changeLocation === obj.route ? 'bg-[#556E83] text-white' : ''} `}>
+                    <Link
+                      href={obj.route}
+                      className={`w-full h-full flex flex-row justify-start items-center gap-2 p-1`}>
+                      <Image
+                        className={`${obj.enable ? 'opacity-100' : 'opacity-50'} `}
+                        src={obj.icon_path || "/img/icons/default-icon.png"}
+                        height={30}
+                        width={30}
+                        alt={obj.icon_tooltip + obj.id}
+                      />
+                      <p className=''>{obj.icon_tooltip}</p>
+                    </Link>
+                  </Button>
+                </div>
+              )
+            })
+        }
+
+      </div>
+      <div>
+        <Label className='font-bold text-base'>Gemelo Digital</Label>
+        <Separator />
+        {
+          moduleList
+            .filter((obj: moduleListStructure) => obj.group === 'twin')
+            .map((obj: moduleListStructure, i: number) => {
+              return (
+                <div key={obj.id} className='w-full rounded-sm'>
+                  <Button
+                    onClick={() => {
+                      setChangeLocation(obj.route)
+                    }}
+                    variant={'ghost'}
+                    disabled={!obj.enable}
+                    className={`w-full h-full p-0 hover:hover:bg-[#556E83] hover:text-white rounded-sm ${obj.enable ? 'cursor-pointer pointer-events-auto' : 'cursor-not-allowed'} ${changeLocation === obj.route ? 'bg-[#556E83] text-white' : ''} `}>
+                    <Link
+                      href={obj.route}
+                      className={`w-full h-full flex flex-row justify-start items-center gap-2 p-1 `}>
+                      <Image
+                        className={`${obj.enable ? 'opacity-100' : 'opacity-50'}`}
+                        src={obj.icon_path || "/img/menu-icons/gemelo_digital.png"}
+                        height={30}
+                        width={30}
+                        alt={obj.icon_tooltip + obj.id}
+                      />
+                      <p className=''>{obj.icon_tooltip}</p>
+                    </Link>
+                  </Button>
+                </div>
+              )
+            })
+        }
+
+      </div>
 
     </div>
   )

@@ -54,6 +54,8 @@ import { Input } from '../ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { getEquipments } from '@/api/admin/equipments-api';
 import SparesDialog from './spares-dialog';
+import { set } from 'react-hook-form';
+import ReportDialog from './report-dialog';
 
 interface MapProps {
   mapSelected: Map2dStructure | null
@@ -660,28 +662,35 @@ export default function PlansMapContainer(Map: MapProps) {
     }
   }, [openGallery, equipmentSelected]);
 
-  console.log("Images by Equipment", imagesByEquipment);
   const [isZoomed, setIsZoomed] = useState(false);
 
 
   const [openModoFallaDialog, setOpenModoFallaDialog] = useState(false);
 
+  // SECCION REPORTES
   const [reportesGenerales, setReportesGenerales] = useState<any[]>([]);
   const [reportesFiltrados, setReportesFiltrados] = useState<any[]>([]);
+  const [allEquipments, setAllEquipments] = useState<EquipmentStructure[]>([]);
+  const [reporteSelected, setReporteSelected] = useState<any>(null);
+  const [openReporteDialog, setOpenReporteDialog] = useState<boolean>(false);
 
   useEffect(() => {
     fetch(`/data/avisos_skf_s32.json`).then(response => response.json()).then(data => {
-      console.log("Datos de criticidad:", data)
       setReportesGenerales(data)
     })
+    getEquipments().then((response) => {
+      setAllEquipments(response.data.data);
+    });
   }, []);
 
-  console.log("reportesGenerales", reportesGenerales);
-
   useEffect(() => {
-    const resp = reportesGenerales.filter(item => (item["SEMANA"] === 32));
-    setReportesFiltrados(resp);
-  }, [reportesGenerales]);
+    //Filtrar el equipo seleccionado para obtener toda su info (principalmente TAG)
+    const responseEquiment = allEquipments.filter(equipment => equipment.equipment_id === equipmentSelected?.obj.entity_id.id);
+
+    //filtrar los reportes de skf que contengan el tag dentro de TAG, existen varios componentes para un equipo
+    const reportesFiltrados = reportesGenerales.filter(item => item['TAG'].includes(responseEquiment[0]?.tag))
+    setReportesFiltrados(reportesFiltrados.reverse());
+  }, [allEquipments, equipmentSelected, reportesGenerales]);
 
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
@@ -991,8 +1000,8 @@ export default function PlansMapContainer(Map: MapProps) {
       }
 
       {/* TOP MENU CONTROL */}
-      <div className='absolute bottom-5 left-2 z-40 flex flex-row gap-2'>
-        <h1 className='bg-gray-500 text-white font-bold p-2 rounded-md text-xl uppercase'>{Map.mapSelected?.name}</h1>
+      <div className='absolute bottom-5 left-2 z-40'>
+        <h1 className='bg-gray-500 text-white p-2 font-bold rounded-md uppercase'>{Map.mapSelected?.name}</h1>
       </div>
       <div className={`absolute transition-all duration-500 left-14 bottom-20 flex justify-center items-center ${!controlMinimized ? 'opacity-100' : 'opacity-0'} w-7 h-7`}>
         <div className='flex justify-center items-center w-full h-full bg-[#ffffff] text-white transition-all duration-300'>
@@ -1008,13 +1017,13 @@ export default function PlansMapContainer(Map: MapProps) {
                           // setActivateEquipments(!activateEquipments)
                           handleClickBtn(obj)
                         }}
-                        className={`text-xl p-2 flex items-center justify-center text-black bg-white border-2 border-blue-600 gap-2 rounded-full w-24`}>
+                        className={`py-1 px-2 flex items-center justify-center text-black bg-white border-2 border-blue-500 gap-2 rounded-full`}>
                         {
-                          obj.active ? null : <FaCircle size={25} color='red' />
+                          obj.active ? null : <FaCircle size={20} color='red' />
                         }
                         <h1 className='font-bold'>{obj.active ? 'ON' : 'OFF'}</h1>
                         {
-                          obj.active ? <FaCircle size={25} color='green' /> : null
+                          obj.active ? <FaCircle size={20} color='green' /> : null
                         }
                       </button>
                       {/* <Button
@@ -1035,7 +1044,7 @@ export default function PlansMapContainer(Map: MapProps) {
                       {/* </div> */}
                       {/* </Button> */}
                     </TooltipTrigger>
-                    <TooltipContent side='right'>
+                    <TooltipContent side='top'>
                       <p>{!obj.active ? obj.show_name : obj.hide_name}</p>
                     </TooltipContent>
                   </Tooltip>
@@ -1060,95 +1069,60 @@ export default function PlansMapContainer(Map: MapProps) {
           null
       }
 
-      {/* LEFT DATA INFORMATION SHOW */}
-      <div className={`absolute flex flex-col transition-all duration-500 h-[94%] right-0 top-14 bottom-0 ${reportSelected === true && !closeInformation ? 'w-[20%] opacity-100' : 'w-0 opacity-0'} bg-slate-100 z-20 border rounded-l-md`}>
-
-        {/* {
-          renderLeftInformation === null || selectedShape === null ? <div className='w-full h-full flex flex-col justify-center items-center'>
-            <Spinner />
-          </div> : <div className='h-full w-full overflow-hidden flex flex-col'>
-            {renderLefInfo(Number(entityType))}
-            <Button onClick={() => {
-              setAlertDeleteShape(true)
-            }} className='flex flex-row justify-between items-center'>
-              <h1>Eliminar Shape</h1>
-              <FaTrash />
-            </Button>
-          </div>
-        } */}
-        <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[40px] rounded-tl-md px-2'>
-          <p className='text-white ml-2 text-lg font-bold uppercase'>
+      {/* RIGHT DATA INFORMATION SHOW */}
+      <div className={`absolute flex flex-col h-[94%] right-0 top-14 bottom-0 ${reportSelected === true && !closeInformation ? 'w-[35%] opacity-100' : 'w-0 opacity-0'} bg-slate-300 z-50 border rounded-l-md`}>
+        <div className='flex flex-row justify-between items-center right-0 top-0  bg-[#e9851e] w-full h-[30px] rounded-tl-md px-2'>
+          <p className='text-white ml-2 font-bold uppercase'>
             {entityType === 3
               ? `Informacion adicional de equipo ${infoShape?.entity_data.name}`
               : `${'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as EquipmentStructure).tag : ''} - ${infoShape?.entity_data.name}`}
           </p>
           <FaX className='cursor-pointer' onClick={() => { setCloseInformation(true), setSelectedShape(null) }} size={20} color='white' />
         </div>
-
-        {/* <div className='flex flex-row items-center justify-between bg-[#e9851e] p-2'>
-          <h1 className='font-bold text-white'>Reporte de Condición</h1>
-          <button onClick={() => { console.log("Cerrar reporte"), setShowPanel(false) }} >
-              <FaCircleXmark className='text-white' size={25} />
-            </button>
-        </div> */}
-
         <Tabs defaultValue="reports" className=''>
-          <TabsList className='flex flex-row w-full bg-white rounded-md gap-1'>
+          <TabsList className='flex flex-row w-full rounded-md gap-1'>
             <TabsTrigger value="reports" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Reportes</TabsTrigger>
-            <TabsTrigger value="information" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Información</TabsTrigger>
+            <TabsTrigger value="information" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Información Téc.</TabsTrigger>
             <TabsTrigger value="options" className='w-1/3 bg-gray-300 hover:bg-gray-500 hover:text-white'>Opciones</TabsTrigger>
           </TabsList>
           <TabsContent value="reports" className=''>
-            <div
-              className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
-              onClick={() => setIsOpen3(!isOpen3)}
-            >
-              <h1 className='font-bold text-white'>Reportes de Equipo</h1>
-            </div>
-            <div className={`flex flex-col gap-1 p-2 bg-gray-200 h-auto max-h-[33%] overflow-y-auto`}>
+            <div className={`flex flex-col gap-1 p-2 m-2 rounded-md bg-white max-h-[80vh] overflow-auto`}>
               {
-                reportsEquipment !== undefined && reportsEquipment !== null && reportsEquipment.length > 0 ? reportsEquipment.map((obj: any, index: number) => {
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        console.log("Click on report", obj);
-                        handleViewDoc(obj)
-                      }}
-                      className='flex flex-col gap-1 p-2 bg-white rounded-md text-black items-start'
-                    >
-                      <h1 className='font-bold text-lg truncate max-w-full' title={obj.filename}>{obj.filename}</h1>
-                      <p className=' flex flex-row items-center gap-4 text-lg'>
-                        Estado: <FaCircle color={renderColor(generalCondition)} size={30} className=' rounded-full' /> - {
-                          generalCondition === 1 ? 'Alerta'
-                            : generalCondition === 2 ? 'Precaución'
-                              : generalCondition === 3 ? 'Tolerable'
-                                : generalCondition === 4 ? 'Normal'
-                                  : generalCondition === 5 ? 'No monitoreado'
-                                    : generalCondition === 6 ? 'No aplica'
-                                      : ''
-                        }
-                      </p>
-                      <p className='text-sm'>Fecha: {new Date(obj.created_at).toLocaleDateString()}</p>
-                    </button>
-                  )
-                }) : (
+                reportesFiltrados.length > 0 ? reportesFiltrados.map((reporte, index) => (
+                  <div
+                    onClick={() => {
+                      setReporteSelected(reporte);
+                      setOpenReporteDialog(true);
+                    }}
+                    key={index} className='flex flex-col gap-1 bg-gray-100 border border-gray-300 shadow-md rounded-md text-black cursor-pointer hover:bg-gray-100'>
+                    <div className={` p-1 rounded-t-md flex justify-center  ${reporte["CONDICION ACT."] === 'ALARMA' ? 'bg-[#F20000]' :
+                      reporte["CONDICION ACT."] === 'PRECAUCION' ? 'bg-[#FFC000]' :
+                        reporte["CONDICION ACT."] === 'TOLERABLE' ? 'bg-[#FFFF00]' :
+                          reporte["CONDICION ACT."] === 'NORMAL' ? 'bg-[#00A049]' :
+                            reporte["CONDICION ACT."] === 'NORMAL' ? 'bg-[#B0B0B0]' :
+                              'bg-white'}`} />
+                    <div className='p-2 text-xs'>
+                      <div className='flex flex-row justify-between'>
+                        <p className=''>Semana:{reporte["SEMANA"]}</p>
+                        <p className=''>{reporte["FECHA DE CREACIÓN"]}</p>
+                      </div>
+                      <p className=''>Ubicación técnica:{reporte["TAG"]}</p>
+                      <p className=''>Técnica:{reporte["Técnica"]}</p>
+                      <p className=''>Modo de falla:{reporte["Modo de falla"] === '' ? "Sin modo de falla" : reporte["Modo de falla"]}</p>
+                    </div>
+                  </div>
+                )) : (
                   <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-                    <p>No hay reportes disponibles</p>
+                    <p className='text-xs italic text-center'>No hay reportes disponibles</p>
                   </div>
                 )
               }
-              {/* <div className='flex flex-col gap-1 p-2 bg-white rounded-md text-black'>
-            <h1 className='font-bold text-lg'>REP-001_25 - 0210-CV-004</h1>
-            <p className='text-sm'>Fecha: 20/03/2025</p>
-            <p className='text-sm flex flex-row items-center gap-4'>Estado: <FaCircle size={20} color='green' /> </p>
-          </div> */}
             </div>
           </TabsContent>
           <TabsContent value="information" className=''>
-            <div className='flex flex-col text-sm h-auto bg-white overflow-hidden'>
+            <div className='flex flex-col m-2 rounded-md text-sm h-auto bg-white overflow-hidden'>
               {/* Header */}
-              <div
+              {/* <div
                 className='flex flex-row justify-between gap-1 p-2 bg-gray-500 cursor-pointer'
                 onClick={() => setIsOpen(!isOpen)}
               >
@@ -1158,33 +1132,35 @@ export default function PlansMapContainer(Map: MapProps) {
                 ) : (
                   <FaAngleDown className='text-white' size={20} />
                 )}
-              </div>
+              </div> */}
 
               {/* Contenido colapsable */}
               <div className={`transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} >
-                <div className='flex flex-col gap-3 px-7 py-2'>
-                  <div className='flex flex-col gap-1 text-black'>
+                <div className='flex flex-col gap-3 p-2'>
+                  {/* <div className='flex flex-col gap-1 text-black'>
                     <h1 className='font-bold border-b-2 border-black'>Proceso Asociado:</h1>
                     <p className='ml-4'>{'parent_data' in (infoShape?.entity_data ?? {}) && (infoShape?.entity_data as any)?.parent_data?.name ? (infoShape?.entity_data as any).parent_data.name : 'Sin proceso asociado'}</p>
-                  </div>
-                  <div className='flex flex-col gap-1 text-black'>
-                    <h1 className='font-bold border-b-2 border-black'>TAG:</h1>
-                    <p className='ml-4'>{'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as any).tag : ''}</p>
-                  </div>
-                  <div className='flex flex-col gap-1 text-black'>
-                    <h1 className='font-bold border-b-2 border-black'>Nombre:</h1>
-                    <p className='ml-4'>{infoShape?.entity_data.name}</p>
+                  </div> */}
+                  <div className='flex flex-row'>
+                    <div className='flex flex-row gap-1 text-black w-1/3'>
+                      <h1 className='font-bold'>TAG:</h1>
+                      <p className=''>{'tag' in (infoShape?.entity_data ?? {}) ? (infoShape?.entity_data as any).tag : ''}</p>
+                    </div>
+                    <div className='flex flex-row gap-1 text-black w-2/3'>
+                      <h1 className='font-bold'>Nombre:</h1>
+                      <p className=''>{infoShape?.entity_data.name}</p>
+                    </div>
                   </div>
                   <div className='flex flex-col gap-1 text-black'>
                     <h1 className='font-bold border-b-2 border-black'>Características:</h1>
-                    <div className='flex flex-col gap-1 ml-4'>
+                    <div className='flex flex-col gap-1 ml-2 text-xs'>
                       {
                         (selectedShape !== null && infoShape !== null && 'properties' in infoShape.entity_data && infoShape.entity_data.properties) ?
                           JSON.parse((infoShape.entity_data as any).properties)?.filter((obj2: any) => obj2.value !== '')?.map((obj: any, index: number) => {
                             return (
                               <div className='flex flex-row justify-between items-center gap-2' key={index}>
                                 <FaCircle size={6} />
-                                <p className='w-1/3'>{obj.label}</p>
+                                <p className='w-1/3'>{obj.label}:</p>
                                 <p className='w-2/3'>{obj.value}</p>
                               </div>
                             )
@@ -1196,14 +1172,14 @@ export default function PlansMapContainer(Map: MapProps) {
                   </div>
                   <div className='flex flex-col gap-1 text-black'>
                     <h1 className='font-bold border-b-2 border-black text-black'>Documentos:</h1>
-                    <div className='gap-1 flex flex-col overflow-auto h-[80%] ml-4'>
+                    <div className='gap-1 flex flex-col overflow-auto max-h-[65vh] ml-2'>
                       {
                         infoShape?.documents && infoShape.documents.length > 0 ? infoShape.documents.map((obj: any, index: number) => {
                           const document = obj.document_id as DocumentStructure
                           return (
                             <button key={index} className=' text-black flex flex-row items-center text-start gap-2 p-1 hover:bg-gray-300 rounded-sm bg-gray-200' onClick={() => onSetViewDoc(document)}>
                               <FaFile size={15} />
-                              <p className='text-sm'>{document.title}</p>
+                              <p className='text-xs'>{document.title}</p>
                             </button>
                           )
                         }) : <p className='text-black'>No hay documentos disponibles</p>
@@ -1215,40 +1191,30 @@ export default function PlansMapContainer(Map: MapProps) {
             </div>
           </TabsContent>
           <TabsContent value="options" className=''>
-            <div className='flex flex-col text-sm bg-white h-auto gap-2'>
-              <div
-                className='flex flex-row justify-between gap-1 p-2 bg-gray-500 rounded-sms cursor-pointer'
-                onClick={() => setIsOpen2(!isOpen2)}
-              >
-                <h1 className='font-bold text-white'>Opciones de Equipo</h1>
-                {isOpen2 ? (
-                  <FaAngleUp className='text-white' size={20} />
-                ) : (
-                  <FaAngleDown className='text-white' size={20} />
-                )}
-              </div>
-              {/* <div className={`overflow-y-auto transition-all duration-500 ${isOpen ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`} ></div> */}
-              <div className={`grid grid-cols-4 gap-1 px-2 text-white items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className='flex flex-col text-sm bg-white h-auto gap-2 m-2 rounded-md p-2'>
+              <div className={`grid grid-cols-4 xl:grid-cols-3 gap-1 text-white items-start ${isOpen2 ? 'max-h-1/3 opacity-100' : 'max-h-0 opacity-0'}`}>
                 {
                   selectedShape && selectedShape.id === 62 ?
                     <button
                       onClick={() => {
                         setOpenDespiece(true)
                       }}
-                      className='flex flex-col  bg-[#002645] rounded-md items-center justify-start p-2 h-full gap-1 cursor-pointer hover:opacity-70'>
+                      title='Despiece'
+                      className='flex flex-col bg-[#002645] rounded-md items-center justify-start p-2 h-full gap-1 cursor-pointer hover:opacity-70'>
                       <Image
                         src={'/img/icons/ico-28.svg'}
                         alt={'Despiece'}
                         width={80}
                         height={60}
                       />
-                      <span className='font-bold'>Despiece</span>
+                      {/* <span className='font-bold'>Despiece</span> */}
                     </button>
                     :
                     <button
                       disabled
+                      title='Despiece'
                       // href='https://nexa-b2025.dportal.app'
-                      className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                      className='flex flex-col  bg-[#002645] rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
                       <Image
                         src={'/img/icons/ico-28.svg'}
                         alt={'Despiece'}
@@ -1262,14 +1228,14 @@ export default function PlansMapContainer(Map: MapProps) {
                   options.map((option, index) => {
                     return (
                       <>
-                        <button disabled className='flex flex-col  bg-slate-700 rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
+                        <button title={option.label} disabled className='flex flex-col  bg-[#002645] rounded-md items-center justify-start p-2 h-full gap-1 opacity-50'>
                           <Image
                             src={option.url}
                             alt={option.label}
                             width={80}
                             height={60}
                           />
-                          <span className='font-bold'>{option.label}</span>
+                          <span className='font-bold text-xs'>{option.label}</span>
                         </button>
                       </>
                     )
@@ -1297,9 +1263,6 @@ export default function PlansMapContainer(Map: MapProps) {
             </div>
           </TabsContent>
         </Tabs>
-
-
-
       </div>
       {
         openDespiece ?
@@ -1375,38 +1338,11 @@ export default function PlansMapContainer(Map: MapProps) {
           ? <ModalViewMedia setOpen={setOpenDialogDoc} open={openDialogDoc} information={fileSelected} type={'document'} />
           : null
       }
-      <SparesDialog openSpare={openSpare} setOpenSpare={setOpenSpare} equipmentSelected={selectedShape} setEquipmentSelected={setSelectedShape} reportesFiltrados={reportesGenerales} />
 
-      <Dialog open={openModoFallaDialog} onOpenChange={() => { setOpenModoFallaDialog(false) }}>
-        <DialogContent className='bg-gray-200'>
-          <DialogHeader>
-            <DialogTitle>Modo de Falla</DialogTitle>
-          </DialogHeader>
-          <div className='flex flex-col gap-2'>
-            <div className='flex flex-row gap-2 items-center'>
-              <Label className='text-md font-bold w-1/3'>Tecnica:</Label>
-              <h1 className='bg-white p-1 rounded-md w-full'>Analisis Vibracional</h1>
-            </div>
-            <div className='flex flex-row gap-2 items-center'>
-              <Label className='text-md font-bold w-1/3'>Modo de falla:</Label>
-              <h1 className='bg-white p-1 rounded-md w-full'>Defectos en componentes del sistema de transporte de calcina.</h1>
-            </div>
-            <div className='flex flex-row gap-2 items-center'>
-              <Label className='text-md font-bold w-1/3'>Numero de aviso:</Label>
-              <h1 className='bg-white p-1 rounded-md w-full'>20853598</h1>
-            </div>
-            <div className='flex flex-row gap-2 items-center'>
-              <Label className='text-md font-bold w-1/3'>#O.T.:</Label>
-              <h1 className='bg-white p-1 rounded-md w-full'>S/N</h1>
-            </div>
-            <div className='flex flex-row gap-2 items-center'>
-              <Label className='text-md font-bold w-1/3'>Fecha Inicio:</Label>
-              <h1 className='bg-white p-1 rounded-md w-full'>S/F</h1>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
+      {
+        openReporteDialog ? <ReportDialog openReporteDialog={openReporteDialog} setOpenReporteDialog={setOpenReporteDialog} reportData={reporteSelected} /> : null
+      }
+      <SparesDialog openSpareDialog={openSpare} setOpenSpareDialog={setOpenSpare} equipmentSelected={selectedShape} setEquipmentSelected={setSelectedShape} reportesFiltrados={reportesGenerales} />
     </div >
   )
 }

@@ -10,14 +10,14 @@ import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 
 interface SpareDialogProps {
-  openSpare: boolean
-  setOpenSpare: (open: boolean) => void
+  openSpareDialog: boolean
+  setOpenSpareDialog: (open: boolean) => void
   equipmentSelected: any | null
   setEquipmentSelected: (equipment: any | null) => void
   reportesFiltrados: any[]
 }
 
-const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipmentSelected, reportesFiltrados }: SpareDialogProps) => {
+const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, setEquipmentSelected, reportesFiltrados }: SpareDialogProps) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const [equipmentByCriticidad, setEquipmentByCriticidad] = useState<any[]>([])
@@ -205,11 +205,11 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
   console.log("Repuestos por falla:", failureModeRF);
 
   return (
-    <div className={`absolute flex flex-col max-h-[92%] right-0 top-14 bottom-0 ${openSpare ? 'w-[45%] opacity-100' : 'w-0 opacity-0'} bg-slate-300 z-50 border rounded-l-md p-2`}>
+    <div className={`absolute flex flex-col max-h-[92%] right-0 top-14 bottom-0 ${openSpareDialog ? 'w-[45%] opacity-100' : 'w-0 opacity-0'} bg-slate-300 z-50 border rounded-l-md p-2`}>
       <div className='p-2 bg-[#002645] rounded-md flex flex-row justify-between items-center w-full'>
         <h1 className='text-white font-bold xl:text-sm'>SPARE - REPUESTOS</h1>
         <FaX className='text-white right-2 top-2 cursor-pointer hover:bg-gray-300 p-1 rounded-md' onClick={() => {
-          setOpenSpare(false)
+          setOpenSpareDialog(false)
           setEquipmentSelected(null)
           setCondicionEquipo(null);
           setSelectedReparacion(null);
@@ -226,8 +226,7 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
             </h1>
           </div>
           <div
-            onClick={() => setOpenReporteDialog(true)}
-            className={`flex w-1/2 px-2 py-1 rounded-md text-xs cursor-pointer
+            className={`flex w-2/3 px-2 py-1 rounded-md text-xs
             ${condicionEquipo?.["CONDICION ACT."] === 'ALARMA' ? 'bg-[#F20000]' :
                 condicionEquipo?.["CONDICION ACT."] === 'PRECAUCION' ? 'bg-[#FFC000]' :
                   condicionEquipo?.["CONDICION ACT."] === 'TOLERABLE' ? 'bg-[#FFFF00]' :
@@ -236,7 +235,7 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
                         'bg-white'}`}>
             {
               condicionEquipo?.SEMANA && condicionEquipo?.["CONDICION ACT."]
-                ? `${condicionEquipo["CONDICION ACT."]}`
+                ? `S${condicionEquipo["SEMANA"]} - ${condicionEquipo["CONDICION ACT."]}`
                 : "Sin condición"
             }
           </div>
@@ -628,119 +627,6 @@ const SparesDialog = ({ openSpare, setOpenSpare, equipmentSelected, setEquipment
               </div>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog de condicion de equipo */}
-      <Dialog open={openReporteDialog} onOpenChange={setOpenReporteDialog}>
-        <DialogContent className="max-h-[90vh] min-w-[80%] bg-gray-200 flex flex-col">
-          <DialogHeader>
-            <DialogTitle>CONDICIÓN DE EQUIPO</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-row gap-2">
-            <div className="flex flex-col bg-white text-xs overflow-y-auto rounded-sm w-3/4 max-h-[calc(70vh-20px)] p-2 gap-2">
-              <Label className="font-bold bg-slate-200 p-2 rounded-md">Reporte Actual:</Label>
-              <div className="flex flex-row gap-4 w-full">
-                <div className="flex flex-row gap-2 items-center w-1/3">
-                  <Label className="font-bold">Semana:</Label>
-                  <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["SEMANA"]}</h1>
-                </div>
-                <div className="flex flex-row gap-2 items-center w-1/3">
-                  <Label className="font-bold">Condicion:</Label>
-                  <h1 className={`px-2 py-1 w-full rounded-md font-bold
-                  ${condicionEquipo?.["CONDICION ACT."] === 'ALARMA' ? 'bg-[#F20000]' :
-                      condicionEquipo?.["CONDICION ACT."] === 'PRECAUCION' ? 'bg-[#FFC000]' :
-                        condicionEquipo?.["CONDICION ACT."] === 'TOLERABLE' ? 'bg-[#FFFF00]' :
-                          condicionEquipo?.["CONDICION ACT."] === 'NORMAL' ? 'bg-[#00A049]' :
-                            condicionEquipo?.["CONDICION ACT."] === 'NORMAL' ? 'bg-[#B0B0B0]' :
-                              'bg-white'}
-                    `}>{condicionEquipo?.["CONDICION ACT."]}</h1>
-                </div>
-                <div className="flex flex-row gap-2 items-center w-1/3">
-                  <Label className="font-bold">Fecha:</Label>
-                  <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["FECHA"]}</h1>
-                </div>
-              </div>
-              <div className="flex flex-row gap-4">
-                <div className="flex flex-row gap-2 items-center w-1/3">
-                  <Label className="font-bold">TAG:</Label>
-                  <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["TAG"]}</h1>
-                </div>
-                <div className="flex flex-row gap-2 items-center w-2/3">
-                  <Label className="font-bold">Equipo:</Label>
-                  <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["ACTIVO"]}</h1>
-                </div>
-              </div>
-              <div className="flex flex-row gap-2 items-center">
-                <Label className="font-bold">Área:</Label>
-                <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["AREA"]}</h1>
-              </div>
-              <div className="flex flex-row gap-2 items-center">
-                <Label className="font-bold">Diagnóstico/Observación:</Label>
-                <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md whitespace-pre-line">
-                  {condicionEquipo?.["PLAN DE ACCIÓN"]}
-                </h1>
-                {/* <Textarea value={condicionEquipo?.["DIAGNÓSTICO / OBSERVACIÓN"]} /> */}
-              </div>
-              <div className="flex flex-row gap-2 items-center">
-                <Label className="font-bold">Plan de acción:</Label>
-                <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md whitespace-pre-line">{condicionEquipo?.["PLAN DE ACCIÓN"]}</h1>
-                {/* <Textarea value={condicionEquipo?.["PLAN DE ACCIÓN"]} /> */}
-              </div>
-              <div className="flex flex-row gap-2 items-center">
-                <Label className="font-bold">N° de aviso:</Label>
-                <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["N° AVISO"]}</h1>
-              </div>
-              <div className="flex flex-row gap-2 items-center">
-                <div className="flex flex-row gap-2 items-center w-1/2">
-                  <Label className="font-bold">Técnica:</Label>
-                  <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["Técnica"]}</h1>
-                </div>
-                <div className="flex flex-row gap-2 items-center w-1/2">
-                  <Label className="font-bold">Modo de falla:</Label>
-                  <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["Modo de falla"] === "" ? "Sin modo de falla registrado" : condicionEquipo?.["Modo de falla"]}</h1>
-                </div>
-              </div>
-              <div className="flex flex-row gap-2 items-center">
-                <div className="flex flex-row gap-2 items-center w-1/2">
-                  <Label className="font-bold"># Orden de Trabajo:</Label>
-                  <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["OT"] === 0 ? "Sin orden de trabajo" : condicionEquipo?.["OT"]}</h1>
-                </div>
-                <div className="flex flex-row gap-2 items-center w-1/2">
-                  <Label className="font-bold">Fecha de inicio extremo:</Label>
-                  <h1 className="bg-gray-100 px-2 py-1 w-full rounded-md">{condicionEquipo?.["Fecha Inicio Extremo"] === "" ? "Sin fecha de inicio extremo registrada" : condicionEquipo?.["Fecha Inicio Extremo"]}</h1>
-                </div>
-              </div>
-
-
-            </div>
-            <div className="bg-white text-xs rounded-sm w-1/4 max-h-[calc(90vh-20px)]">
-              <div className="p-2 gap-2 flex flex-col  overflow-auto max-h-[calc(70vh-20px)]">
-                <Label className="font-bold bg-slate-200 p-2 rounded-md">Reportes Anteriores:</Label>
-                {
-                  historialCondicionEquipo.map((reporte, index) => (
-                    <div key={index} className="flex flex-row gap-2 items-center p-2 border border-gray-300 bg-gray-100 rounded-md">
-                      <div className={`font-bold p-2 rounded-md flex justify-center  ${reporte["CONDICION ACT."] === 'ALARMA' ? 'bg-[#F20000]' :
-                        reporte["CONDICION ACT."] === 'PRECAUCION' ? 'bg-[#FFC000]' :
-                          reporte["CONDICION ACT."] === 'TOLERABLE' ? 'bg-[#FFFF00]' :
-                            reporte["CONDICION ACT."] === 'NORMAL' ? 'bg-[#00A049]' :
-                              reporte["CONDICION ACT."] === 'NORMAL' ? 'bg-[#B0B0B0]' :
-                                'bg-white'}`}>
-                        {reporte["CONDICION ACT."]}
-                      </div>
-                      <div>
-                        <h1>Semana {reporte["SEMANA"]}</h1>
-                        <h1>{reporte["Técnica"]}</h1>
-                        <h1>{reporte["Modo de falla"] === '' ? "Sin modo de falla" : reporte["Modo de Falla"]}</h1>
-                      </div>
-                    </div>
-                  ))
-                }
-
-              </div>
-            </div>
-          </div>
-
         </DialogContent>
       </Dialog>
 
