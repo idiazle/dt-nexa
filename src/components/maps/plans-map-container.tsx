@@ -1102,13 +1102,21 @@ export default function PlansMapContainer(Map: MapProps) {
                             reporte["CONDICION ACT."] === 'NORMAL' ? 'bg-[#B0B0B0]' :
                               'bg-white'}`} />
                     <div className='p-2 text-xs'>
-                      <div className='flex flex-row justify-between'>
+                      <div className='flex flex-row justify-between font-bold'>
                         <p className=''>Semana:{reporte["SEMANA"]}</p>
-                        <p className=''>{reporte["FECHA DE CREACIÓN"]}</p>
+                        <p className=''>{reporte["FECHA"]}</p>
                       </div>
-                      <p className=''>Ubicación técnica:{reporte["TAG"]}</p>
-                      <p className=''>Técnica:{reporte["Técnica"]}</p>
-                      <p className=''>Modo de falla:{reporte["Modo de falla"] === '' ? "Sin modo de falla" : reporte["Modo de falla"]}</p>
+                      <div className='flex flex-row justify-between'>
+                        <div>
+                          <p className=''>Ubicación técnica: {reporte["TAG"]}</p>
+                          <p className=''>Técnica: {reporte["Técnica"]}</p>
+                          <p className=''>Modo de falla: {reporte["Modo de falla"] === '' ? "Sin modo de falla" : reporte["Modo de falla"]}</p>
+                        </div>
+                        <div className='flex flex-col items-end'>
+                          <p>Dias sin atencion:</p>
+                          <p className='text-red-600'>{reporte["DÍAS SIN ATENCIÓN"]} días</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )) : (

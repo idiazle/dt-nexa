@@ -81,6 +81,8 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
   const searchRepuestobyComponent = (technic_location: string) => {
     const resp = repuestosData.filter(item => item["Ubicación técnica"] === technic_location)
     setRepuestosFilterData(resp)
+
+
   }
 
   const searchInfoNdVbByRepuesto = (repuesto: string) => {
@@ -185,24 +187,34 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
       });
   }, []);
 
-  const filterByLocationAndMode = () => {
-    return repuestosFallaData.filter(
-      (item: any) =>
-        item["Ubicación técnica"] === consultRF["Ubicación técnica"] &&
-        ["Modo Falla 1", "Modo Falla 2", "Modo Falla 3", "Modo Falla 4"].some(
-          (col) => item[col] === consultRF["Modo de falla"]
-        )
-    );
-  };
-
   useEffect(() => {
-    if (consultRF["Ubicación técnica"] && consultRF["Modo de falla"]) {
-      const filtered = filterByLocationAndMode();
-      setResultRFConsult(filtered);
-    }
+    const resp = repuestosFallaData.filter(item => item["Ubicación técnica"] === consultRF["Ubicación técnica"])
+    console.log("FGAAAA: ", resp)
+    setResultRFConsult(resp)
   }, [consultRF, repuestosFallaData]);
 
-  console.log("Repuestos por falla:", failureModeRF);
+  // const filterByLocationAndMode = () => {
+  //   return repuestosFallaData.filter(
+  //     (item: any) =>
+  //       item["Ubicación técnica"] === consultRF["Ubicación técnica"] &&
+  //       ["Modo Falla 1", "Modo Falla 2", "Modo Falla 3", "Modo Falla 4"].some(
+  //         (col) => item[col] === consultRF["Modo de falla"]
+  //       )
+  //   );
+  // };
+
+  // useEffect(() => {
+  //   if (consultRF["Ubicación técnica"]) {
+  //     const filtered = filterByLocationAndMode();
+  //     console.log("Repuestos por falla:", filtered);
+  //     setResultRFConsult(filtered);
+  //   }
+  // }, [consultRF, repuestosFallaData]);
+
+  // console.log("Repuestos por falla:", resultRFConsult);
+
+
+  const [componentChildren, setComponentChildren] = useState<string>("");
 
   return (
     <div className={`absolute flex flex-col max-h-[92%] right-0 top-14 bottom-0 ${openSpareDialog ? 'w-[45%] opacity-100' : 'w-0 opacity-0'} bg-slate-300 z-50 border rounded-l-md p-2`}>
@@ -293,6 +305,7 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
                               onClick={() => {
                                 setOpenRepuestosDialog(true);
                                 searchRepuestobyComponent(component["TAG-HIJO"])
+                                setComponentChildren(component["TAG-HIJO"])
                               }}>
                               Rep.
                             </Button>
@@ -553,22 +566,23 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
 
       {/* Dialog de repuestos */}
       <Dialog open={openRepuestosDialog} onOpenChange={() => { setOpenRepuestosDialog(false) }}>
-        <DialogContent className="max-h-[90vh] min-w-[800px] bg-gray-200">
+        <DialogContent className="max-h-[90vh] min-w-[70vw] bg-gray-200">
           <DialogHeader>
-            <DialogTitle>Repuestos de</DialogTitle>
+            <DialogTitle>Repuestos de {componentChildren}</DialogTitle>
           </DialogHeader>
           <div className=''>
             {/* <h1 className='font-bold text-lg'>Lista de Repuestos </h1> */}
-            <div className="bg-white max-h-[500px] flex flex-col">
+            <div className="bg-white max-h-[70vh] flex flex-col">
               <div>
                 <Table className="w-full">
                   <TableHeader className="bg-gray-100">
                     <TableRow className="text-xs">
-                      <TableHead className='w-[12%]'>Componente</TableHead>
-                      <TableHead className='w-[33%]'>Texto breve del material</TableHead>
+                      <TableHead className='w-[10%]'>Componente</TableHead>
+                      <TableHead className='w-[30%]'>Texto breve del material</TableHead>
                       {/* <TableHead className='w-[10%]'>Ubicación Técnica</TableHead> */}
-                      <TableHead className='w-[15%]'>Tipo de material</TableHead>
+                      <TableHead className='w-[20%]'>Tipo de material</TableHead>
                       <TableHead className='w-[10%]'># posición</TableHead>
+                      <TableHead className='w-[10%]'>Stock</TableHead>
                       <TableHead className='w-[10%]'>Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -583,11 +597,12 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
                           <TableRow
                             key={index}
                             className="text-xs">
-                            <TableCell className='w-[12%]'>{obj["Componente"]}</TableCell>
-                            <TableCell className='w-[33%]'>{obj["Texto breve de material"]}</TableCell>
+                            <TableCell className='w-[10%]'>{obj["Componente"]}</TableCell>
+                            <TableCell className='w-[30%]'>{obj["Texto breve de material"]}</TableCell>
                             {/* <TableCell className='w-[10%]'>{obj.["Tipo material"]}</TableCell> */}
                             <TableCell className='w-[15%]'>{obj["Tipo material"]}</TableCell>
-                            <TableCell className='w-[10%]'>{obj["Núm.posición"]}</TableCell>
+                            <TableCell className='w-[15%]'>{obj["Núm.posición"]}</TableCell>
+                            <TableCell className='w-[10%]'>{obj["Cantidad componente"]}</TableCell>
                             <TableCell className='w-[10%]'>
                               <Button
                                 onClick={() => {
@@ -610,7 +625,7 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
                                 <TableCell className='w-[33%]'>{obj["Texto breve de material"]}</TableCell>
                                 {/* <TableCell className='w-[10%]'>{obj.["Tipo material"]}</TableCell> */}
                                 <TableCell className='w-[15%]'>{obj["Tipo material"]}</TableCell>
-                                <TableCell className='w-[10%]'>{obj["Núm. posición"]}</TableCell>
+                                <TableCell className='w-[20%]'>{obj["Núm. posición"]}</TableCell>
                                 <TableCell className='w-[10%]'></TableCell>
                               </TableRow>
                             )
@@ -632,7 +647,7 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
 
       {/* Dialog Modos de falla segun equipo instalado. */}
       <Dialog open={openDialogModosFalla} onOpenChange={() => setOpenDialogModosFalla(false)}>
-        <DialogContent className="min-w-[60vw]">
+        <DialogContent className="min-w-[80vw]">
 
           <DialogHeader>
             <DialogTitle>Repuestos según ISO 14224</DialogTitle>
@@ -644,7 +659,7 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
             </div>
             <div className="flex flex-row gap-2 items-center w-full">
               <Label className='font-bold text-xs w-1/3'>Modo de Falla:</Label>
-              <Select
+              {/* <Select
                 value={consultRF["Modo de falla"]}
                 onValueChange={(value) => setConsultRF({ ...consultRF, "Modo de falla": value })}
               >
@@ -658,32 +673,38 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
                     ))
                   }
                 </SelectContent>
-              </Select>
+              </Select> */}
             </div>
             <div className=''>
               <div className="sticky top-0 z-10">
                 <Table>
                   <TableHeader>
                     <TableRow className="text-xs bg-gray-200">
-                      <TableHead>Ubicacion Tecnica</TableHead>
-                      <TableHead>Componente</TableHead>
-                      <TableHead>Descripcion</TableHead>
-                      <TableHead>Stock</TableHead>
+                      <TableHead className="w-[10%]">Componente</TableHead>
+                      <TableHead className="w-[30%]">Descripcion</TableHead>
+                      {/* <TableHead>Stock</TableHead> */}
+                      <TableHead className="w-[15%]">Modo de Falla 1</TableHead>
+                      <TableHead className="w-[15%]">Modo de Falla 2</TableHead>
+                      <TableHead className="w-[15%]">Modo de Falla 3</TableHead>
+                      <TableHead className="w-[15%]">Modo de Falla 4</TableHead>
                     </TableRow>
                   </TableHeader>
                 </Table>
               </div>
-              <div className="bg-white flex overflow-auto h-[90%]">
+              <div className="bg-white flex overflow-auto h-[70%]">
                 <Table>
                   <TableBody>
                     {
                       resultRFConsult && resultRFConsult.length > 0 ?
                         resultRFConsult.map((item: any, index: number) => (
                           <TableRow key={index} className="text-xs">
-                            <TableCell>{item["Ubicación técnica"]}</TableCell>
-                            <TableCell>{item["Componente"]}</TableCell>
-                            <TableCell>{item["Texto breve de material"]}</TableCell>
-                            <TableCell></TableCell>
+                            <TableCell className="w-[10%]">{item["Componente"]}</TableCell>
+                            <TableCell className="w-[30%]">{item["Texto breve de material"]}</TableCell>
+                            {/* <TableCell></TableCell> */}
+                            <TableCell className="w-[15%]">{item["Modo Falla 1"]}</TableCell>
+                            <TableCell className="w-[15%]">{item["Modo Falla 2"]}</TableCell>
+                            <TableCell className="w-[15%]">{item["Modo Falla 3"]}</TableCell>
+                            <TableCell className="w-[15%]">{item["Modo Falla 4"]}</TableCell>
                           </TableRow>
                         ))
                         :
