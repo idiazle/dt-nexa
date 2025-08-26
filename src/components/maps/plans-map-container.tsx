@@ -692,6 +692,24 @@ export default function PlansMapContainer(Map: MapProps) {
     setReportesFiltrados(reportesFiltrados.reverse());
   }, [allEquipments, equipmentSelected, reportesGenerales]);
 
+  function diasTranscurridos(fechaStr: string) {
+    // separar el string por "/"
+    const [dia, mes, anio] = fechaStr.split("/").map(Number)
+
+    // ojo: en JS los meses van de 0 a 11
+    const fechaDada = new Date(anio, mes - 1, dia)
+    const hoy = new Date()
+
+    // poner ambas fechas a medianoche (sin horas) para evitar desfases
+    fechaDada.setHours(0, 0, 0, 0)
+    hoy.setHours(0, 0, 0, 0)
+
+    const diffMs = hoy.getTime() - fechaDada.getTime()
+    const diffDias = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+    return diffDias
+  }
+
   return (
     <div className='flex flex-col w-full h-full relative overflow-hidden' ref={refDivOverflow}>
       <div className='relative w-full h-full'>
@@ -1115,7 +1133,7 @@ export default function PlansMapContainer(Map: MapProps) {
                         </div>
                         <div className='flex flex-col items-end'>
                           <p>Dias sin atencion:</p>
-                          <p className='text-red-600'>{reporte["DÍAS SIN ATENCIÓN"]} días</p>
+                          <p className='text-red-600'>{diasTranscurridos(reporte["FECHA"])} días</p>
                         </div>
                       </div>
                     </div>
