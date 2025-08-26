@@ -178,7 +178,7 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
     )
 
     // 2. Crear hoja desde datos
-    const worksheet = XLSX.utils.json_to_sheet(filteredData, { header: keys, origin: "A5" })
+    const worksheet = XLSX.utils.json_to_sheet(filteredData, { header: keys })
     // 👆 origin: "A3" para que deje espacio arriba (fila 1: fecha, fila 2: headers)
 
     // 3. Insertar cabecera personalizada en fila 2
