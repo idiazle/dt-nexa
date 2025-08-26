@@ -710,7 +710,7 @@ export default function PlansMapContainer(Map: MapProps) {
           bounds={bounds}
           style={{
             height: '100%',
-            width: openSpare === true ? '60%' : '100%',
+            width: (openSpare === true && reportSelected === true) ? '60%' : '100%',
             background: 'white'
           }}
           className={`z-0`}
@@ -809,6 +809,7 @@ export default function PlansMapContainer(Map: MapProps) {
             setOpenGallery={setOpenGallery}
             openGallery={openGallery}
             setOpenSpare={setOpenSpare}
+            openSpare={openSpare}
           /> : null
       }
       {

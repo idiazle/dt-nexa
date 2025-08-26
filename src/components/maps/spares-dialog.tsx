@@ -8,6 +8,7 @@ import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Textarea } from "../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import * as XLSX from "xlsx"
 
 interface SpareDialogProps {
   openSpareDialog: boolean
@@ -163,6 +164,51 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
   const [resultRFConsult, setResultRFConsult] = useState<any[]>([]);
 
   const [openDialogModosFalla, setOpenDialogModosFalla] = useState(false);
+
+  const headers = ["Componente", "Texto Breve del material", "Tipo de material", "# posición", "stock"] // lo que se ve en la tabla
+  const keys = ["Componente", "Texto breve de material", "Tipo material", "Núm.posición", "Cantidad componente"]   // las claves reales del objeto
+
+  const exportToExcel = () => {
+    // 1. Filtrar solo las columnas visibles
+    const filteredData = repuestosFilterData.map(row =>
+      keys.reduce((acc, key) => {
+        acc[key] = row[key]
+        return acc
+      }, {} as Record<string, any>)
+    )
+
+    // 2. Crear hoja desde datos
+    const worksheet = XLSX.utils.json_to_sheet(filteredData, { header: keys, origin: "A5" })
+    // 👆 origin: "A3" para que deje espacio arriba (fila 1: fecha, fila 2: headers)
+
+    // 3. Insertar cabecera personalizada en fila 2
+    XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: "A5" })
+
+    // 4. Insertar fecha en fila 1
+    XLSX.utils.sheet_add_aoa(
+      worksheet,
+      [
+        ["📅 Fecha de generación:", new Date().toLocaleString()],
+        ["Repuestos de:", componentChildren]
+      ],
+      { origin: "A1" }
+    )
+
+    // 5. Autoajustar columnas
+    const colWidths = keys.map((key, i) => {
+      const maxLength = Math.max(
+        headers[i].length,
+        ...filteredData.map(row => String(row[key] ?? "").length)
+      )
+      return { wch: maxLength + 2 }
+    })
+    worksheet["!cols"] = colWidths
+
+    // 6. Crear libro y exportar
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Repuestos")
+    XLSX.writeFile(workbook, "Tostacion.xlsx")
+  }
 
   useEffect(() => {
     fetch('/data/repuestos_fallas.json')
@@ -567,8 +613,17 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
       {/* Dialog de repuestos */}
       <Dialog open={openRepuestosDialog} onOpenChange={() => { setOpenRepuestosDialog(false) }}>
         <DialogContent className="max-h-[90vh] min-w-[70vw] bg-gray-200">
-          <DialogHeader>
+          <DialogHeader className="flex flex-row justify-between items-center p-2">
             <DialogTitle>Repuestos de {componentChildren}</DialogTitle>
+            <div>
+              <Button
+                onClick={() => {
+                  exportToExcel()
+                }}
+              >
+                Exportar
+              </Button>
+            </div>
           </DialogHeader>
           <div className=''>
             {/* <h1 className='font-bold text-lg'>Lista de Repuestos </h1> */}
@@ -596,13 +651,13 @@ const SparesDialog = ({ openSpareDialog, setOpenSpareDialog, equipmentSelected, 
                         return (
                           <TableRow
                             key={index}
-                            className="text-xs">
+                            className={`text-xs ${obj["Cantidad componente"] > 0 ? "" : "bg-red-100 hover:bg-red-200"}`}>
                             <TableCell className='w-[10%]'>{obj["Componente"]}</TableCell>
                             <TableCell className='w-[30%]'>{obj["Texto breve de material"]}</TableCell>
                             {/* <TableCell className='w-[10%]'>{obj.["Tipo material"]}</TableCell> */}
-                            <TableCell className='w-[15%]'>{obj["Tipo material"]}</TableCell>
-                            <TableCell className='w-[15%]'>{obj["Núm.posición"]}</TableCell>
-                            <TableCell className='w-[10%]'>{obj["Cantidad componente"]}</TableCell>
+                            <TableCell className='w-[20%]'>{obj["Tipo material"]}</TableCell>
+                            <TableCell className='w-[10%]'>{obj["Núm.posición"]}</TableCell>
+                            <TableCell className={`${obj["Cantidad componente"] > 0 ? "" : "text-red-500 font-bold"} w-[10%]`} >{obj["Cantidad componente"]}</TableCell>
                             <TableCell className='w-[10%]'>
                               <Button
                                 onClick={() => {

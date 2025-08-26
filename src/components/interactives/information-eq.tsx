@@ -25,8 +25,9 @@ interface InfoEquipCompStructure {
   setOpenGallery: (value: boolean) => void
   openGallery: boolean
   setOpenSpare: (value: boolean) => void
+  openSpare: boolean
 }
-export default function InformationEquipmentComponent({ equipmentIsPressed, refToDivOverflow, equipmentSelected, setEquipmentSelected, setStateInformation, setNavIcons, trouInfodocData, setTrouInfodocData, setReportSelected, set360ViewSelected, setOpenGallery, setOpenSpare, openGallery }: InfoEquipCompStructure) {
+export default function InformationEquipmentComponent({ equipmentIsPressed, refToDivOverflow, equipmentSelected, setEquipmentSelected, setStateInformation, setNavIcons, trouInfodocData, setTrouInfodocData, setReportSelected, set360ViewSelected, setOpenGallery, setOpenSpare, openGallery, openSpare }: InfoEquipCompStructure) {
   const [equipInformation, setEquipInformation] = useState<EquipmentStructure | null>(null)
   const [troubleshooting, setTroubleshooting] = useState<any[] | null>(null)
 
@@ -199,24 +200,44 @@ export default function InformationEquipmentComponent({ equipmentIsPressed, refT
         }} >
         <div className='absolute flex flex-row bg-gray-500 bg-opacity-70 gap-0.5 p-2 rounded-md mt-5'>
           <Button
-            onClick={() => { setReportSelected(true); set360ViewSelected(false) }}
+            onClick={() => {
+              setReportSelected(true);
+              set360ViewSelected(false);
+              setOpenSpare(false);
+              setOpenGallery(false);
+            }}
             className='w-20 h-8 bg-[#002a98] text-white text-xs font-semibold'>
             Reportes
           </Button>
           <Button
-            onClick={() => { setReportSelected(false); set360ViewSelected(true) }}
+            onClick={() => {
+              set360ViewSelected(true);
+              setReportSelected(false);
+              setOpenSpare(false);
+              setOpenGallery(false);
+            }}
             className='w-20 h-8 bg-[#002a98] text-white text-xs font-semibold'>
             360°
           </Button>
           <Button
             disabled={!isHaveImages}
-            onClick={() => { setOpenGallery(true) }}
+            onClick={() => {
+              setOpenGallery(true)
+              set360ViewSelected(false);
+              setReportSelected(false);
+              setOpenSpare(false);
+            }}
             className='w-20 h-8 bg-[#002a98] text-white text-xs font-semibold'>
             Imágenes
           </Button>
           <Button
             // disabled={!isHaveImages}
-            onClick={() => { setOpenSpare(true) }}
+            onClick={() => {
+              setOpenSpare(true)
+              set360ViewSelected(false);
+              setReportSelected(false);
+              setOpenGallery(false);
+            }}
             className='w-20 h-8 bg-[#002a98] text-white text-xs font-semibold'>
             Repuestos
           </Button>

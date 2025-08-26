@@ -48,6 +48,7 @@
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
     "embla-carousel-react": "^8.5.1",
+    "file-saver": "^2.0.5",
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "leaflet-defaulticon-compatibility": "^0.1.2",
@@ -72,6 +73,7 @@
     "react-zoom-pan-pinch": "^3.7.0",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
+    "xlsx": "^0.18.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
