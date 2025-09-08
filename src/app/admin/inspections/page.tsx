@@ -71,17 +71,17 @@ const Inspections = () => {
 
   console.log("All inspections:", allInspections)
 
-  const filteredData = useMemo(() => {
-    if (filterBy === "1") {
-      return equipments.filter((eq) =>
-        eq["TAG-HIJO"]?.toLowerCase().includes(search.toLowerCase())
-      )
-    } else {
-      return users.filter((u) =>
-        u.name?.toLowerCase().includes(search.toLowerCase())
-      )
-    }
-  }, [filterBy, search, equipments, users])
+  // const filteredData = useMemo(() => {
+  //   if (filterBy === "1") {
+  //     return equipments.filter((eq) =>
+  //       eq["TAG-HIJO"]?.toLowerCase().includes(search.toLowerCase())
+  //     )
+  //   } else {
+  //     return users.filter((u) =>
+  //       u.name?.toLowerCase().includes(search.toLowerCase())
+  //     )
+  //   }
+  // }, [filterBy, search, equipments, users])
 
   return (
     <div className='flex flex-col gap-2'>
