@@ -31,25 +31,25 @@ const OptionsNav = () => {
   const showRBDMenu = openRBDlist || hoveringRBD === 'rbd';
 
   return (
-    <div className='absolute flex flex-row-rever bottom-3 left-1/2 -translate-x-1/2 z-50 p-2 rounded-md gap-1'>
+    <div className='absolute flex flex-row-rever bottom-1 left-1/2 -translate-x-1/2 z-50 rounded-md gap-1'>
       {/* PFD */}
       <div className='flex flex-col items-center w-32 gap-2 relative'>
         {showPFDMenu && (
           <div
-            className='absolute flex flex-col items-center w-40 bottom-28 mb-16 bg-white rounded-sm z-10'
+            className='absolute flex flex-col items-center w-40 bottom-28 bg-white rounded-sm z-10'
             onMouseEnter={() => setHoveringPFD('pfd')}
             onMouseLeave={() => setHoveringPFD(null)}
           >
             <a href={"/interactives?map-id=10013&map-type=1"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 10</a>
             <a href={"/interactives?map-id=20013&map-type=1"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 25</a>
-            <a href={"/interactives?map-id=10006&map-type=1"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20</a>
+            <a href={"/interactives?map-id=30017&map-type=1"} className='w-full text-center text-black p-1 hover:bg-[#002645] hover:text-white cursor-pointer bg-gray-200 rounded-sm'>Seccion 20</a>
           </div>
         )}
         <button
           onClick={() => handleToggle('pfd')}
           onMouseEnter={() => setHoveringPFD('pfd')}
           onMouseLeave={() => setHoveringPFD(null)}
-          className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center hover:bg-[#002645] hover:text-white ${openPFDlist || mapType === "1" ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'}`}
+          className={`font-bold text-2xl p-4 rounded-full w-16 h-16 flex items-center justify-center hover:bg-[#002645] hover:text-white ${openPFDlist || mapType === "1" ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'}`}
         >
           PFD
         </button>
@@ -78,7 +78,7 @@ const OptionsNav = () => {
           onClick={() => handleToggle('pnd')}
           onMouseEnter={() => setHoveringPND('pnd')}
           onMouseLeave={() => setHoveringPND(null)}
-          className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center hover:bg-[#002645] hover:text-white ${openPNDList || mapType === '3' ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'}`}
+          className={`font-bold text-2xl p-4 rounded-full w-16 h-16 flex items-center justify-center hover:bg-[#002645] hover:text-white ${openPNDList || mapType === '3' ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'}`}
         >
           PND
         </button>
@@ -101,7 +101,7 @@ const OptionsNav = () => {
           onClick={() => handleToggle('rbd')}
           onMouseEnter={() => setHoveringRBD('rbd')}
           onMouseLeave={() => setHoveringRBD(null)}
-          className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center hover:bg-[#002645] hover:text-white ${openRBDlist || mapType === "2" ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'} `}
+          className={`font-bold text-2xl p-4 rounded-full w-16 h-16 flex items-center justify-center hover:bg-[#002645] hover:text-white ${openRBDlist || mapType === "2" ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'} `}
         >
           RBD
         </button>
@@ -124,7 +124,7 @@ const OptionsNav = () => {
           onClick={() => handleToggle('360')}
           onMouseEnter={() => setHovering360('360')}
           onMouseLeave={() => setHovering360(null)}
-          className={`font-bold text-3xl p-4 rounded-full w-24 h-24 flex items-center justify-center hover:bg-[#002645] hover:text-white ${open360list || is360View ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'}`}
+          className={`font-bold text-2xl p-4 rounded-full w-16 h-16 flex items-center justify-center hover:bg-[#002645] hover:text-white ${open360list || is360View ? 'bg-[#002645] text-white' : 'text-white bg-[#47657C]'}`}
         >
           <TbView360Number size={55} />
         </button>

@@ -128,6 +128,14 @@ export default function AdminAside() {
     {
       id: 15,
       icon_path: '/img/aside-icons/icon_icon.png',
+      icon_tooltip: 'Inspecciones',
+      route: '/admin/inspections',
+      enable: true,
+      group: 'twin'
+    },
+    {
+      id: 16,
+      icon_path: '/img/aside-icons/icon_icon.png',
       icon_tooltip: 'Imágenes',
       route: '/admin/imagenes',
       enable: true,

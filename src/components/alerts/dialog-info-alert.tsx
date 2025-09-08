@@ -43,7 +43,7 @@ interface DialogInfoNotifyStruct {
 }
 
 export default function DialogInfoNotify({ open, setOpen, dataSelected, setAllAlerts }: DialogInfoNotifyStruct) {
-  const {toast} = useToast()
+  const { toast } = useToast()
   const [data, setData] = useState<any>({ ...dataSelected })
   const { data: session } = useSession()
   const [areas, setAreas] = useState<EntityStructure[] | null>(null)
@@ -312,24 +312,42 @@ export default function DialogInfoNotify({ open, setOpen, dataSelected, setAllAl
         <div className='flex flex-col justify-center items-start w-full my-2 gap-1 '>
           <Label className='font-bold'>Evidencias:</Label>
           <div className='flex flex-row gap-2 w-full h-40 overflow-x-auto'>
-            {
-              data && data.uploaded_files && data.uploaded_files.length > 0 ?
-                data.uploaded_files.map((file: any, index: number) => (
-                  <div key={index} className='bg-white w-40 h-40 rounded-md gap-1 p-2'>
-                    <Image
-                      width={300}
-                      height={130}
-                      src={file.file}
-                      alt={`Evidencia ${index + 1}`}
-                      className='w-full h-full object-cover'
-                    />
-                  </div>
-                ))
-                :
-                <div className='bg-white w-full rounded-md gap-1 p-2 justify-center flex'>
-                  <h1 className='italic'>No hay evidencias</h1>
-                </div>
-            }
+            {data && data.uploaded_files && data.uploaded_files.length > 0 ? (
+              data.uploaded_files.map((file: any, index: number) => (
+                <Dialog key={index}>
+                  <DialogTrigger asChild>
+                    <div className='bg-white w-40 h-40 rounded-md gap-1 p-2 cursor-pointer'>
+                      <Image
+                        width={300}
+                        height={130}
+                        src={file.file}
+                        alt={`Evidencia ${index + 1}`}
+                        className='w-full h-full object-cover rounded-md'
+                      />
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="min-w-[60%] p-2">
+                    <DialogTitle className="text-lg font-bold mb-2">Evidencia {index + 1}</DialogTitle>
+                    <div className='justify-center flex flex-row items-center gap-2'>
+                      <Image
+                        width={300}
+                        height={200}
+                        src={file.file}
+                        alt={`Evidencia ${index + 1}`}
+                        className=" rounded-md"
+                      />
+                      <div className='flex h-full w-1/3'>
+                        <Label>Comentario Individual:</Label>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              ))
+            ) : (
+              <div className='bg-white w-full rounded-md gap-1 p-2 justify-center flex'>
+                <h1 className='italic'>No hay evidencias</h1>
+              </div>
+            )}
           </div>
         </div>
         {
